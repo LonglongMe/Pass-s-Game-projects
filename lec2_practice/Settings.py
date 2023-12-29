@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-
+import pygame
 from enum import Enum
 
 class WindowSettings:
@@ -9,9 +9,9 @@ class WindowSettings:
     outdoorScale = 1.5 # A necessary scale to allow camera movement in outdoor scenes
 
 class PlayerSettings:
-    playerSpeed = 5
-    playerWidth = 60
-    playerHeight = 55
+    playerSpeed = 10
+    playerWidth = 120
+    playerHeight = 133
 
 class SceneSettings:
     tileXnum = 48
@@ -19,18 +19,18 @@ class SceneSettings:
     tileWidth = tileHeight = 40
 
 class GamePath:
-    player = r".\assets\player\1.png"
+    player = []
+    for i in range(1,122):
+        a=(pygame.image.load(f"./lec2_practice/assets/player/Paimon/{i}.png"))
+        player.append(pygame.transform.scale(a,(PlayerSettings.playerWidth, PlayerSettings.playerHeight)))
 
-    groundTiles = [
-        r".\assets\tiles\ground1.png", 
-        r".\assets\tiles\ground2.png", 
-        r".\assets\tiles\ground3.png", 
-        r".\assets\tiles\ground4.png", 
-        r".\assets\tiles\ground5.png", 
-        r".\assets\tiles\ground6.png", 
-    ]
+    groundTiles = []
+    for i in range(1,7):
+        a=(pygame.image.load(f"./lec2_practice/assets/tiles/ground{i}.png"))
+        groundTiles.append(pygame.transform.scale(a,(SceneSettings.tileWidth, SceneSettings.tileHeight)))
 
-    tree = r".\assets\tiles\tree.png"
+
+    tree = r".lec2_practice/assets/tiles/tree.png"
 
 class GameState(Enum):
     MAIN_MENU = 1

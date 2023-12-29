@@ -1,1 +1,0 @@
-print("xy wyc ljl")

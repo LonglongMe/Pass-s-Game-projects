@@ -7,42 +7,50 @@ from SceneManager import SceneManager
 from Settings import *
 from Player import Player
 
-def run_game():
-    pygame.init()
+class MainGame:
+    window=None
+    player=None
 
-    window = pygame.display.set_mode((WindowSettings.width, WindowSettings.height))
-    pygame.display.set_caption(WindowSettings.name)
+    def run_game():
+        pygame.init()
 
-    scene = SceneManager(window)
+        MainGame.window = pygame.display.set_mode((WindowSettings.width, WindowSettings.height))
+        pygame.display.set_caption(WindowSettings.name)
 
-    # 创建角色，sprites暂时写在这里
-    sprites = pygame.sprite.Group()
-    player = Player(WindowSettings.width // 2, WindowSettings.height // 2)
-    sprites.add(player)
+        scene = SceneManager(MainGame.window)
 
-    # 游戏主循环
-    while True:
-        scene.tick(30)  # 控制帧率
+        # 创建角色，sprites暂时写在这里
+        sprites = pygame.sprite.Group()
+        MainGame.player = Player(WindowSettings.width // 2, WindowSettings.height // 2)
+        sprites.add(MainGame.player)
+       
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+        # 游戏主循环
+        while True:
+            scene.tick(30)  # 控制帧率
 
-        # 获取按键状态
-        keys = pygame.key.get_pressed()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
 
-        # 更新Player
-        player.update(keys, scene)
-        scene.update_camera(player)
+            # 获取按键状态
+            keys = pygame.key.get_pressed()
+
+            # 更新Player
+            MainGame.player.update(keys, scene)
+            scene.update_camera(MainGame.player)
+        
+            # 渲染场景
+            scene.render()
+
+            # 渲染player
+            MainGame.player.show()
+            MainGame.window.blit(MainGame.player.image,MainGame.player.rect)
+           # sprites.draw(window)
+
+            pygame.display.flip()
+
+if __name__=="__main__":
     
-        # 渲染场景
-        scene.render()
-
-        # 渲染player
-        sprites.draw(window)
-
-        pygame.display.flip()
-
-if __name__ == "__main__":
-    run_game()
+    MainGame.run_game()

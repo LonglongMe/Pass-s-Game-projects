@@ -16,7 +16,17 @@ class Block(pygame.sprite.Sprite):
         pass
 
 def gen_map():
-    pass
+    images = GamePath.groundTiles
+
+
+    mapObj = []
+    for i in range(SceneSettings.tileXnum):
+        tmp = []
+        for j in range(SceneSettings.tileYnum):
+            tmp.append(images[randint(0, len(images) - 1)])
+        mapObj.append(tmp)
+
+    return mapObj
 
 def build_obstacle():
     pass
