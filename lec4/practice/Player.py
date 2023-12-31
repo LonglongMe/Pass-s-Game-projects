@@ -17,9 +17,11 @@ class Player(pygame.sprite.Sprite):
         self.speed = PlayerSettings.playerSpeed
         self.talking = False
 
-        self.HP = PlayerSettings.playerHP
+        self.OriginHP = PlayerSettings.playerHP
+        self.Hp=self.OriginHP
         self.attack = PlayerSettings.playerAttack
         self.defence = PlayerSettings.playerDefence
+        self.card_list=[]
 
     def move(self, dx, dy):
         self.rect = self.rect.move(dx,dy)

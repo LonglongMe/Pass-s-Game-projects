@@ -45,9 +45,6 @@ class BattleBox:
         self.isPlayingAnimation = True
         self.currentAnimationCount = 0
 
-        # 移动方向
-
-        self.dir = 1
 
         # 是否结束
 
@@ -80,7 +77,7 @@ class BattleBox:
         text = "monster HP: " + str(self.monsterHP)
         self.window.blit(self.font.render(text, True, self.fontColor),
         (BattleSettings.textMonsterStartX, BattleSettings.textStartY))
-
+        
         # 绘制战斗过程
 
         if self.isPlayingAnimation:

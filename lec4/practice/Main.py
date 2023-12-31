@@ -3,6 +3,7 @@
 import pygame
 import sys
 
+from Card import Card ,CardSet
 from SceneManager import SceneManager
 from Settings import *
 from Player import Player
@@ -18,7 +19,9 @@ def run_game():
     # 创建角色 和 NPC 精灵
     player = Player(WindowSettings.width // 2, WindowSettings.height // 2)
     clock = pygame.time.Clock()
-    
+    # 创建牌库
+    cards=[Card(5,1,i) for i in range(6)]
+    Handset=CardSet(cards,window)
     # 游戏主循环
     while True:
         clock.tick(30)
@@ -33,7 +36,7 @@ def run_game():
         # 更新 NPC / Player
         player.update(keys, scene)    # 主要是角色移动
         scene.update()                # 主要是场景中对象的动画更新，暂时不涉及player的部分
-
+        Handset.Update_card()
         # talking 的render 必须要在scene render以后，不然会被背景盖掉
         scene.render()                
         player.draw(window)

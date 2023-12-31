@@ -31,6 +31,9 @@ class MonsterSettings:
     monsterAttack = 3
     monsterDefense = 1
 
+class CardSettings:
+    cardWidth=120#WindowSettings.width//4.5
+    cardHeight=180#indowSettings.height//5.4
 
 class SceneSettings:
     tileXnum = 36
@@ -104,6 +107,13 @@ class GamePath:
     ]
 
     tree = r".\assets\tiles\tree.png"
+    card_backround_list=[r"./assets/cards/ATK.jpg",
+                    r"./assets/cards/CURE.jpg",
+                    r"./assets/cards/BUFF.jpg",
+                    r"./assets/cards/PURE.jpg",
+                    r"./assets/cards/DEBUFF.jpg",
+                    r"./assets/cards/EMPTY.png"
+    ]
 
 class GameState(Enum):
     MAIN_MENU = 1
@@ -112,3 +122,4 @@ class GameState(Enum):
     GAME_WIN = 4
     GAME_PAUSE = 5
     GAME_PLAY_WILD = 6
+
