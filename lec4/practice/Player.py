@@ -6,6 +6,7 @@ import os
 
 # 设置角色动画
 class Player(pygame.sprite.Sprite):
+    frame=0
     def __init__(self, x, y):
         super().__init__()
         self.images = [pygame.transform.scale(pygame.image.load(img), 
@@ -50,10 +51,14 @@ class Player(pygame.sprite.Sprite):
                 self.rect = self.rect.move(-dx, -dy)
 
             # 更新角色动画
-            if any(keys):
-                self.index = (self.index + 1) % len(self.images)
-                self.image = self.images[self.index]
 
 
+    def show(self):
+        if Player.frame==119:
+            Player.frame=0
+        else:
+            Player.frame+=1
+        self.image=self.images[Player.frame]
     def draw(self, window):
+        self.show()
         window.blit(self.image, self.rect)

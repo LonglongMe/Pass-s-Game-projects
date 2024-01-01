@@ -3,14 +3,15 @@ import sys
 from Settings import *
 import random
 import copy
-from typing import Tuple, List
-
+from typing import List
+import pygame.gfxdraw
+from pygame.locals import *
+from Player import Player
+from time import sleep
 fontlist=pygame.font.get_fonts()
-
  
 game_background_list=[]
 effect_animate=[]
-
 class cardnum:
     "ATK"==0
     "CURE"==1
@@ -18,7 +19,6 @@ class cardnum:
     "PURE"==3
     "DEBUFF"==4
     "EMPTY"==5
-
 #game_backround=pygame.image.load(card_backround_list[i])
 #game_backround = pygame.transform.scale(card_backround, (120, 180))
     
@@ -69,19 +69,27 @@ class Card:  #basic information of differernt cards
             return Card(sort,level,self.order)
 
 class CardSet:
+    win=0
+    actanimategif=0
+    actcuregif=0
+    actlightninggif=0
     cards=[]
     selected=[]
     pressed=0
     Accumulated_atk=1
     Hp_change=0
     ATK_change=1
-    enemy_hp=300
+    enemyinitialhp=50
+    enemy_hp=50
+    playerinitialhp=50
     playerhp=50
-    leftround=10
+    leftround=20
     def __init__(self, cards: List[Card],window) -> None:
         CardSet.cards=copy.copy(cards)
         self.window=window
         self.font = pygame.font.Font(None, 40)
+        self.hpfont = pygame.font.Font(None, 15)
+        self.hpfontcolor=(255,255,255)
         self.fontColor=(0,0,0)
         pass
     def Seclect_Card(self):
@@ -114,47 +122,50 @@ class CardSet:
             CardSet.Hp_change=0
             CardSet.ATK_change=1
 
-    def Update_card(self):       
-        CardSet.DrawNewCard(self)
-        CardSet.Seclect_Card(self)
-        CardSet.Playcards(self)
-        CardSet.detect_end_of_the_round(self)
-        for cards in CardSet.cards:
-            position = ( cards.rect.x+cards.width-2, cards.rect.y+cards.width-1, 124, 182 )   
-            #render cards
-            self.window.blit(cards.image,(cards.rect.x+cards.width,cards.rect.y+cards.width))
-            transparent_rect = pygame.Surface((120, 73), pygame.SRCALPHA)
-            transparent_rect.fill(cards.content_color)
-            self.window.blit(transparent_rect, (cards.rect.x+5, cards.rect.y+110))
-            pygame.draw.rect(self.window,cards.margin_color, position,cards.width,border_radius=9 )
-        pygame.draw.rect(self.window,cards.margin_color,(15,20,30,30),0,border_radius=9)
-        text = "real attak: " + str(CardSet.ATK_change)
-        self.window.blit(self.font.render(text, True, self.fontColor),
-        (BattleSettings.textPlayerStartX-300, BattleSettings.textStartY-80))
+        #self.gradient_fill_rect(self.window, (0,350,960,250), (0,0,0,140), (0,0,0,255))
+    def curegif(self):
+        if CardSet.actcuregif>0 and CardSet.Hp_change>0:
+            images = [pygame.transform.scale(pygame.image.load(img), 
+                            (PlayerSettings.playerWidth-50, PlayerSettings.playerHeight)) for img in GamePath.cure]
+            image = images[CardSet.actcuregif%3]
+            CardSet.actcuregif+=1
+            #render blood volume change
+            text4 = "+ "+str(int(CardSet.Hp_change))
+            self.window.blit(self.hpfont.render(text4, True, self.hpfontcolor),(70+CardSet.actcuregif,10))  
+        if CardSet.actcuregif>20:
+            CardSet.actcuregif=0
+        self.window.blit(image, (100,200))
 
-        text = "cure hp: " + str(CardSet.Hp_change)
-        self.window.blit(self.font.render(text, True, self.fontColor),
-        (BattleSettings.textPlayerStartX-300, BattleSettings.textStartY-40))
+    def lightninggif(self):
+        if CardSet.actlightninggif>0 and CardSet.actlightninggif<10:
+            images = [pygame.transform.scale(pygame.image.load(img), 
+                            (320,370)) for img in GamePath.lightning]
+            image = images[CardSet.actlightninggif//2]
+            CardSet.actlightninggif+=1
+            #render enmey blood volume change
+            text3 = "- "+str(int(CardSet.ATK_change))
+            self.window.blit(self.hpfont.render(text3, True, self.hpfontcolor),(550+CardSet.actlightninggif,10)) 
+ 
+        if CardSet.actlightninggif==10:
+            CardSet.actlightninggif=0
+        self.window.blit(image, (550,100))
+       
+    def animategif(self):
+        
+        if CardSet.actanimategif>0 and CardSet.actanimategif<81:
+            images = [pygame.transform.scale(pygame.image.load(img), 
+                            (426,240)) for img in GamePath.animate]
+            image = images[CardSet.actanimategif]
+            CardSet.actanimategif+=1
+            x=CardSet.actanimategif
+            pygame.draw.rect(self.window,(30,30,30),(0,150,960,240),0)
+            self.window.blit(image, (100,150))
 
-        text = "my hp: " + str((CardSet.Hp_change+1)*CardSet.playerhp)
-        self.window.blit(self.font.render(text, True, self.fontColor),
-        (BattleSettings.textPlayerStartX-300, BattleSettings.textStartY-120))
 
-        text = "accumulated atk: " + str(CardSet.Accumulated_atk)
-        self.window.blit(self.font.render(text, True, self.fontColor),
-        (BattleSettings.textPlayerStartX-300, BattleSettings.textStartY)) 
 
-        text = "enemy hp: " + str(CardSet.enemy_hp)
-        self.window.blit(self.font.render(text, True, self.fontColor),
-        (BattleSettings.textPlayerStartX, BattleSettings.textStartY)) 
-
-        text = "left round: " + str(CardSet.leftround)
-        self.window.blit(self.font.render(text, True, self.fontColor),
-        (BattleSettings.textPlayerStartX, BattleSettings.textStartY-40)) 
-        self.Win()
-        mousepos=pygame.mouse.get_pos()
-        pygame.draw.circle(self.window, (100,0,0), (mousepos[0],mousepos[1]),5, width=0)
-
+        if CardSet.actanimategif==81:
+            CardSet.actanimategif=0
+            CardSet.actlightninggif=1
     def Playcards(self):
         keys=pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and len(CardSet.selected)==3:
@@ -186,19 +197,28 @@ class CardSet:
 
             #card=buff-accumulate atk
             if card.sort==2:
-                enhancement=[1,2,3]
+                enhancement=[1,2.3,3.4]
                 Accumulate_ATK+=enhancement[card.level-1]
             print(card.sort,Hp_change,real_ATK)
-
+        #plaer atk number adjust and activate animate        
         if real_ATK!=0:
-            real_ATK=real_ATK*Accumulate_ATK
+            real_ATK=real_ATK*Accumulate_ATK          
+            if Accumulate_ATK>=10:
+                CardSet.actanimategif=1
+            if Accumulate_ATK<10:
+                CardSet.actlightninggif=1
+
             CardSet.Accumulated_atk=1
         else:
             CardSet.Accumulated_atk=Accumulate_ATK
-        CardSet.Hp_change=int(Hp_change)
+        #plaer hp number adjust and activate animate
+        if Hp_change>0:
+            CardSet.Hp_change=int(Hp_change)
+            CardSet.actcuregif=1
         CardSet.ATK_change=int(real_ATK)
+        #enemy hp number adjust
         if CardSet.enemy_hp-real_ATK>0:
-            CardSet.enemy_hp-=real_ATK
+            CardSet.enemy_hp-=int(real_ATK)
         else:
             CardSet.enemy_hp=0
         CardSet.leftround-=1
@@ -207,19 +227,83 @@ class CardSet:
             if cards.sort==5:
                 CardSet.cards=[cards.random_card() if i==cards else i for i in CardSet.cards]
     def Win(self):
+        bg=pygame.transform.scale(pygame.image.load(GamePath.dialog), (900, 200))
+        
         if CardSet.enemy_hp==0 and CardSet.leftround>=0:
-            pygame.draw.rect(self.window,(200,200,200), (0,160,1000,200),0)
+            CardSet.win=1
             b=pygame.font.SysFont(fontlist[17], 50)
-            text = b.render("You win! by" + str(10-CardSet.leftround)+"rounds",True,(20,0,0))
-            self.window.blit(text,(150,220))
+            text = b.render("You win! by" + str(20-CardSet.leftround)+"rounds",True,(20,0,0))
+            self.window.blit(bg, (30, 170))
+            self.window.blit(text,(250,240))
         elif CardSet.enemy_hp>0 and CardSet.leftround<=0:
-            pygame.draw.rect(self.window,(200,200,200), (135,160,500,200),0,border_radius=9 )
+
             b=pygame.font.SysFont(fontlist[17], 50)
             text = b.render("You Lose! ",True,(20,0,0))
-            self.window.blit(text,(150,210))
+            self.window.blit(bg, (30, 170))
+            self.window.blit(text,(250,240))
+    def Update_card(self):
+
+        for cards in CardSet.cards:
+            position = ( cards.rect.x+cards.width-3, cards.rect.y+cards.width-2, 126, 184 )   
+            #render cards
+            #render image
+            self.window.blit(cards.image,(cards.rect.x+cards.width,cards.rect.y+cards.width))
+            #render margin and level color
+            transparent_rect = pygame.Surface((120, 73), pygame.SRCALPHA)
+            transparent_rect.fill(cards.content_color)
+            self.window.blit(transparent_rect, (cards.rect.x+5, cards.rect.y+110))
+            pygame.draw.rect(self.window,cards.margin_color, position,cards.width,border_radius=9 )
+            #render light mod
+            transparent_rect = pygame.Surface((124,182), pygame.SRCALPHA)
+            transparent_rect.fill((0, 0,0, 20))
+            self.window.blit(transparent_rect, (cards.rect.x,cards.rect.y))
 
 
 
+
+
+        text = "accumulated atk: " + str(int(CardSet.Accumulated_atk))
+        self.window.blit(self.font.render(text, True, self.fontColor),
+        (BattleSettings.textPlayerStartX-300, BattleSettings.textStartY)) 
+
+
+
+        text = "left round: " + str(CardSet.leftround)
+        self.window.blit(self.font.render(text, True, self.fontColor),
+        (BattleSettings.textPlayerStartX-300, BattleSettings.textStartY-40))
+
+
+        #CardSet.actanimategif==0 and 
+        if CardSet.win==0:
+            CardSet.DrawNewCard(self)
+            CardSet.Seclect_Card(self)
+            CardSet.Playcards(self)
+            CardSet.detect_end_of_the_round(self)
+
+
+        #render player hp
+        pygame.draw.rect(self.window,(240,60,60), (20,10,CardSet.playerhp/CardSet.playerinitialhp*300,10),0,border_radius=30 )
+        #render enmey hp
+        pygame.draw.rect(self.window,(240,60,60), (500,10,CardSet.enemy_hp/CardSet.enemyinitialhp*400,10),0,border_radius=30)
+        text1 = str(int(CardSet.enemy_hp))
+        self.window.blit(self.hpfont.render(text1, True, self.hpfontcolor),(530,10)) 
+        text2 = str(int(CardSet.playerhp))
+        self.window.blit(self.hpfont.render(text2, True, self.hpfontcolor),(50,10))
+        #render cure&atk animate
+        if CardSet.actlightninggif>0:
+            self.lightninggif()
+            print("lightning")
+
+        if CardSet.actcuregif>0:
+            self.curegif()
+            print("curing")
+
+        #determin whether win         
+        if CardSet.actanimategif==0:
+            self.Win()
+        #display mouse in game
+        mousepos=pygame.mouse.get_pos()
+        pygame.draw.circle(self.window, (100,0,0), (mousepos[0],mousepos[1]),5, width=0)
 
 
 
@@ -228,11 +312,19 @@ class Background:
     def __init__(self,window) -> None:
         self.window=window
     def showbg(self):
+        bg=pygame.transform.scale(pygame.image.load(GamePath.background), (960, 540))
+        self.window.blit(bg, (0, 0))
+        #self.gradient_fill_rect(self.window, (0,350,960,250), (0,0,0,140), (0,0,0,255))
         transparent_rect = pygame.Surface((960, 250), pygame.SRCALPHA)
         transparent_rect.fill((0, 0,0, 140))
         self.window.blit(transparent_rect, (0, 350))
 
-        
+    def gradient_fill_rect(self,screen, rect, start_color, end_color):
+        start_color = pygame.Color(start_color)
+        end_color = pygame.Color(end_color)
+        pygame.gfxdraw.hgradient(screen, (rect.left, rect.top, rect.width, rect.height), start_color, end_color)
+
+      
 def run_game():
     pygame.init()
     window = pygame.display.set_mode((960,540))
@@ -240,15 +332,18 @@ def run_game():
     cards=[Card(5,1,i) for i in range(6)]
     Handset=CardSet(cards,window)
     clock = pygame.time.Clock()
+   # player=Player(100,150)
+    
     while True:
         clock.tick(30)
-        window.fill((255,255,255))
+        window.fill((10,30,20))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
         bg.showbg()
         Handset.Update_card()
+        #player.draw(window)
 
 
 
@@ -257,3 +352,11 @@ def run_game():
 
 if __name__ == "__main__":
     run_game()
+
+"""        text = "real attak: " + str(CardSet.ATK_change)
+        self.window.blit(self.font.render(text, True, self.fontColor),
+        (BattleSettings.textPlayerStartX-300, BattleSettings.textStartY-80))
+
+        text = "cure hp: " + str(CardSet.Hp_change)
+        self.window.blit(self.font.render(text, True, self.fontColor),
+        (BattleSettings.textPlayerStartX-300, BattleSettings.textStartY-40))"""

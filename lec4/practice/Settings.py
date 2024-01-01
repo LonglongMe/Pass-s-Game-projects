@@ -11,8 +11,8 @@ class WindowSettings:
 
 class PlayerSettings:
     playerSpeed = 5
-    playerWidth = 60
-    playerHeight = 55
+    playerWidth = 170#100
+    playerHeight = 190#110
     playerHP = 20
     playerAttack = 5
     playerDefence = 1
@@ -88,12 +88,8 @@ class BattleSettings:
 
 class GamePath:
     # player/npc related path
-    player = [
-        r".\assets\player\1.png", 
-        r".\assets\player\2.png", 
-        r".\assets\player\3.png", 
-        r".\assets\player\4.png", 
-    ]
+    player = [f"./assets/player/Paimon/{i}.png" for i in range(1,122)]
+
     npc = r".\assets\npc\npc.png"
     monster = r".\assets\npc\monster\1.png"
 
@@ -114,6 +110,11 @@ class GamePath:
                     r"./assets/cards/DEBUFF.jpg",
                     r"./assets/cards/EMPTY.png"
     ]
+    background=r"./assets/bg/bg6.jpg"
+    dialog=r"./assets/bg/bg7.png"
+    cure=[f"./assets/gif/curegif/curegif{i}.png" for i in range(1,4)]
+    lightning=[f"./assets/gif/accumulate/{i}.png" for i in range(1,6)]
+    animate=[f"./assets/gif/animate/{i}.png" for i in range(1,82)]
 
 class GameState(Enum):
     MAIN_MENU = 1
