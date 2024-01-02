@@ -10,9 +10,9 @@ class WindowSettings:
     outdoorScale = 1.5 # A necessary scale to allow camera movement in outdoor scenes
 
 class PlayerSettings:
-    playerSpeed = 5
-    playerWidth = 170#100
-    playerHeight = 190#110
+    playerSpeed = 9
+    playerWidth = 72
+    playerHeight = 80
     playerHP = 20
     playerAttack = 5
     playerDefence = 1
@@ -93,28 +93,27 @@ class GamePath:
     npc = r".\assets\npc\npc.png"
     monster = r".\assets\npc\monster\1.png"
 
-    groundTiles = [
-        r".\assets\tiles\ground1.png", 
-        r".\assets\tiles\ground2.png", 
-        r".\assets\tiles\ground3.png", 
-        r".\assets\tiles\ground4.png", 
-        r".\assets\tiles\ground5.png", 
-        r".\assets\tiles\ground6.png", 
-    ]
+    groundTiles = [f"./assets/tiles/ground{i}.png" for i in range(1,7)]
 
     tree = r".\assets\tiles\tree.png"
     card_backround_list=[r"./assets/cards/ATK.jpg",
                     r"./assets/cards/CURE.jpg",
                     r"./assets/cards/BUFF.jpg",
-                    r"./assets/cards/PURE.jpg",
+                    r"./assets/cards/SPELL.png",
                     r"./assets/cards/DEBUFF.jpg",
-                    r"./assets/cards/EMPTY.png"
-    ]
+                    r"./assets/cards/EMPTY.png",
+                    r"./assets/cards/SACRIFICE.png",
+                    r"./assets/cards/REBOUND.png",
+                    r"./assets/cards/LASTSTAND.png",
+                    r"./assets/cards/JOKER.png"]
     background=r"./assets/bg/bg6.jpg"
     dialog=r"./assets/bg/bg7.png"
     cure=[f"./assets/gif/curegif/curegif{i}.png" for i in range(1,4)]
     lightning=[f"./assets/gif/accumulate/{i}.png" for i in range(1,6)]
     animate=[f"./assets/gif/animate/{i}.png" for i in range(1,82)]
+    lightshield=[f"./assets/gif/lightshield/{i}.png" for i in range(1,10)]
+    fire=[f"./assets/gif/fire/{i}.png" for i in range(1,7)]
+    empty=f"./assets/tiles/empty.png"
 
 class GameState(Enum):
     MAIN_MENU = 1

@@ -10,11 +10,13 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.images = [pygame.transform.scale(pygame.image.load(img), 
-                            (PlayerSettings.playerWidth, PlayerSettings.playerHeight)) for img in GamePath.player]
+                            (PlayerSettings.playerWidth+10, PlayerSettings.playerHeight+10)) for img in GamePath.player]
         self.index = 0
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
+        self.rect.width-=50
+        self.rect.height-=50
+        self.rect.topleft = (x,y)
         self.speed = PlayerSettings.playerSpeed
         self.talking = False
 
@@ -61,4 +63,4 @@ class Player(pygame.sprite.Sprite):
         self.image=self.images[Player.frame]
     def draw(self, window):
         self.show()
-        window.blit(self.image, self.rect)
+        window.blit(self.image, (self.rect.x-20,self.rect.y-20,self.rect.width,self.rect.height))

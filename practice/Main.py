@@ -2,7 +2,7 @@
 
 import pygame
 import sys
-
+from Map import Fire
 from Card import Card ,CardSet
 from SceneManager import SceneManager
 from Settings import *
@@ -15,7 +15,7 @@ def run_game():
     pygame.display.set_caption(WindowSettings.name)
 
     scene = SceneManager(window)
-
+    firegif=Fire(1,40*3,40*8)
     # 创建角色 和 NPC 精灵
     player = Player(WindowSettings.width // 2, WindowSettings.height // 2)
     clock = pygame.time.Clock()
@@ -40,6 +40,7 @@ def run_game():
         # talking 的render 必须要在scene render以后，不然会被背景盖掉
         scene.render()                
         player.draw(window)
+        firegif.draw(window)
 
         scene.check_event_talking(player, keys)
         scene.check_event_battle(player, keys)
