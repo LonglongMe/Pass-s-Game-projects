@@ -99,13 +99,13 @@ class GamePath:
     card_backround_list=[r"./assets/cards/ATK.jpg",
                     r"./assets/cards/CURE.jpg",
                     r"./assets/cards/BUFF.jpg",
-                    r"./assets/cards/SPELL.png",
+                    r"./assets/cards/SPELL.jpg",
                     r"./assets/cards/DEBUFF.jpg",
                     r"./assets/cards/EMPTY.png",
-                    r"./assets/cards/SACRIFICE.png",
-                    r"./assets/cards/REBOUND.png",
-                    r"./assets/cards/LASTSTAND.png",
-                    r"./assets/cards/JOKER.png"]
+                    r"./assets/cards/SACRIFICE.jpg",
+                    r"./assets/cards/REBOUND.jpg",
+                    r"./assets/cards/DESPRATE.jpg",
+                    r"./assets/cards/JOKER.jpg"]
     background=r"./assets/bg/bg6.jpg"
     dialog=r"./assets/bg/bg7.png"
     cure=[f"./assets/gif/curegif/curegif{i}.png" for i in range(1,4)]

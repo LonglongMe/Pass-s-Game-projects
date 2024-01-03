@@ -62,13 +62,17 @@ class SceneManager:
         # update npc
         for each in self.npcs.sprites():
             each.update()
+        for each in self.obstacles.sprites():
+            each.update()
 
     def render(self):
         for i in range(SceneSettings.tileXnum):
             for j in range(SceneSettings.tileYnum):
                 self.window.blit(self.map[i][j], 
                                  (SceneSettings.tileWidth * i, SceneSettings.tileHeight * j))
+
         self.obstacles.draw(self.window)
+
         self.npcs.draw(self.window)
         self.monsters.draw(self.window)
 

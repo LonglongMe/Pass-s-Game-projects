@@ -4,37 +4,35 @@ import pygame
 from random import random,randint
 
 class Block(pygame.sprite.Sprite):
-    def __init__(self,n, x, y):
-        super().__init__()
-        self.n=n
-        if n==1:
-            self.image = pygame.transform.scale(pygame.image.load(GamePath.tree) , (SceneSettings.tileWidth, SceneSettings.tileHeight))
-        if n==2:
-            self.image = pygame.transform.scale(pygame.image.load(GamePath.empty) , (SceneSettings.tileWidth, SceneSettings.tileHeight))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-
-
-class Fire(pygame.sprite.Sprite):
     frame=0
     def __init__(self,n, x, y):
         super().__init__()
+        self.n=n
+
+        self.image = pygame.transform.scale(pygame.image.load(GamePath.tree) , (SceneSettings.tileWidth, SceneSettings.tileHeight))
+
         self.images = [pygame.transform.scale(pygame.image.load(img), 
                             (SceneSettings.tileWidth, SceneSettings.tileHeight*2)) for img in GamePath.fire]
+        self.rect=self.image.get_rect()
         self.x=x
         self.y=y
-        self.n=n
-    def draw(self,window):
 
-            if Fire.frame<15:
-                self.image=self.images[Fire.frame//3]
-                Fire.frame+=1
+
+    def update(self):
+        if self.n==1:
+            self.rect = self.image.get_rect()
+            self.rect.topleft = (self.x, self.y)
+        if self.n==2:
+            if Block.frame<15:
+                self.image=self.images[Block.frame//3]
+                Block.frame+=1
             else:
-                Fire.frame=0
+                Block.frame=0
             self.rect = self.image.get_rect()
             self.rect.height=50
             self.rect.topleft = (self.x, self.y+30)
-            window.blit(self.image, self.rect)
+        
+
 
 
 def gen_map():
