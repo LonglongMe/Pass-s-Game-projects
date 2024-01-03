@@ -33,6 +33,7 @@ class NPCType(Enum):
     DIALOG = 1
     MONSTER = 2
     SHOP = 3
+    
 
 class BossSettings:
     width = 300
@@ -41,9 +42,10 @@ class BossSettings:
     coordY = (SceneSettings.tileYnum / 2) * SceneSettings.tileHeight - height / 2
 
 class SceneType(Enum):
-    CITY = 1
+    HOME = 1
     WILD = 2
     BOSS = 3
+    MENU = 4
 
 class DialogSettings:
     boxWidth = 800
@@ -155,6 +157,7 @@ class GamePath:
     bgm = [r".\assets\bgm\city.mp3",
            r".\assets\bgm\wild.mp3",
            r".\assets\bgm\boss.mp3"]
+    menu=[r"./assets/background/menubg.jpg"]
 
 class PortalSettings:
     width = 320

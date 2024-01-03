@@ -2,18 +2,17 @@
 
 import sys
 import pygame
-
+import Maps
 from Player import Player
 from Scene import *
 from Settings import *
 from PopUpBox import *
 
 class GameManager:
-    def __init__(self):
-        
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+    def __init__(self,window):
+        self.scene = StartMenu(window)
+        self.window = window
+        self.obstacles ,self.decorates = Maps.build_obstacles()
 
     def game_reset(self):
 
@@ -34,9 +33,12 @@ class GameManager:
 
     # Scene-related update functions here ↓
     def flush_scene(self, GOTO:SceneType):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        if self.scene.type == SceneType.CITY:
+            self.scene = Scene.WildScene(self.window)
+        elif self.scene.type == SceneType.WILD:
+            self.scene = Scene.CityScene(self.window)
+        elif self.scene.type == SceneType.MENU:
+            self.scene = Scene.StartMenu(self.window)
 
     def update(self):
         ##### Your Code Here ↓ #####
