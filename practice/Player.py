@@ -14,8 +14,8 @@ class Player(pygame.sprite.Sprite):
         self.index = 0
         self.image = self.images[self.index]
         self.rect = self.image.get_rect()
-        self.rect.width-=50
-        self.rect.height-=50
+        self.rect.width=25
+        self.rect.height=50
         self.rect.topleft = (x,y)
         self.speed = PlayerSettings.playerSpeed
         self.talking = False
@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
                 dx += self.speed
                 
             self.rect = self.rect.move(dx, dy)
-            if pygame.sprite.spritecollide(self, scene.obstacles, False):
+            if pygame.sprite.spritecollide(self, scene.obstacles, False) or pygame.sprite.spritecollide(self, scene.decorates, False,pygame.sprite.collide_mask):
                 # 遇到障碍物，取消移动
                 self.rect = self.rect.move(-dx, -dy)
 
@@ -63,4 +63,4 @@ class Player(pygame.sprite.Sprite):
         self.image=self.images[Player.frame]
     def draw(self, window):
         self.show()
-        window.blit(self.image, (self.rect.x-20,self.rect.y-20,self.rect.width,self.rect.height))
+        window.blit(self.image, (self.rect.x-15,self.rect.y-15,self.rect.width,self.rect.height))

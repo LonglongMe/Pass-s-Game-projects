@@ -17,7 +17,8 @@ class SceneManager:
         self.npcs.add(NPC.NPC(WindowSettings.width // 4, WindowSettings.height // 4 + 80))
 
         
-        self.obstacles = Map.build_obstacles()
+        self.obstacles ,self.decorates = Map.build_obstacles()
+
         
         self.window = window
 
@@ -62,7 +63,7 @@ class SceneManager:
         # update npc
         for each in self.npcs.sprites():
             each.update()
-        for each in self.obstacles.sprites():
+        for each in self.decorates.sprites():
             each.update()
 
     def render(self):
@@ -72,7 +73,7 @@ class SceneManager:
                                  (SceneSettings.tileWidth * i, SceneSettings.tileHeight * j))
 
         self.obstacles.draw(self.window)
-
+        self.decorates.draw(self.window)
         self.npcs.draw(self.window)
         self.monsters.draw(self.window)
 
