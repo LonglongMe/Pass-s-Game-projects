@@ -55,13 +55,18 @@ class ShopNPC(NPC):
     
 
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, x, y, HP = 10, Attack = 3, Defence = 1, Money = 15):
+    def __init__(self, x, y, HP = 10, Attack = 3, Money = 15):
         super().__init__()
-        
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.images = [pygame.transform.scale(pygame.image.load(img), 
+                            (SceneSettings.monsterWidth, SceneSettings.monsterHeight)) for img in GamePath.monster]
+        self.image=self.images[0]
+        self.rect = self.image.get_rect()
+        self.x=x
+        self.y=y
 
+        self.HP = HP
+        self.attack = Attack
+        self.money=Money
     def draw(self, window, dx=0, dy=0):
         ##### Your Code Here ↓ #####
         pass

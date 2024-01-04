@@ -10,8 +10,8 @@ class WindowSettings:
     outdoorScale = 1.5 # A necessary scale to allow camera movement in outdoor scenes
 
 class SceneSettings:
-    tileXnum = 48 # 64
-    tileYnum = 27 # 36
+    tileXnum = 36#48 # 64
+    tileYnum = 19#27 # 36
     tileWidth = tileHeight = 40
 
 class PlayerSettings:
@@ -99,23 +99,14 @@ class ShopSettings:
 
 class GamePath:
     # Window related path
-    menu = r".\assets\background\menu.png"
+
     wild = r".\assets\background\wild.png"
     mapBlock = r".\assets\background\map.png"
 
     # player/npc related path
     npc = r".\assets\npc\npc.png"
-    player = [
-        r".\assets\player\1.png", 
-        r".\assets\player\1.png",
-        r".\assets\player\2.png", 
-        r".\assets\player\2.png", 
-        r".\assets\player\3.png", 
-        r".\assets\player\3.png", 
-        r".\assets\player\4.png", 
-        r".\assets\player\4.png", 
-        # 8 frames for a single loop of animation looks much better.
-    ]
+ 
+
     monster = r".\assets\npc\monster\1.png"
     boss = r".\assets\npc\boss.png"
 
@@ -157,7 +148,33 @@ class GamePath:
     bgm = [r".\assets\bgm\city.mp3",
            r".\assets\bgm\wild.mp3",
            r".\assets\bgm\boss.mp3"]
-    menu=[r"./assets/background/menubg.jpg"]
+    menu=  r"./assets/background/menubg.jpg"
+    player = [f"./assets/player/Paimon/{i}.png" for i in range(1,122)]
+
+    npc = r".\assets\npc\npc.png"
+    monster =[f"./assets/npc/enemy/{i}.jpg" for i in range(1,17)]
+
+    groundTiles = [f"./assets/tiles/ground{i}.png" for i in range(1,7)]
+
+    tree = r".\assets\tiles\tree.png"
+    card_backround_list=[r"./assets/cards/ATK.jpg",
+                    r"./assets/cards/CURE.jpg",
+                    r"./assets/cards/BUFF.jpg",
+                    r"./assets/cards/SPELL.jpg",
+                    r"./assets/cards/DEBUFF.jpg",
+                    r"./assets/cards/EMPTY.png",
+                    r"./assets/cards/SACRIFICE.jpg",
+                    r"./assets/cards/REBOUND.jpg",
+                    r"./assets/cards/DESPRATE.jpg",
+                    r"./assets/cards/JOKER.jpg"]
+    background=r"./assets/bg/bg6.jpg"
+    dialog=r"./assets/bg/bg7.png"
+    cure=[f"./assets/gif/curegif/curegif{i}.png" for i in range(1,4)]
+    lightning=[f"./assets/gif/accumulate/{i}.png" for i in range(1,6)]
+    animate=[f"./assets/gif/animate/{i}.png" for i in range(1,82)]
+    lightshield=[f"./assets/gif/lightshield/{i}.png" for i in range(1,10)]
+    fire=[f"./assets/gif/fire/{i}.png" for i in range(1,7)]
+    menu=[f"./assets/gif/menubggif/{i}.png" for i in range(1,96)]
 
 class PortalSettings:
     width = 320
@@ -172,7 +189,7 @@ class GameState(Enum):
     GAME_WIN = 4
     GAME_PAUSE = 5
     GAME_PLAY_WILD = 6
-    GAME_PLAY_CITY = 7
+    GAME_PLAY_HOME = 7
     GAME_PLAY_BOSS = 8
 
 class GameEvent:

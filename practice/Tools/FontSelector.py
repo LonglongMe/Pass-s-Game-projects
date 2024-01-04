@@ -21,7 +21,9 @@ def run_game():
                 b=pygame.font.SysFont(a[i], 20)
                 text = b.render(f"ATK Buff BUFF {i}",True,(20,0,0),(255,255,255))
                 window.blit(text,(10+200*x,30*(i%20)))
+        print(a[18])
         pygame.display.flip()
 
 if __name__ == "__main__":
     run_game()
+    
