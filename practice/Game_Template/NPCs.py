@@ -63,10 +63,9 @@ class Monster(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.x=x
         self.y=y
-
         self.HP = HP
         self.attack = Attack
-        self.money=Money
+        self.money= Money
     def draw(self, window, dx=0, dy=0):
         ##### Your Code Here ↓ #####
         pass
