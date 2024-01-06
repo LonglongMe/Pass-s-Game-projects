@@ -28,7 +28,6 @@ class NPC(pygame.sprite.Sprite, Collidable):
         pass
         ##### Your Code Here ↑ #####
 
-
 class DialogNPC(NPC):
     def __init__(self, x, y, name, dialog):
         ##### Your Code Here ↓ #####
@@ -58,7 +57,7 @@ class Monster(pygame.sprite.Sprite):
     def __init__(self, x, y, HP = 10, Attack = 3, Money = 15):
         super().__init__()
         self.images = [pygame.transform.scale(pygame.image.load(img), 
-                            (SceneSettings.monsterWidth, SceneSettings.monsterHeight)) for img in GamePath.monster]
+                            (BattleSettings.monsterWidth//3, BattleSettings.monsterHeight//3)) for img in GamePath.monster]
         self.image=self.images[0]
         self.rect = self.image.get_rect()
         self.x=x
@@ -66,10 +65,11 @@ class Monster(pygame.sprite.Sprite):
         self.HP = HP
         self.attack = Attack
         self.money= Money
+        
     def draw(self, window, dx=0, dy=0):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.rect.x-=dx
+        self.rect.y-=dy
+        window.image.blit(self.image,self.rect)
 
 class Boss(pygame.sprite.Sprite):
     def __init__(self, x, y):

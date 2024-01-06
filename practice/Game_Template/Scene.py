@@ -14,7 +14,7 @@ from Player import *
 class Scene():
     def __init__(self, window):
         self.type = None
-        
+        self.monsters=pygame.sprite.Group()
         self.map = None
         self.decorates=pygame.sprite.Group()
         self.obstacles = pygame.sprite.Group()
@@ -73,6 +73,7 @@ class Scene():
                                     (SceneSettings.tileWidth * i, SceneSettings.tileHeight * j))
             self.obstacles.draw(self.window)         
             self.decorates.draw(self.window)
+            self.monsters.draw(self.window,0,0)
             if player.is_colliding():
                 player.draw(self.window,player.dx,player.dy)
             else:
@@ -88,55 +89,51 @@ class StartMenu:
         self.type=SceneType.MENU
         self.images=[ pygame.transform.scale(pygame.image.load(img) ,
                      (WindowSettings.width,550)) for img in GamePath.menu]
+        self.startimg=pygame.transform.scale(pygame.image.load(GamePath.dialog) ,(300,50)) 
         self.image=self.images[self.index]
         self.window=window
-        self.button_width = 300
-        self.button_height = 50
-        self.button_x =0
-        self.button_y =0
-        self.position1=None
-        self.text_x=0
-        self.text_y=0
-        self.position2=None
+        self.start_rect=self.startimg.get_rect()
+        self.wordcenter=(WindowSettings.width // 2 , (WindowSettings.height ) // 2+100)
+        #self.start_rect.center=self.wordcenter
+
         self.textsize=40
         self.textsize2=30
         self.position3=(350,620)
-        self.text = None
-        self.text2=None
-        c=pygame.font.SysFont("inkfree", self.textsize2)
-        self.text2=c.render("If you don't risk anything, you risk even more",True,(150,150,150))
+
+        font0=pygame.font.SysFont("impact", self.textsize)
+        self.text = font0.render("START",True,(20,0,0))
+        self.text_rect=self.text.get_rect()
+        #self.text_rect.center=self.wordcenter
+        self.a=self.text_rect.width
+        self.b=self.text_rect.height
+        font1=pygame.font.SysFont("inkfree", self.textsize2)
+        self.text2=font1.render("If you don't risk anything, you risk even more",True,(150,150,150))
     def selectanimate(self,size=1):
-        self.button_width = 300*size
-        self.button_height = 50*size
-        self.button_x = (WindowSettings.width - self.button_width) // 2 -15
-        self.button_y = (WindowSettings.height - self.button_height) // 2+100
-        self.position1=(self.button_x,self.button_y,self.button_width,self.button_height)
-        self.text_x=(self.button_x+93*size)    
-        if size==1:
-            self.text_y=(self.button_y+1)
-        else:
-            self.text_y=(self.button_y-3)
-        self.position2=(self.text_x,self.text_y)
 
-        self.textsize=int(40*size**2)
-        b=pygame.font.SysFont("impact", self.textsize)
+        self.start_rect.width = 300*size
+        self.start_rect.height = 50*size
+        self.text_rect.width = self.a*size
+        self.text_rect.height = self.b*size
 
-        self.text = b.render("START",True,(20,0,0))
+        self.text=pygame.font.SysFont("impact", int(self.textsize*size)).render("START",True,(20,0,0))
+        self.startimg=pygame.transform.scale(pygame.image.load(GamePath.dialog) ,(300*size,50*size)) 
+        self.start_rect.center=self.wordcenter
+        self.text_rect.center=self.wordcenter
     def update_menu(self):
-        if self.scene.index<94*4:
-            self.scene.index+=1
+        if self.index<94*4:
+            self.index+=1
         else:
-            self.scene.index=0
-        self.scene.image=self.scene.images[self.scene.index//4]
+            self.index=0
+        self.image=self.images[self.index//4]
         mousepos=pygame.mouse.get_pos()
-        if mousepos[0] >= self.scene.button_x and mousepos[0]<self.scene.button_x+300 and mousepos[1] >self.scene.button_y  and mousepos[1]<self.scene.button_y+50  :
-            self.scene.selectanimate(1.1)
+        if mousepos[0] >= self.start_rect.x and mousepos[0]<self.start_rect.x+300 and mousepos[1] >self.start_rect.y  and mousepos[1]<self.start_rect.y+50  :
+            self.selectanimate(1.3)
             if pygame.mouse.get_pressed()[0]:
                 pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
-                self.scene.selectanimate(1)               
+                self.selectanimate(1)               
         else:
-            self.scene.selectanimate(1)
-        return self.scene.position1,self.scene.position2
+            self.selectanimate(1)
+
 
     def gen_menu(self, time):
         pygame.draw.rect(self.window,(255,255,255), self.position,0,border_radius=9 )
@@ -165,15 +162,14 @@ class WildScene(Scene):
         self.type=SceneType.WILD
         self.obstacles,self.decorates=Maps.gen_wild_obstacle()
         self.map=Maps.gen_wild_map()
+        self.monsters.add(Monster(WindowSettings.width // 4, WindowSettings.height // 4 + 180))
 
     def gen_WILD(self):
         pass
         #PortalSettings
 
     def gen_monsters(self, num = 10):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.monsters.add(Monster(600,600,100,5,10))
 
 class BossScene(Scene):
     def __init__(self, window):

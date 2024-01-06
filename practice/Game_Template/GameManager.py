@@ -70,6 +70,7 @@ class GameManager:
             if event.type == GameEvent.EVENT_SWITCH:
                 GameManager.flush_scene(self)
                 self.state=GameState.GAME_PLAY_WILD
+            
 
         
 
@@ -97,6 +98,9 @@ class GameManager:
             each.update()
         for each in self.scene.decorates.sprites():
             each.update()
+        for each in self.scene.monsters.sprites():
+            each.update()
+            print(each.rect)
     def update_boss(self, events):
         # Deal with EventQueue First
         ##### Your Code Here ↓ #####
@@ -123,7 +127,7 @@ class GameManager:
         ##### Your Code Here ↑ #####
 
         # Player -> Monsters
-        if pygame.sprite.spritecollide(self.player, self.scene.monster, False) :
+        if pygame.sprite.spritecollide(self.player, self.scene.monsters, False) :
             self.player.collidingWith["monster"]=True
         else:
             self.player.collidingWith["monster"]=False
@@ -154,16 +158,11 @@ class GameManager:
             self.render_home()
     
     def render_main_menu(self):
-        StartMenu.update_menu(self)
-        #self.window.fill((255,255,255))
-        #self.update_main_menu(self.scene.type)
-        #print(self.scene.position2)
+        self.scene.update_menu()
         self.window.blit(self.scene.image,(0,75))
-        pygame.draw.rect(self.window,(200,200,200), self.scene.position1,0,border_radius=9 )
-        #self.window.blit(self.scene.button,self.scene.position,0,9)
-        self.window.blit(self.scene.text,(self.scene.position2))
+        self.window.blit(self.scene.startimg,self.scene.start_rect)
+        self.window.blit(self.scene.text,self.scene.text_rect)
         self.window.blit(self.scene.text2,(self.scene.position3))
-        
     
     def render_home(self):
         ##### Your Code Here ↓ #####
@@ -172,8 +171,9 @@ class GameManager:
 
     def render_wild(self):
         #print("rendering")
-        self.update()
+        #self.update()
         self.scene.render(self.player)
+
 
     def render_boss(self):
         ##### Your Code Here ↓ #####

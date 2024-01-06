@@ -76,6 +76,6 @@ class Player(pygame.sprite.Sprite, Collidable):
 
     def draw(self, window, dx=0, dy=0):
         self.update(PlayerSettings.playerWidth,PlayerSettings.playerHeight)
-        self.rect.x-=dx*2
-        self.rect.y-=dy*2
+        self.rect.x-=dx
+        self.rect.y-=dy
         window.blit(self.image, (self.rect.x-15,self.rect.y-15,self.rect.width,self.rect.height))

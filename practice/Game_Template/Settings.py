@@ -107,7 +107,7 @@ class GamePath:
     npc = r".\assets\npc\npc.png"
  
 
-    monster = r".\assets\npc\monster\1.png"
+    #monster = r".\assets\npc\monster\1.png"
     boss = r".\assets\npc\boss.png"
 
     groundTiles = [
@@ -141,7 +141,7 @@ class GamePath:
 
     bossWall = r".\assets\tiles\bossWall.png"
 
-    portal = r".\assets\background\portal.png"
+    #portal = r".\assets\background\portal.png"
 
     tree = r".\assets\tiles\tree.png"
 
@@ -152,7 +152,7 @@ class GamePath:
     player = [f"./assets/player/Paimon/{i}.png" for i in range(1,122)]
 
     npc = r".\assets\npc\npc.png"
-    monster =[f"./assets/npc/enemy/{i}.jpg" for i in range(1,17)]
+    monster =[f"./assets/npc/enemy/enemy1/{i}.jpg" for i in range(1,17)]
 
     groundTiles = [f"./assets/tiles/ground{i}.png" for i in range(1,7)]
 
@@ -167,15 +167,15 @@ class GamePath:
                     r"./assets/cards/REBOUND.jpg",
                     r"./assets/cards/DESPRATE.jpg",
                     r"./assets/cards/JOKER.jpg"]
-    background=r"./assets/bg/bg6.jpg"
-    dialog=r"./assets/bg/bg7.png"
+    background=r"./assets/background/bg6.jpg"
+    dialog=r"./assets/background/bg7.png"
     cure=[f"./assets/gif/curegif/curegif{i}.png" for i in range(1,4)]
     lightning=[f"./assets/gif/accumulate/{i}.png" for i in range(1,6)]
     animate=[f"./assets/gif/animate/{i}.png" for i in range(1,82)]
     lightshield=[f"./assets/gif/lightshield/{i}.png" for i in range(1,10)]
     fire=[f"./assets/gif/fire/{i}.png" for i in range(1,7)]
     menu=[f"./assets/gif/menubggif/{i}.png" for i in range(1,96)]
-
+    portal=[f"./assets/gif/portal/{i}.png" for i in range(1,8)]
 class PortalSettings:
     width = 320
     height = 320
