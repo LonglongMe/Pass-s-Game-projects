@@ -26,9 +26,7 @@ class GameManager:
 
     # Necessary game components here ↓
     def tick(self, fps):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.clock.tick(fps)
 
     def get_time(self):
         ##### Your Code Here ↓ #####
@@ -72,8 +70,6 @@ class GameManager:
                 self.state=GameState.GAME_PLAY_WILD
             
 
-        
-
     def update_home(self, events):
         # Deal with EventQueue First
         ##### Your Code Here ↓ #####
@@ -100,7 +96,7 @@ class GameManager:
             each.update()
         for each in self.scene.monsters.sprites():
             each.update()
-            print(each.rect)
+ 
     def update_boss(self, events):
         # Deal with EventQueue First
         ##### Your Code Here ↓ #####
@@ -171,7 +167,8 @@ class GameManager:
 
     def render_wild(self):
         #print("rendering")
-        #self.update()
+
+        
         self.scene.render(self.player)
 
 

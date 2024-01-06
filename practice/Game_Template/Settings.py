@@ -7,11 +7,11 @@ class WindowSettings:
     name = "Thgink Luos"
     width = 1280
     height = 720
-    outdoorScale = 1.5 # A necessary scale to allow camera movement in outdoor scenes
+    outdoorScale = 2 # A necessary scale to allow camera movement in outdoor scenes
 
 class SceneSettings:
-    tileXnum = 36#48 # 64
-    tileYnum = 19#27 # 36
+    tileXnum = 64  #48 # 64
+    tileYnum = 36#27 # 36
     tileWidth = tileHeight = 40
 
 class PlayerSettings:
