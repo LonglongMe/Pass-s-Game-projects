@@ -11,11 +11,12 @@ from PopUpBox import *
 
 class GameManager:
     def __init__(self,window):
-        self.state=GameState.MAIN_MENU
+        self.state=GameState.GAME_PLAY_WILD
         self.player=Player(60,20)
-        self.scene = StartMenu(window)
+        self.scene = WildScene(window)
         self.window = window
         self.clock = pygame.time.Clock()
+        self.collideindex=0
         
 
     def game_reset(self):
@@ -82,21 +83,39 @@ class GameManager:
         ##### Your Code Here ↑ #####
 
     def update_wild(self, events):
+
         for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             # 传送
-            if event.type== GameEvent.EVENT_SWITCH:
+            elif event.type== GameEvent.EVENT_SWITCH:
                 GameManager.flush_scene()
-        self.update_collide()
+            #if event.type==GameEvent.EVENT_BATTLE:
+
+
+        if self.player.collidingWith['monster']==True and self.scene.battlebox==None:
+
+            self.player.dx=0
+            self.player.dy=0
+            self.player.battle=True
+            pygame.event.post(pygame.event.Event(GameEvent.EVENT_BATTLE))
+            self.scene.trigger_battle(self.player)
+            print("triggerd")
+        if self.scene.battlebox==None:    
+            self.update_collide()
+
         for each in self.scene.obstacles.sprites():
             each.update()
         for each in self.scene.decorates.sprites():
             each.update()
         for each in self.scene.monsters.sprites():
             each.update()
- 
+        if self.scene.battlebox!=None:
+            if self.scene.battlebox.readytoleave==1:
+                self.scene.end_battle(self.player)
+
+
     def update_boss(self, events):
         # Deal with EventQueue First
         ##### Your Code Here ↓ #####
@@ -116,7 +135,6 @@ class GameManager:
         else:
             self.player.collidingWith["obstacle"]=False
 
-
         # Player -> NPCs; if multiple NPCs collided, only first is accepted and dealt with.
         ##### Your Code Here ↓ #####
         pass
@@ -124,9 +142,19 @@ class GameManager:
 
         # Player -> Monsters
         if pygame.sprite.spritecollide(self.player, self.scene.monsters, False) :
+
             self.player.collidingWith["monster"]=True
-        else:
-            self.player.collidingWith["monster"]=False
+            self.player.collidingObject["monster"]=(pygame.sprite.spritecollide(self.player,self.scene.monsters,False)[0])
+
+            print(self.player.collidingObject)
+
+
+            #self.scene.end_battle(self.player)
+
+
+            
+            #self.player.collidingWith["monster"]=False
+            #self.player.collidingObject["monster"]=None
         
         # Player -> Portals
         ##### Your Code Here ↓ #####
@@ -166,9 +194,7 @@ class GameManager:
         ##### Your Code Here ↑ #####
 
     def render_wild(self):
-        #print("rendering")
 
-        
         self.scene.render(self.player)
 
 

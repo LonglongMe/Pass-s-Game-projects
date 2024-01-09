@@ -54,7 +54,7 @@ class ShopNPC(NPC):
     
 
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, x, y, HP = 10, Attack = 3, Money = 15):
+    def __init__(self, x, y,order, HP = 100, Atk = 3, Money = 15):
         super().__init__()
         self.images = [pygame.transform.scale(pygame.image.load(img), 
                             (BattleSettings.monsterWidth//3, BattleSettings.monsterHeight//3)) for img in GamePath.monster]
@@ -65,8 +65,9 @@ class Monster(pygame.sprite.Sprite):
         self.originrect_x=x
         self.originrect_y=y
         self.HP = HP
-        self.attack = Attack
+        self.ATK = Atk
         self.money= Money
+        self.order=order
         
     def draw(self, window, dx=0, dy=0):
 

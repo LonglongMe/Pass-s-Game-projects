@@ -41,12 +41,17 @@ class Scene():
 
 
     def trigger_battle(self, player):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
 
-    def end_battle(self):
+        self.battlebox=BattleBox(self.window,player,player.collidingObject["monster"])
+        pygame.event.post(pygame.event.Event(GameEvent.EVENT_BATTLE))
+        print("init battle done,battle event done")
+
+
+    def end_battle(self,player):
         self.battlebox=None
+        player.collidingWith['monster']=False
+        player.reset_pos()
+        
 
 
     def trigger_shop(self, npc, player):
@@ -67,49 +72,57 @@ class Scene():
         return WindowSettings.height * WindowSettings.outdoorScale
 
     def update_camera(self, player):
-        if player.rect.x > WindowSettings.width //2+ 10:
-            self.cameraX += player.speed
-            if self.cameraX < self.get_width() - WindowSettings.width:
-                player.fix_to_middle(player.speed, 0)
-            else:
-                self.cameraX = self.get_width() - WindowSettings.width
-        elif player.rect.x < WindowSettings.width//2+10:
-            self.cameraX -= player.speed
-            if self.cameraX > 0:
-                player.fix_to_middle(-player.speed, 0)
-            else:
-                self.cameraX = 0
-        if player.rect.y > WindowSettings.height //2+10:
-            self.cameraY += player.speed
-            if self.cameraY < self.get_height() - WindowSettings.height:
-                player.fix_to_middle(0, player.speed)
-            else:
-                self.cameraY = self.get_height() - WindowSettings.height
-        elif player.rect.y < WindowSettings.height //2+10:
-            self.cameraY -= player.speed
-            if self.cameraY > 0:
-                player.fix_to_middle(0, -player.speed)
-            else:
-                self.cameraY = 0
+
+            if player.rect.x > WindowSettings.width //2+ 10:
+                self.cameraX += player.speed
+
+                if self.cameraX < self.get_width() - WindowSettings.width:
+                    player.fix_to_middle(player.speed, 0)
+                else:
+                    self.cameraX = self.get_width() - WindowSettings.width
+                    
+            elif player.rect.x < WindowSettings.width//2-10:
+                self.cameraX -= player.speed
+                if self.cameraX > 0:
+                    player.fix_to_middle(-player.speed, 0)
+                else:
+                    self.cameraX = 0
+            if player.rect.y > WindowSettings.height //2+10:
+                self.cameraY += player.speed
+                if self.cameraY < self.get_height() - WindowSettings.height:
+                    player.fix_to_middle(0, player.speed)
+                else:
+                    self.cameraY = self.get_height() - WindowSettings.height
+            elif player.rect.y < WindowSettings.height //2-10:
+                self.cameraY -= player.speed
+                if self.cameraY > 0:
+                    player.fix_to_middle(0, -player.speed)
+                else:
+                    self.cameraY = 0
+
+
 
     def render(self, player:Player):
         self.update_camera(player)
-        print(self.cameraX,self.cameraY)
+
         if self.type==SceneType.WILD:
-            #self.WildScene.gen_WILD()
-            #WildScene.gen_WILD(self)
+
             for i in range(SceneSettings.tileXnum):
                 for j in range(SceneSettings.tileYnum):
                     self.window.blit(self.map[i][j], 
                                     (SceneSettings.tileWidth * i- self.cameraX, SceneSettings.tileHeight * j- self.cameraY))
-            for obs in self.obstacles:
+            for obs in self.obstacles.sprites():
                 obs.draw(self.window,self.cameraX,self.cameraY)
-            for dec in self.decorates:             
+            for dec in self.decorates.sprites():             
                 dec.draw(self.window,self.cameraX,self.cameraY)
-            for mon in self.monsters: 
+            for mon in self.monsters.sprites(): 
                 mon.draw(self.window,self.cameraX,self.cameraY)
+
             if player.is_colliding():
                 player.draw(self.window,player.dx,player.dy)
+            if self.battlebox!=None:
+                self.battlebox.Update_card()
+                #print("render in scene")
             else:
                 player.draw(self.window,0,0)
 
@@ -135,19 +148,14 @@ class StartMenu:
         self.text = font0.render("START",True,(20,0,0))
         self.text_rect=self.text.get_rect()
         #self.text_rect.center=self.wordcenter
-        self.a=self.text_rect.width
-        self.b=self.text_rect.height
+
         font1=pygame.font.SysFont("inkfree", self.textsize2)
         self.text2=font1.render("If you don't risk anything, you risk even more",True,(150,150,150))
     def selectanimate(self,size=1):
-
-        self.start_rect.width = 300*size
-        self.start_rect.height = 50*size
-        self.text_rect.width = self.a*size
-        self.text_rect.height = self.b*size
-
         self.text=pygame.font.SysFont("impact", int(self.textsize*size)).render("START",True,(20,0,0))
         self.startimg=pygame.transform.scale(pygame.image.load(GamePath.dialog) ,(300*size,50*size)) 
+        self.start_rect=self.startimg.get_rect()
+        self.text_rect=self.text.get_rect()
         self.start_rect.center=self.wordcenter
         self.text_rect.center=self.wordcenter
     def update_menu(self):
@@ -193,7 +201,7 @@ class WildScene(Scene):
         self.type=SceneType.WILD
         self.obstacles,self.decorates=Maps.gen_wild_obstacle()
         self.map=Maps.gen_wild_map()
-        self.monsters.add(Monster(600, 300,100,5,10))
+        self.monsters.add(Monster(200, 80,1,100,2,10))
 
     def gen_WILD(self):
         pass

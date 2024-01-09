@@ -15,9 +15,10 @@ class Player(pygame.sprite.Sprite, Collidable):
                             (PlayerSettings.playerWidth+10, PlayerSettings.playerHeight+10)) for img in GamePath.player]
         self.index = 0
         self.image = self.images[self.index]
+        self.battle=False
         self.rect = self.image.get_rect()
-        self.rect.width=10
-        self.rect.height=10
+        self.rect.width=13
+        self.rect.height=13
         self.rect.topleft = (x,y)
         self.next_rect=self.rect
         self.speed = PlayerSettings.playerSpeed
@@ -25,20 +26,22 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.dx=0
         self.dy=0
         self.OriginHP = PlayerSettings.playerHP
-        self.Hp=self.OriginHP
-        self.attack = PlayerSettings.playerAttack
+        self.HP=self.OriginHP
+        self.ATK = PlayerSettings.playerAttack
         self.defence = PlayerSettings.playerDefence
-        self.card_list=[]
+
 
     def attr_update(self, addCoins = 0, addHP = 0, addAttack = 0, addDefence = 0):
         ##### Your Code Here ↓ #####
         pass
         ##### Your Code Here ↑ #####
 
-    def reset_pos(self, x=WindowSettings.width // 2, y=WindowSettings.height // 2):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+    def reset_pos(self):
+        if self.collidingObject["monster"].order==1:
+            self.rect.x=50
+            self.rect.y=100
+        return self.rect
+
 
 
     def try_move(self):
@@ -65,6 +68,7 @@ class Player(pygame.sprite.Sprite, Collidable):
             self.dx=dx
             self.dy=dy
 
+
         return self.rect ,self.dy,self.dx
 
     def update(self, width,height):
@@ -75,10 +79,11 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.image=self.images[self.index]
 
     def draw(self, window, dx=0, dy=0):
+        
         self.update(PlayerSettings.playerWidth,PlayerSettings.playerHeight)
         self.rect.x-=dx
         self.rect.y-=dy
-        window.blit(self.image, (self.rect.x-15,self.rect.y-15,self.rect.width,self.rect.height))
+        window.blit(self.image, (self.rect.x-5,self.rect.y-5,self.rect.width,self.rect.height))
 
         
     def fix_to_middle(self, dx, dy):

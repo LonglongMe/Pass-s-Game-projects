@@ -7,20 +7,22 @@ class WindowSettings:
     name = "Thgink Luos"
     width = 1280
     height = 720
-    outdoorScale = 2 # A necessary scale to allow camera movement in outdoor scenes
+    outdoorScale = 3 # A necessary scale to allow camera movement in outdoor scenes
 
 class SceneSettings:
-    tileXnum = 64  #48 # 64
-    tileYnum = 36#27 # 36
+    tileXnum = 108  #48 # 64
+    tileYnum = 54#27 # 36
     tileWidth = tileHeight = 40
-
+class CardSettings:
+    cardWidth=120#WindowSettings.width//4.5
+    cardHeight=180#indowSettings.height//5.4
 class PlayerSettings:
     # Initial Player Settings
-    playerSpeed = 7
+    playerSpeed = 6
     playerWidth = 60
     playerHeight = 55
-    playerHP = 20
-    playerAttack = 5
+    playerHP = 100
+    playerAttack = 3
     playerDefence = 1
     playerMoney = 100
 
@@ -75,17 +77,19 @@ class BattleSettings:
     textStartY = WindowSettings.height // 3         # Coordinate Y of the first line of dialog
     textVerticalDist = textSize // 4 * 3            # Vertical distance of two lines
 
-    playerWidth = WindowSettings.width // 6
-    playerHeight = WindowSettings.height // 3
-    playerCoordX = WindowSettings.width // 8
-    playerCoordY = WindowSettings.height // 2 
+    playerWidth = WindowSettings.width // 8
+    playerHeight = WindowSettings.height // 4
+    playerCoordX = WindowSettings.width // 8+30
+    playerCoordY = WindowSettings.height // 2 -150
 
-    monsterWidth = WindowSettings.width // 6
-    monsterHeight = WindowSettings.height // 3
-    monsterCoordX = WindowSettings.width * 5 // 8
-    monsterCoordY = WindowSettings.height // 2 
+    monsterWidth = WindowSettings.width // 8
+    monsterHeight = WindowSettings.height // 4
+    monsterCoordX = WindowSettings.width * 5 // 8+90
+    monsterCoordY = WindowSettings.height // 2 -150
 
     stepSize = 20
+    animationCount=200
+    stepSpeed=2
 
 class ShopSettings:
     boxWidth = 800
