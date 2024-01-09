@@ -20,6 +20,7 @@ class Scene():
         self.obstacles = pygame.sprite.Group()
         self.npcs = pygame.sprite.Group()
         self.portals = pygame.sprite.Group()
+        self.breakobj=pygame.sprite.Group()
 
         self.window = window
         self.width = WindowSettings.width
@@ -117,6 +118,8 @@ class Scene():
                 dec.draw(self.window,self.cameraX,self.cameraY)
             for mon in self.monsters.sprites(): 
                 mon.draw(self.window,self.cameraX,self.cameraY)
+            for bra in self.breakobj.sprites(): 
+                bra.draw(self.window,self.cameraX,self.cameraY)
 
             if player.is_colliding():
                 player.draw(self.window,player.dx,player.dy)
@@ -125,7 +128,10 @@ class Scene():
                 #print("render in scene")
             else:
                 player.draw(self.window,0,0)
-
+            keys=pygame.key.get_pressed()
+            if player.is_colliding_bra() and keys[pygame.K_0]:
+                for bra in player.collidingObject["bra"]:
+                    self.breakobj.remove(bra)
 
 class StartMenu:
     def __init__(self, window):
@@ -199,7 +205,7 @@ class WildScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
         self.type=SceneType.WILD
-        self.obstacles,self.decorates=Maps.gen_wild_obstacle()
+        self.obstacles,self.decorates,self.breakobj=Maps.gen_wild_obstacle()
         self.map=Maps.gen_wild_map()
         self.monsters.add(Monster(200, 80,1,100,2,10))
 

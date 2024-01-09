@@ -180,6 +180,7 @@ class GamePath:
     fire=[f"./assets/gif/fire/{i}.png" for i in range(1,7)]
     menu=[f"./assets/gif/menubggif/{i}.png" for i in range(1,96)]
     portal=[f"./assets/gif/portal/{i}.png" for i in range(1,8)]
+    vase=f"./assets/gif/vase/1.jpg"
 class PortalSettings:
     width = 320
     height = 320

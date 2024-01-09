@@ -148,13 +148,13 @@ class GameManager:
 
             print(self.player.collidingObject)
 
-
-            #self.scene.end_battle(self.player)
-
-
-            
-            #self.player.collidingWith["monster"]=False
-            #self.player.collidingObject["monster"]=None
+        #player→breakableobjects
+        if pygame.sprite.spritecollide(self.player, self.scene.breakobj, False) :
+            self.player.collidingWith["bra"]=True
+            self.player.collidingObject["bra"]=(pygame.sprite.spritecollide(self.player,self.scene.breakobj,False))
+        else:
+            self.player.collidingWith["bra"]=False
+            self.player.collidingObject["bra"]=[]
         
         # Player -> Portals
         ##### Your Code Here ↓ #####
