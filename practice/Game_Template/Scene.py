@@ -117,7 +117,7 @@ class Scene():
             if player.is_colliding_bra() and keys[pygame.K_0]:
                 for bra in player.collidingObject["bra"]:
                     self.breakobj.remove(bra)
-                
+                #
                 
 
 
