@@ -1,5 +1,3 @@
-# -*- coding:utf-8 -*-
-
 from enum import Enum
 import pygame
 
@@ -7,11 +5,11 @@ class WindowSettings:
     name = "Thgink Luos"
     width = 1280
     height = 720
-    outdoorScale = 1.5 # A necessary scale to allow camera movement in outdoor scenes
+    outdoorScale = 3 # A necessary scale to allow camera movement in outdoor scenes
 
 class SceneSettings:
-    tileXnum = 36#48 # 64
-    tileYnum = 19#27 # 36
+    tileXnum = 108  #48 # 64
+    tileYnum = 54  #27 # 36
     tileWidth = tileHeight = 40
 
 class PlayerSettings:
@@ -28,6 +26,7 @@ class NPCSettings:
     npcSpeed = 1
     npcWidth = 60
     npcHeight = 60
+    
 
 class NPCType(Enum):
     DIALOG = 1
@@ -176,6 +175,7 @@ class GamePath:
     fire=[f"./assets/gif/fire/{i}.png" for i in range(1,7)]
     menu=[f"./assets/gif/menubggif/{i}.png" for i in range(1,96)]
     portal=[f"./assets/gif/portal/{i}.png" for i in range(1,8)]
+    vase=f"./assets/gif/vase/1.jpg"
 class PortalSettings:
     width = 320
     height = 320

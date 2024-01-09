@@ -1,5 +1,3 @@
-# -*- coding:utf-8 -*-
-
 import pygame
 
 from Settings import *
@@ -79,3 +77,8 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.rect.x-=dx
         self.rect.y-=dy
         window.blit(self.image, (self.rect.x-15,self.rect.y-15,self.rect.width,self.rect.height))
+
+        
+    def fix_to_middle(self, dx, dy):
+        self.rect.x -= dx
+        self.rect.y -= dy

@@ -1,5 +1,3 @@
-# -*- coding:utf-8 -*-
-
 import sys
 import pygame
 import Maps
@@ -26,9 +24,7 @@ class GameManager:
 
     # Necessary game components here ↓
     def tick(self, fps):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.clock.tick(fps)
 
     def get_time(self):
         ##### Your Code Here ↓ #####
@@ -72,8 +68,6 @@ class GameManager:
                 self.state=GameState.GAME_PLAY_WILD
             
 
-        
-
     def update_home(self, events):
         # Deal with EventQueue First
         ##### Your Code Here ↓ #####
@@ -98,9 +92,11 @@ class GameManager:
             each.update()
         for each in self.scene.decorates.sprites():
             each.update()
+        for each in self.scene.breakobj.sprites():
+            each.update()
         for each in self.scene.monsters.sprites():
             each.update()
-            print(each.rect)
+ 
     def update_boss(self, events):
         # Deal with EventQueue First
         ##### Your Code Here ↓ #####
@@ -119,6 +115,12 @@ class GameManager:
             self.player.collidingWith["obstacle"]=True
         else:
             self.player.collidingWith["obstacle"]=False
+        if pygame.sprite.spritecollide(self.player, self.scene.breakobj, False) :
+            self.player.collidingWith["bra"]=True
+            self.player.collidingObject["bra"]=(pygame.sprite.spritecollide(self.player,self.scene.breakobj,False))
+        else:
+            self.player.collidingWith["bra"]=False
+            self.player.collidingObject["bra"]=[]
 
 
         # Player -> NPCs; if multiple NPCs collided, only first is accepted and dealt with.
@@ -171,7 +173,8 @@ class GameManager:
 
     def render_wild(self):
         #print("rendering")
-        #self.update()
+
+        
         self.scene.render(self.player)
 
 
@@ -179,4 +182,3 @@ class GameManager:
         ##### Your Code Here ↓ #####
         pass
         ##### Your Code Here ↑ #####
-
