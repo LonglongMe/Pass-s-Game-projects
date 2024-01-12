@@ -10,10 +10,11 @@ from PopUpBox import *
 class GameManager:
     def __init__(self,window):
         self.state=GameState.MAIN_MENU
-        self.player=Player(60,20)
+        self.player=Player(192,48)
         self.scene = StartMenu(window)
         self.window = window
         self.clock = pygame.time.Clock()
+        
         
 
     def game_reset(self):
@@ -41,7 +42,7 @@ class GameManager:
             self.state= GameState.GAME_PLAY_HOME
         elif self.scene.type == SceneType.MENU:
             self.state= GameState.GAME_PLAY_HOME
-            self.scene = WildScene(self.window)
+            self.scene = HomeScene(self.window)
             print("scene changed")
             print(f"{self.scene.type}")
 
@@ -69,30 +70,37 @@ class GameManager:
             
 
     def update_home(self, events):
-        # Deal with EventQueue First
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
-
-        # Then deal with regular updates
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
-
-    def update_wild(self, events):
         for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            # 传送
             if event.type== GameEvent.EVENT_SWITCH:
-                GameManager.flush_scene()
+                GameManager.flush_scene(self)
         self.update_collide()
         for each in self.scene.obstacles.sprites():
             each.update()
         for each in self.scene.decorates.sprites():
             each.update()
         for each in self.scene.breakobj.sprites():
+            each.update()
+        for each in self.scene.portals.sprites():
+            each.update()
+
+    def update_wild(self, events):
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type== GameEvent.EVENT_SWITCH:
+                GameManager.flush_scene(self)
+        self.update_collide()
+        for each in self.scene.obstacles.sprites():
+            each.update()
+        for each in self.scene.decorates.sprites():
+            each.update()
+        for each in self.scene.breakobj.sprites():
+            each.update()
+        for each in self.scene.portals.sprites():
             each.update()
         for each in self.scene.monsters.sprites():
             each.update()
@@ -121,6 +129,16 @@ class GameManager:
         else:
             self.player.collidingWith["bra"]=False
             self.player.collidingObject["bra"]=[]
+        
+        if pygame.sprite.spritecollide(self.player,self.scene.portals,False) :
+            self.player.collidingWith["portal"]=True
+        else:
+            self.player.collidingWith["portal"]=False
+        if pygame.sprite.spritecollide(self.player,self.scene.npcs,False) :
+            self.player.collidingWith["npc"]=True
+        else:
+            self.player.collidingWith["npc"]=False
+            
 
 
         # Player -> NPCs; if multiple NPCs collided, only first is accepted and dealt with.
@@ -167,14 +185,9 @@ class GameManager:
         self.window.blit(self.scene.text2,(self.scene.position3))
     
     def render_home(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.scene.render(self.player)
 
     def render_wild(self):
-        #print("rendering")
-
-        
         self.scene.render(self.player)
 
 

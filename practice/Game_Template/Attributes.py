@@ -6,17 +6,17 @@ class Collidable:
             "obstacle": False, 
             "npc": False, 
             "monster": False, 
-            "portal": False, 
             "boss": False, 
-            "bra":False
+            "bra":False,
+            "portal":False
         }
         self.collidingObject = {
             "obstacle":[], 
-            "npc": None, 
+            "npc":[], 
             "monster": None, 
-            "portal": None, 
             "boss": None, 
-            "bra":[]
+            "bra":[],
+            "portal":[]
         }
     
     def is_colliding(self):
@@ -30,3 +30,6 @@ class Collidable:
     
     def is_colliding_bra(self):
         return self.collidingWith["bra"]
+    
+    def is_colliding_portal(self):
+        return self.collidingWith["portal"]

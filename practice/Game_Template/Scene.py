@@ -6,7 +6,6 @@ from enum import Enum
 from Settings import *
 from NPCs import *
 from PopUpBox import *
-from Portal import *
 from BgmPlayer import *
 from Player import *
 class Scene():
@@ -94,7 +93,6 @@ class Scene():
     def render(self, player:Player):
         keys=pygame.key.get_pressed()
         self.update_camera(player)
-        print(self.cameraX,self.cameraY)
         if self.type==SceneType.WILD:
             #self.WildScene.gen_WILD()
             #WildScene.gen_WILD(self)
@@ -110,6 +108,8 @@ class Scene():
                 mon.draw(self.window,self.cameraX,self.cameraY)
             for bra in self.breakobj: 
                 bra.draw(self.window,self.cameraX,self.cameraY)
+            for portal in self.portals:
+                portal.draw(self.window,self.cameraX,self.cameraY)
             if player.is_colliding():
                 player.draw(self.window,player.dx,player.dy)
             else:
@@ -117,7 +117,44 @@ class Scene():
             if player.is_colliding_bra() and keys[pygame.K_0]:
                 for bra in player.collidingObject["bra"]:
                     self.breakobj.remove(bra)
-                #
+            if player.is_colliding_portal():
+                pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
+
+                
+
+        if self.type==SceneType.HOME:
+            
+            for i in range(SceneSettings.tileXnum):
+                for j in range(SceneSettings.tileYnum):
+                    self.window.blit(self.map[i][j], 
+                                    (SceneSettings.tileWidth * i- self.cameraX, SceneSettings.tileHeight * j- self.cameraY))
+            for obs in self.obstacles:
+                obs.draw(self.window,self.cameraX,self.cameraY)
+            for dec in self.decorates:             
+                dec.draw(self.window,self.cameraX,self.cameraY)
+            for bra in self.breakobj: 
+                bra.draw(self.window,self.cameraX,self.cameraY)
+            for portal in self.portals:
+                portal.draw(self.window,self.cameraX,self.cameraY)
+            for npc in self.npcs:
+                npc.draw(self.window,self.cameraX,self.cameraY)
+                print("npc drawed")
+
+            if player.is_colliding():
+                player.draw(self.window,player.dx,player.dy)
+            else:
+                player.draw(self.window,0,0)
+            if player.is_colliding_bra() and keys[pygame.K_0]:
+                for bra in player.collidingObject["bra"]:
+                    self.breakobj.remove(bra)
+            if player.is_colliding_portal():
+                pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
+                
+
+                
+
+        
+                
                 
 
 
@@ -187,9 +224,11 @@ class StartMenu:
 class HomeScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.type=SceneType.HOME
+        self.obstacles,self.decorates,self.breakobj,self.portals=Maps.gen_home_obstacle(Maps.homematrix)
+        self.map=Maps.gen_home_map()
+        self.npcs.add(ShopNPC(192,144,"Shop",None))
+        
 
     def gen_Home(self):
         ##### Your Code Here ↓ #####
@@ -199,7 +238,7 @@ class WildScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
         self.type=SceneType.WILD
-        self.obstacles,self.decorates,self.breakobj=Maps.gen_wild_obstacle(Maps.datamatrix)
+        self.obstacles,self.decorates,self.breakobj,self.portals=Maps.gen_wild_obstacle(Maps.datamatrix)
         self.map=Maps.gen_wild_map()
         self.monsters.add(Monster(600, 300,100,5,10))
 

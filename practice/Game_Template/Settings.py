@@ -26,6 +26,7 @@ class NPCSettings:
     npcSpeed = 1
     npcWidth = 60
     npcHeight = 60
+    talkCD=30
     
 
 class NPCType(Enum):
@@ -151,6 +152,7 @@ class GamePath:
     player = [f"./assets/player/Paimon/{i}.png" for i in range(1,122)]
 
     npc = r".\assets\npc\npc.png"
+    npc2 = r".\assets\player\1.png"
     monster =[f"./assets/npc/enemy/enemy1/{i}.jpg" for i in range(1,17)]
 
     groundTiles = [f"./assets/tiles/ground{i}.png" for i in range(1,7)]
