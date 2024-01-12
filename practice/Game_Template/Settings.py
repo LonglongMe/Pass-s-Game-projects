@@ -4,7 +4,7 @@ from enum import Enum
 import pygame
 
 class WindowSettings:
-    name = "Thgink Luos"
+    name = "高三牲模拟器"
     width = 1280
     height = 720
     outdoorScale = 3 # A necessary scale to allow camera movement in outdoor scenes
@@ -85,7 +85,7 @@ class BattleSettings:
     monsterWidth = WindowSettings.width // 8
     monsterHeight = WindowSettings.height // 4
     monsterCoordX = WindowSettings.width * 5 // 8+90
-    monsterCoordY = WindowSettings.height // 2 -150
+    monsterCoordY = WindowSettings.height // 2 -120
 
     stepSize = 20
     animationCount=200
@@ -156,10 +156,8 @@ class GamePath:
     player = [f"./assets/player/Paimon/{i}.png" for i in range(1,122)]
 
     npc = r".\assets\npc\npc.png"
-    monster =[f"./assets/npc/enemy/enemy1/{i}.jpg" for i in range(1,17)]
-
+    monster =[f"./assets/npc/enemy/ghost2/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
     groundTiles = [f"./assets/tiles/ground{i}.png" for i in range(1,7)]
-
     tree = r".\assets\tiles\tree.png"
     card_backround_list=[r"./assets/cards/ATK.jpg",
                     r"./assets/cards/CURE.jpg",
@@ -176,11 +174,26 @@ class GamePath:
     cure=[f"./assets/gif/curegif/curegif{i}.png" for i in range(1,4)]
     lightning=[f"./assets/gif/accumulate/{i}.png" for i in range(1,6)]
     animate=[f"./assets/gif/animate/{i}.png" for i in range(1,82)]
-    lightshield=[f"./assets/gif/lightshield/{i}.png" for i in range(1,10)]
+    lightshield=[f"./assets/gif/lightshield/{i}.png" for i in range(1,14)]
     fire=[f"./assets/gif/fire/{i}.png" for i in range(1,7)]
     menu=[f"./assets/gif/menubggif/{i}.png" for i in range(1,96)]
     portal=[f"./assets/gif/portal/{i}.png" for i in range(1,8)]
     vase=f"./assets/gif/vase/1.jpg"
+    strongatk=[f"./assets/gif/strongatk/{i}.png" for i in range(1,5)]
+    rainatk=[f"./assets/gif/rainatk/{i}.png" for i in range(1,15)]
+    winbg=f"./assets/background/winbg.png"
+    cat1 =[f"./assets/npc/animals/cat1/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+    cat2 =[f"./assets/npc/animals/cat2/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+    cat3 =[f"./assets/npc/animals/cat3/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+    cat4 =[f"./assets/npc/animals/cat3/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+    fish =[f"./assets/npc/animals/fish/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+    elf =[f"./assets/npc/animals/elf/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+    chicken1 =[f"./assets/npc/animals/chicken1/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+    chicken2 =[f"./assets/npc/animals/chicken2/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+    goldenbird =[f"./assets/npc/animals/goldenbird/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+    chicken1 =[f"./assets/npc/animals/cat1/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
+
+
 class PortalSettings:
     width = 320
     height = 320

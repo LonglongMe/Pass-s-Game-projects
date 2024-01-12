@@ -17,6 +17,8 @@ class GameManager:
         self.window = window
         self.clock = pygame.time.Clock()
         self.collideindex=0
+        self.playerlist=pygame.sprite.Group()
+        self.playerlist.add(self.player)
         
 
     def game_reset(self):
@@ -111,6 +113,9 @@ class GameManager:
             each.update()
         for each in self.scene.monsters.sprites():
             each.update()
+        for each in self.scene.animals.sprites():
+            each.walk(self.playerlist,self.scene.animals,self.scene.obstacles)
+
         if self.scene.battlebox!=None:
             if self.scene.battlebox.readytoleave==1:
                 self.scene.end_battle(self.player)
@@ -146,7 +151,7 @@ class GameManager:
             self.player.collidingWith["monster"]=True
             self.player.collidingObject["monster"]=(pygame.sprite.spritecollide(self.player,self.scene.monsters,False)[0])
 
-            print(self.player.collidingObject)
+
 
         #player→breakableobjects
         if pygame.sprite.spritecollide(self.player, self.scene.breakobj, False) :
@@ -156,6 +161,11 @@ class GameManager:
             self.player.collidingWith["bra"]=False
             self.player.collidingObject["bra"]=[]
         
+        if pygame.sprite.spritecollide(self.player, self.scene.animals, False) :
+            self.player.collidingWith["animal"]=True
+        else:
+            self.player.collidingWith["animal"]=False
+
         # Player -> Portals
         ##### Your Code Here ↓ #####
         pass

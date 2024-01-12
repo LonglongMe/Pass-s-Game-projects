@@ -2,7 +2,6 @@
 
 import pygame
 import Maps
-from random import randint
 
 from enum import Enum
 from Settings import *
@@ -21,7 +20,7 @@ class Scene():
         self.npcs = pygame.sprite.Group()
         self.portals = pygame.sprite.Group()
         self.breakobj=pygame.sprite.Group()
-
+        self.animals=pygame.sprite.Group()
         self.window = window
         self.width = WindowSettings.width
         self.height = WindowSettings.height
@@ -63,8 +62,6 @@ class Scene():
     def end_shop(self):
 
         self.shoppingbox=None
-
-
     
     def get_width(self):
         return WindowSettings.width * WindowSettings.outdoorScale
@@ -101,8 +98,6 @@ class Scene():
                 else:
                     self.cameraY = 0
 
-
-
     def render(self, player:Player):
         self.update_camera(player)
 
@@ -120,6 +115,8 @@ class Scene():
                 mon.draw(self.window,self.cameraX,self.cameraY)
             for bra in self.breakobj.sprites(): 
                 bra.draw(self.window,self.cameraX,self.cameraY)
+            for ani in self.animals.sprites(): 
+                ani.draw(self.window,self.cameraX,self.cameraY)
 
             if player.is_colliding():
                 player.draw(self.window,player.dx,player.dy)
@@ -129,7 +126,7 @@ class Scene():
             else:
                 player.draw(self.window,0,0)
             keys=pygame.key.get_pressed()
-            if player.is_colliding_bra() and keys[pygame.K_0]:
+            if player.is_colliding_bra() and keys[pygame.K_SPACE]:
                 for bra in player.collidingObject["bra"]:
                     self.breakobj.remove(bra)
 
@@ -207,7 +204,14 @@ class WildScene(Scene):
         self.type=SceneType.WILD
         self.obstacles,self.decorates,self.breakobj=Maps.gen_wild_obstacle()
         self.map=Maps.gen_wild_map()
-        self.monsters.add(Monster(200, 80,1,100,2,10))
+        self.monsters.add(Monster(200,80,1,100,5,10))#x y order hp atk money
+        self.animals.add(Animal(1,100,140))#index x y
+        self.animals.add(Animal(2,60,120))
+        self.animals.add(Animal(3,150,120))
+        self.animals.add(Animal(6,250,120))
+        self.animals.add(Animal(7,200,140))
+        self.animals.add(Animal(8,300,240))
+        self.animals.add(Animal(5,400,140))
 
     def gen_WILD(self):
         pass

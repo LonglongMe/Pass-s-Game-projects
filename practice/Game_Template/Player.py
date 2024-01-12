@@ -83,7 +83,7 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.update(PlayerSettings.playerWidth,PlayerSettings.playerHeight)
         self.rect.x-=dx
         self.rect.y-=dy
-        window.blit(self.image, (self.rect.x-5,self.rect.y-5,self.rect.width,self.rect.height))
+        window.blit(self.image, (self.rect.x-25,self.rect.y-28,self.rect.width,self.rect.height))
 
         
     def fix_to_middle(self, dx, dy):

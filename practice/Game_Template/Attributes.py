@@ -8,7 +8,8 @@ class Collidable:
             "monster": False, 
             "portal": False, 
             "boss": False, 
-            "bra":False
+            "bra":False,
+            "animal":False
         }
         self.collidingObject = {
             "obstacle": [], 
@@ -24,7 +25,10 @@ class Collidable:
                 self.collidingWith["npc"] or 
                 self.collidingWith["monster"] or
                 self.collidingWith["portal"] or 
-                self.collidingWith["boss"]or
+                self.collidingWith["boss"] or
+                self.collidingWith["animal"] or
                 self.collidingWith["bra"])
     def is_colliding_bra(self):
         return self.collidingWith["bra"]
+    #def is_colliding_animal(self):
+     #   return self.collidingWith["animal"]
