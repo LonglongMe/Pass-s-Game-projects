@@ -11,9 +11,9 @@ from PopUpBox import *
 
 class GameManager:
     def __init__(self,window):
-        self.state=GameState.GAME_PLAY_WILD
-        self.player=Player(60,20)
-        self.scene = WildScene(window)
+        self.state=GameState.MAIN_MENU
+        self.player=Player(200,100)
+        self.scene = StartMenu(window)
         self.window = window
         self.clock = pygame.time.Clock()
         self.collideindex=0
@@ -46,7 +46,7 @@ class GameManager:
             self.state= GameState.GAME_PLAY_HOME
         elif self.scene.type == SceneType.MENU:
             self.state= GameState.GAME_PLAY_HOME
-            self.scene = WildScene(self.window)
+            self.scene = HomeScene(self.window)
             print("scene changed")
             print(f"{self.scene.type}")
 
@@ -73,16 +73,25 @@ class GameManager:
                 self.state=GameState.GAME_PLAY_WILD
             
 
-    def update_home(self, events):
-        # Deal with EventQueue First
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
 
-        # Then deal with regular updates
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+    def update_home(self, events):
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type== GameEvent.EVENT_SWITCH:
+                GameManager.flush_scene(self)
+
+
+        self.update_collide()
+        for each in self.scene.obstacles.sprites():
+            each.update()
+        for each in self.scene.decorates.sprites():
+            each.update()
+        for each in self.scene.breakobj.sprites():
+            each.update()
+        for each in self.scene.portals.sprites():
+            each.update()
 
     def update_wild(self, events):
 
@@ -92,8 +101,8 @@ class GameManager:
                 sys.exit()
             # 传送
             elif event.type== GameEvent.EVENT_SWITCH:
-                GameManager.flush_scene()
-            #if event.type==GameEvent.EVENT_BATTLE:
+                GameManager.flush_scene(self)
+
 
 
         if self.player.collidingWith['monster']==True and self.scene.battlebox==None:
@@ -115,7 +124,8 @@ class GameManager:
             each.update()
         for each in self.scene.animals.sprites():
             each.walk(self.playerlist,self.scene.animals,self.scene.obstacles)
-
+        for each in self.scene.portals.sprites():
+            each.update()
         if self.scene.battlebox!=None:
             if self.scene.battlebox.readytoleave==1:
                 self.scene.end_battle(self.player)
@@ -166,15 +176,20 @@ class GameManager:
         else:
             self.player.collidingWith["animal"]=False
 
-        # Player -> Portals
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
-        
-        # Player -> Boss
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        if pygame.sprite.spritecollide(self.player,self.scene.portals,False) :
+            self.player.collidingWith["portal"]=True
+
+        else:
+            self.player.collidingWith["portal"]=False
+
+        if pygame.sprite.spritecollide(self.player,self.scene.shop_npcs,False) :
+            self.player.collidingWith["shop_npc"]=True
+        else:
+            self.player.collidingWith["shop_npc"]=False
+        if pygame.sprite.spritecollide(self.player,self.scene.dialog_npcs,False) :
+            self.player.collidingWith["dialog_npc"]=True
+        else:
+            self.player.collidingWith["dialog_npc"]=False
 
     def update_NPCs(self):
         # This is not necessary. If you want to re-use your code you can realize this.
@@ -199,9 +214,7 @@ class GameManager:
         self.window.blit(self.scene.text2,(self.scene.position3))
     
     def render_home(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.scene.render(self.player)
 
     def render_wild(self):
 

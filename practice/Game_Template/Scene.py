@@ -10,6 +10,7 @@ from PopUpBox import *
 from Portal import *
 from BgmPlayer import *
 from Player import *
+
 class Scene():
     def __init__(self, window):
         self.type = None
@@ -20,6 +21,9 @@ class Scene():
         self.npcs = pygame.sprite.Group()
         self.portals = pygame.sprite.Group()
         self.breakobj=pygame.sprite.Group()
+        self.dialog_npcs = pygame.sprite.Group()
+        self.shop_npcs = pygame.sprite.Group()
+        self.portals = pygame.sprite.Group()
         self.animals=pygame.sprite.Group()
         self.window = window
         self.width = WindowSettings.width
@@ -100,9 +104,8 @@ class Scene():
 
     def render(self, player:Player):
         self.update_camera(player)
-
+        keys=pygame.key.get_pressed()
         if self.type==SceneType.WILD:
-
             for i in range(SceneSettings.tileXnum):
                 for j in range(SceneSettings.tileYnum):
                     self.window.blit(self.map[i][j], 
@@ -115,9 +118,9 @@ class Scene():
                 mon.draw(self.window,self.cameraX,self.cameraY)
             for bra in self.breakobj.sprites(): 
                 bra.draw(self.window,self.cameraX,self.cameraY)
-            for ani in self.animals.sprites(): 
-                ani.draw(self.window,self.cameraX,self.cameraY)
 
+            for portal in self.portals:
+                portal.draw(self.window,self.cameraX,self.cameraY)
             if player.is_colliding():
                 player.draw(self.window,player.dx,player.dy)
             if self.battlebox!=None:
@@ -125,11 +128,43 @@ class Scene():
                 #print("render in scene")
             else:
                 player.draw(self.window,0,0)
-            keys=pygame.key.get_pressed()
+            
             if player.is_colliding_bra() and keys[pygame.K_SPACE]:
                 for bra in player.collidingObject["bra"]:
                     self.breakobj.remove(bra)
+            if player.is_colliding_portal():
+                pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
+                
+        if self.type==SceneType.HOME:
+            
+            for i in range(SceneSettings.tileXnum):
+                for j in range(SceneSettings.tileYnum):
+                    self.window.blit(self.map[i][j], 
+                                    (SceneSettings.tileWidth * i- self.cameraX, SceneSettings.tileHeight * j- self.cameraY))
+            for obs in self.obstacles:
+                obs.draw(self.window,self.cameraX,self.cameraY)
+            for dec in self.decorates:             
+                dec.draw(self.window,self.cameraX,self.cameraY)
+            for bra in self.breakobj: 
+                bra.draw(self.window,self.cameraX,self.cameraY)
+            for portal in self.portals:
+                portal.draw(self.window,self.cameraX,self.cameraY)
+            for npc in self.shop_npcs:
+                npc.draw(self.window,self.cameraX,self.cameraY)
+            for npc in self.dialog_npcs:
+                npc.draw(self.window,self.cameraX,self.cameraY)
+            for ani in self.animals.sprites(): 
+                ani.draw(self.window,self.cameraX,self.cameraY)
 
+            if player.is_colliding():
+                player.draw(self.window,player.dx,player.dy)
+            else:
+                player.draw(self.window,0,0)
+            if player.is_colliding_bra() and keys[pygame.K_SPACE]:
+                for bra in player.collidingObject["bra"]:
+                    self.breakobj.remove(bra)
+            if player.is_colliding_portal():
+                pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
 class StartMenu:
     def __init__(self, window):
         self.index=0
@@ -176,7 +211,6 @@ class StartMenu:
         else:
             self.selectanimate(1)
 
-
     def gen_menu(self, time):
         pygame.draw.rect(self.window,(255,255,255), self.position,0,border_radius=9 )
         if self.index<94:
@@ -187,54 +221,46 @@ class StartMenu:
         if mousepos[0] >= self.button_x and mousepos[0]<self.button_x+300 and mousepos[1] >self.button_y  and mousepos[1]<self.button_y+50  and pygame.mouse.get_pressed()[0] :
             pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
 
+
 class HomeScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
-
-    def gen_Home(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.type=SceneType.HOME
+        self.obstacles,self.decorates,self.breakobj,self.portals=Maps.gen_home_obstacle()
+        self.map=Maps.gen_home_map()
+        self.shop_npcs.add(ShopNPC(192,144,"Shop",None))
+        self.dialog_npcs.add(DialogNPC(282,72,"Dialog",None))
+        self.animals.add(Animal(1,550,440))#index x y
+        self.animals.add(Animal(2,540,320))
+        self.animals.add(Animal(3,350,520))
+        self.animals.add(Animal(6,450,120))
+        self.animals.add(Animal(7,200,440))
+        self.animals.add(Animal(8,700,440))
+        self.animals.add(Animal(5,600,240))
+        self.animals.add(Animal(1,350,480))#index x y
+        self.animals.add(Animal(2,800,520))
+        self.animals.add(Animal(3,350,290))
+        self.animals.add(Animal(6,450,460))
+        self.animals.add(Animal(7,350,340))
 class WildScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
         self.type=SceneType.WILD
-        self.obstacles,self.decorates,self.breakobj=Maps.gen_wild_obstacle()
+        self.obstacles,self.decorates,self.breakobj,self.portals=Maps.gen_wild_obstacle()
         self.map=Maps.gen_wild_map()
-        self.monsters.add(Monster(200,80,1,100,5,10))#x y order hp atk money
-        self.animals.add(Animal(1,100,140))#index x y
-        self.animals.add(Animal(2,60,120))
-        self.animals.add(Animal(3,150,120))
-        self.animals.add(Animal(6,250,120))
-        self.animals.add(Animal(7,200,140))
-        self.animals.add(Animal(8,300,240))
-        self.animals.add(Animal(5,400,140))
+        self.monsters=self.gen_monsters()#x y order hp atk money
+        
+
 
     def gen_WILD(self):
         pass
         #PortalSettings
 
-    def gen_monsters(self, num = 10):
-        self.monsters.add(Monster(600,600,100,5,10))
-
-class BossScene(Scene):
-    def __init__(self, window):
-        super().__init__(window=window)
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
-
-    # Overwrite Scene's function
-    def trigger_battle(self, player):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
-
-    def gen_BOSS(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+    def gen_monsters(self):
+        monsters=pygame.sprite.Group()
+        monsters.add(Monster(200,80,1,100,5,10))
+        monsters.add(Monster(600,600,100,5,10))
+        monsters.add(Monster(300,580,1,100,5,10))
+        monsters.add(Monster(400,600,100,5,10))
+        return monsters
 
