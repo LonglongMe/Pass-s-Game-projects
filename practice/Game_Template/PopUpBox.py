@@ -28,6 +28,7 @@ class BattleBox:
         # 最基础的字体和背景图片设置
         self.font = pygame.font.Font(None, 40)
         self.font2= pygame.font.Font(None, 30)
+        self.font3=pygame.font.Font(None,25)
         self.hpfont = pygame.font.Font(None, 15)
         self.hpfontcolor=(255,255,255)
         self.fontColor=(230,230,230)
@@ -83,6 +84,8 @@ class BattleBox:
         self.retoreenergyindex=0
         self.enemyretoreenergyindex=0
         self.actrainatkindex=0
+        self.gettinginfo=False
+        self.hintindex=0
         #战斗过程数据变量
         self.atktimes=0
         self.Accumulated_atk=1
@@ -131,7 +134,7 @@ class BattleBox:
                             cards.rect.y=420
                 elif cards not in self.selected:
                     cards.rect.y=440
-                cards.rendermycard(self.window)#second render for beauty
+                #cards.rendermycard(self.window)#second render for beauty
 
     def Mergecards(self):
         if self.mergetimes<3:
@@ -492,14 +495,63 @@ class BattleBox:
             text2 = c.render(f"Your strongest shot : {self.bestshot}" ,False,(20,0,0))
             self.window.blit(text2,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+290))
 
+    def Getinfo(self):
+
+        keys=pygame.key.get_pressed()
+
+        if keys[pygame.K_SPACE] and len(self.selected)==1 :
+            self.gettinginfo=True
+
+        if self.gettinginfo==True and keys[pygame.K_b] :
+            self.hintindex=0
+            self.gettinginfo=False
 
 
+        if self.gettinginfo==True:
+            boxbeginx=BattleSettings.boxStartX
+            boxbeginy= BattleSettings.boxStartY+150
+            databg = pygame.Surface((960,300), pygame.SRCALPHA)
+            databg.fill((100,100,100,250))
+            self.window.blit(databg,(boxbeginx, boxbeginy))
+            self.selected[0].rendermycard(self.window,boxbeginx+100, boxbeginy+50)
+            if self.selected[0].sort==0:
+                enhancement=[1.1,1.2,1.5,self.selected[0].level4atk]
+                enhancement2=[1.1,1.2,1.5,"1~7"]
+                realatk=self.playeratk*enhancement[self.selected[0].level-1]        
+                texts=[ "Card Level:       " + str(self.selected[0].level),
+                        "Enhancement:  " + str(enhancement2[self.selected[0].level-1]),
+                        "Initial ATK:       " + str(int(realatk)),
+                        "Brief:                " +str("Reduce EnemyHp by InitialAtk X Accumulate"),
+                        "Special:            " + str("None")]
+            if self.selected[0].sort==1:
+                enhancement=[0.5,0.8,1,self.selected[0].level4atk]
+                enhancement2=["5%","8%","10%","10%~40%"]
+                texts=[ "Card Level:  " + str(self.selected[0].level),
+                        "Cure:              " + str(enhancement2[self.selected[0].level-1]),
+                        "Brief:            " + str("Cure player by Enhancement"),
+                        "Special:         " + str("None")]
+            if self.selected[0].sort==2:
+                enhancement=[1.2,1.5,2,self.selected[0].level4atk]
+                enhancement2=["120%","150%","200%","100%~700%"]
+                texts=[ "Card Level:   " + str(self.selected[0].level),
+                        "Buff Effect:  " + str(enhancement2[self.selected[0].level-1]),
+                        "Brief:            " + str("Store energy and can greatly improve next Atk "),
+                        "Special:         " + str("You can kept adding buff cards to accumulate"),
+                        "                           a huge shoot"]
+            textbegin=boxbeginy+70
+            for text in texts:
+                self.window.blit(self.font2.render(text, True, self.fontColor),(boxbeginx+300, textbegin)) 
+                textbegin+=30
+            hint="Press 'B' to back battle"
+            self.hintindex+=1
+            if self.hintindex%25<16:
+                self.window.blit(self.font3.render(hint, True, self.fontColor),(boxbeginx+600, boxbeginy+260)) 
     def Update_card(self):
         self.showbg()
         
         #render player's card
         for cards in self.player_card_list:
-            cards.rendermycard(self.window)
+            cards.rendermycard(self.window,cards.rect.x,cards.rect.y)
         #render enemy's card
         if self.enemy_round_count==1:
             for cards in self.monster_card_list: #display cards
@@ -515,9 +567,13 @@ class BattleBox:
             #STAGE1 player selection and act effect
             if self.ismyround==1 and self.enemy_round_count==0 :
                 #draw new card
-                self.Seclect_Card()# 1 select card in list by mouse
-                self.Mergecards()
-                self.Playcards()# 2 play 3 cards selceted by "space"
+                if self.gettinginfo==False:
+                    self.Seclect_Card() # 1 select card in list by mouse
+                    self.Getinfo()      # 2 get card information by "space"
+                    self.Mergecards()   # 3 merge 2 cards by "space"
+                    self.Playcards()    # 4 play 3 cards selceted by "space"
+                else:
+                    self.Getinfo()
 
             #STAGE2 player's animations
             if self.ismyround==0 and self.enemy_round_count==0:

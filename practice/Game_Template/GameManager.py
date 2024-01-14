@@ -11,9 +11,9 @@ from PopUpBox import *
 
 class GameManager:
     def __init__(self,window):
-        self.state=GameState.MAIN_MENU
-        self.player=Player(200,100)
-        self.scene = StartMenu(window)
+        self.state=GameState.GAME_PLAY_WILD
+        self.player=Player(100,100)
+        self.scene = WildScene(window)
         self.window = window
         self.clock = pygame.time.Clock()
         self.collideindex=0
