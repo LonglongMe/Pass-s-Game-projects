@@ -105,7 +105,7 @@ class BattleBox:
     def DrawNewCard(self):
         for cards in self.player_card_list:
             if cards.sort==5:
-                self.player_card_list=[cards.random_card() if i==cards else i for i in self.player_card_list]
+                self.player_card_list=[cards.random_card(self.monster.type) if i==cards else i for i in self.player_card_list]
  
     def Seclect_Card(self):#detect mouse and append pointed cards into a list
         #get key events        
@@ -359,8 +359,8 @@ class BattleBox:
 
         #print(f"sacrifice contdown{self.sacrificenextime}")
         if self.sacrificeatkthistime==1:   
-            if self.monsterHP-self.monsterHP*0.2>0:    
-                self.monsterHP-=self.monsterHP*0.2
+            if self.monsterHP-self.monsterHP*0.3>0:    
+                self.monsterHP-=self.monsterHP*0.3
                 self.atkgif=1
                 print("atk thie time")
             else:
@@ -387,7 +387,7 @@ class BattleBox:
 
         for card in self.monster_card_list:
             if card.sort==5:#initial enemy card list
-                self.monster_card_list=[card.random_card_enemy() if i==card else i for i in self.monster_card_list]
+                self.monster_card_list=[card.random_card_enemy(self.monster.type) if i==card else i for i in self.monster_card_list]
                                 #cauculate card effect accordingly
         for card in self.monster_card_list:        
             if card.sort==0:#atk
@@ -499,10 +499,11 @@ class BattleBox:
 
         keys=pygame.key.get_pressed()
 
+
         if keys[pygame.K_SPACE] and len(self.selected)==1 :
             self.gettinginfo=True
 
-        if self.gettinginfo==True and keys[pygame.K_b] :
+        if self.gettinginfo==True and pygame.mouse.get_pressed()[0] :
             self.hintindex=0
             self.gettinginfo=False
 
@@ -513,39 +514,69 @@ class BattleBox:
             databg = pygame.Surface((960,300), pygame.SRCALPHA)
             databg.fill((100,100,100,250))
             self.window.blit(databg,(boxbeginx, boxbeginy))
-            self.selected[0].rendermycard(self.window,boxbeginx+100, boxbeginy+50)
+            self.selected[0].rendermycard(self.window,boxbeginx+50, boxbeginy+50)
             if self.selected[0].sort==0:
                 enhancement=[1.1,1.2,1.5,self.selected[0].level4atk]
                 enhancement2=[1.1,1.2,1.5,"1~7"]
                 realatk=self.playeratk*enhancement[self.selected[0].level-1]        
-                texts=[ "Card Level:       " + str(self.selected[0].level),
-                        "Enhancement:  " + str(enhancement2[self.selected[0].level-1]),
-                        "Initial ATK:       " + str(int(realatk)),
-                        "Brief:                " +str("Reduce EnemyHp by InitialAtk X Accumulate"),
-                        "Special:            " + str("None")]
+                titles=[ "Card Level:",
+                        "Enhancement:" ,
+                        "Initial ATK:" ,
+                        "Brief:" ,
+                        "Special:" ]
+                contents=[str(self.selected[0].level),
+                          str(enhancement2[self.selected[0].level-1]),
+                          str(int(realatk)),
+                          str("Reduce EnemyHp "),
+                          str("None")]
             if self.selected[0].sort==1:
                 enhancement=[0.5,0.8,1,self.selected[0].level4atk]
                 enhancement2=["5%","8%","10%","10%~40%"]
-                texts=[ "Card Level:  " + str(self.selected[0].level),
-                        "Cure:              " + str(enhancement2[self.selected[0].level-1]),
-                        "Brief:            " + str("Cure player by Enhancement"),
-                        "Special:         " + str("None")]
+                titles=[ "Card Level:",
+                        "Brief:" ,
+                        "Special:" ]
+                contents=[str(self.selected[0].level),
+                          str(f"Recover {enhancement2[self.selected[0].level-1]} Hp"),
+                          str("None")]
+
             if self.selected[0].sort==2:
                 enhancement=[1.2,1.5,2,self.selected[0].level4atk]
                 enhancement2=["120%","150%","200%","100%~700%"]
-                texts=[ "Card Level:   " + str(self.selected[0].level),
-                        "Buff Effect:  " + str(enhancement2[self.selected[0].level-1]),
-                        "Brief:            " + str("Store energy and can greatly improve next Atk "),
-                        "Special:         " + str("You can kept adding buff cards to accumulate"),
-                        "                           a huge shoot"]
-            textbegin=boxbeginy+70
-            for text in texts:
-                self.window.blit(self.font2.render(text, True, self.fontColor),(boxbeginx+300, textbegin)) 
+                titles=[ "Card Level:",
+                        "Buff Effect:" ,
+                        "Brief:" ,
+                        "Special:" ]
+                contents=[str(self.selected[0].level),
+                          str(enhancement2[self.selected[0].level-1]),
+                          str("Store energy and can greatly improve next Atk "),
+                          str("You can kept adding buff cards to accumulate"),
+                          str("a huge shot")]
+            if self.selected[0].sort==6:
+
+                titles=["Brief:" ,
+                        "",
+                        "Special:" ]
+                contents=[str("Immediately reduce '30%' of enemy's hp"),
+                        str("With a cost of losing 20% hp 3rounds later"),
+                        str("Sacrifice is one of the rarest card ,"),
+                        str("its attack is strong and regardless of" ),
+                        str("player's initial atk, if you are lucky enough to "),
+                        str("have more than one sacrifice card, you can play"),
+                        str("them in constant rounds to postpone sacrifice")]
+ 
+ 
+            textbegin=boxbeginy+60
+            for text in titles:
+                self.window.blit(self.font2.render(text, True, self.fontColor),(boxbeginx+200, textbegin)) 
                 textbegin+=30
-            hint="Press 'B' to back battle"
+            textbegin=boxbeginy+60
+            for text in contents:
+                self.window.blit(self.font2.render(text, True, self.fontColor),(boxbeginx+400, textbegin)) 
+                textbegin+=30
+            hint="Click to back battle"
             self.hintindex+=1
             if self.hintindex%25<16:
-                self.window.blit(self.font3.render(hint, True, self.fontColor),(boxbeginx+600, boxbeginy+260)) 
+                self.window.blit(self.font3.render(hint, True, self.fontColor),(boxbeginx+750, boxbeginy+270)) 
     def Update_card(self):
         self.showbg()
         
@@ -628,7 +659,7 @@ class BattleBox:
     def showbg(self):
 
         self.playerImg=self.images[self.index]
-        self.monsterImg=self.monsterimages[(self.index//8)%4]
+        self.monsterImg=self.monsterimages[4*int((self.index//12)%4)]
         self.window.blit(self.bg, (BattleSettings.boxStartX,
                                    BattleSettings.boxStartY))
         transparent_rect = pygame.Surface((960, 250), pygame.SRCALPHA)

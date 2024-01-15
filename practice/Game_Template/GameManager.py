@@ -219,7 +219,9 @@ class GameManager:
     def render_wild(self):
 
         self.scene.render(self.player)
-
+        keys=pygame.key.get_pressed()
+        if keys[pygame.K_0]:
+            print(self.player.rect.topleft)
 
     def render_boss(self):
         ##### Your Code Here ↓ #####

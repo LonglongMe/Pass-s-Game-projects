@@ -21,13 +21,13 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.rect.height=13
         self.rect.topleft = (x,y)
         self.next_rect=self.rect
-        self.speed = PlayerSettings.playerSpeed
+        self.speed = PlayerSettings.playerSpeed+20
         self.talking = False
         self.dx=0
         self.dy=0
         self.OriginHP = PlayerSettings.playerHP
         self.HP=self.OriginHP
-        self.ATK = PlayerSettings.playerAttack
+        self.ATK = PlayerSettings.playerAttack+1000
         self.defence = PlayerSettings.playerDefence
 
 
@@ -38,11 +38,27 @@ class Player(pygame.sprite.Sprite, Collidable):
 
     def reset_pos(self):
         if self.collidingObject["monster"].order==1:
-            self.rect.x=50
-            self.rect.y=100
+            self.rect.y=self.collidingObject["monster"].rect.y+80
+            self.rect.x=self.collidingObject["monster"].rect.x-140
+        if self.collidingObject["monster"].order==2:
+            self.rect.y=self.collidingObject["monster"].rect.y-80
+            self.rect.x=self.collidingObject["monster"].rect.x
+        if self.collidingObject["monster"].order==3:
+            self.rect.y=self.collidingObject["monster"].rect.y-80
+            self.rect.x=self.collidingObject["monster"].rect.x-40
+        if self.collidingObject["monster"].order==4:
+            self.rect.y=self.collidingObject["monster"].rect.y+80
+            self.rect.x=self.collidingObject["monster"].rect.x-120
+        if self.collidingObject["monster"].order==5:
+            self.rect.y=self.collidingObject["monster"].rect.y
+            self.rect.x=self.collidingObject["monster"].rect.x+120
+        if self.collidingObject["monster"].order==6:
+            self.rect.y=self.collidingObject["monster"].rect.y-180
+            self.rect.x=self.collidingObject["monster"].rect.x+10
+        if self.collidingObject["monster"].order==7:
+            self.rect.y=self.collidingObject["monster"].rect.y-80
+            self.rect.x=self.collidingObject["monster"].rect.x
         return self.rect
-
-
 
     def try_move(self):
         keys=pygame.key.get_pressed()

@@ -43,21 +43,18 @@ class Scene():
 
         self.dialogbox=None
 
-
     def trigger_battle(self, player):
 
         self.battlebox=BattleBox(self.window,player,player.collidingObject["monster"])
         pygame.event.post(pygame.event.Event(GameEvent.EVENT_BATTLE))
         print("init battle done,battle event done")
 
-
     def end_battle(self,player):
         self.battlebox=None
-        player.collidingWith['monster']=False
         player.reset_pos()
+        player.collidingWith['monster']=False
         
-
-
+        
     def trigger_shop(self, npc, player):
         ##### Your Code Here ↓ #####
         pass
@@ -75,7 +72,7 @@ class Scene():
 
     def update_camera(self, player):
 
-            if player.rect.x > WindowSettings.width //2+ 10:
+            if player.rect.x > WindowSettings.width //2+ 50:
                 self.cameraX += player.speed
 
                 if self.cameraX < self.get_width() - WindowSettings.width:
@@ -83,19 +80,19 @@ class Scene():
                 else:
                     self.cameraX = self.get_width() - WindowSettings.width
                     
-            elif player.rect.x < WindowSettings.width//2-10:
+            elif player.rect.x < WindowSettings.width//2-50:
                 self.cameraX -= player.speed
                 if self.cameraX > 0:
                     player.fix_to_middle(-player.speed, 0)
                 else:
                     self.cameraX = 0
-            if player.rect.y > WindowSettings.height //2+10:
+            if player.rect.y > WindowSettings.height //2+50:
                 self.cameraY += player.speed
                 if self.cameraY < self.get_height() - WindowSettings.height:
                     player.fix_to_middle(0, player.speed)
                 else:
                     self.cameraY = self.get_height() - WindowSettings.height
-            elif player.rect.y < WindowSettings.height //2-10:
+            elif player.rect.y < WindowSettings.height //2-50:
                 self.cameraY -= player.speed
                 if self.cameraY > 0:
                     player.fix_to_middle(0, -player.speed)
@@ -221,7 +218,6 @@ class StartMenu:
         if mousepos[0] >= self.button_x and mousepos[0]<self.button_x+300 and mousepos[1] >self.button_y  and mousepos[1]<self.button_y+50  and pygame.mouse.get_pressed()[0] :
             pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
 
-
 class HomeScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
@@ -258,9 +254,13 @@ class WildScene(Scene):
 
     def gen_monsters(self):
         monsters=pygame.sprite.Group()
-        monsters.add(Monster(200,80,1,100,5,10))
-        monsters.add(Monster(600,600,100,5,10))
-        monsters.add(Monster(300,580,1,100,5,10))
-        monsters.add(Monster(400,600,100,5,10))
+        monsters.add(Monster(560,200,0,1,50,1,1))
+        monsters.add(Monster(1280,280,1,2,100,1,1))
+        monsters.add(Monster(120,1040,1,3,100,2,1))
+        monsters.add(Monster(1000,1040,1,4,100,3,1))
+        monsters.add(Monster(440,1400,2,5,300,4,1))
+        monsters.add(Monster(2080,880,3,6,300,5,5))
+        monsters.add(Monster(3000,1200,4,7,750,10,5))
+
         return monsters
 

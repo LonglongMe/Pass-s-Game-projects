@@ -163,7 +163,7 @@ class Animal(pygame.sprite.Sprite):
         window.blit(self.image,self.rect)
     
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, x, y,order, HP = 100, Atk = 3, Money = 15):
+    def __init__(self, x, y,type, order,HP = 100, Atk = 3, Money = 15):
         super().__init__()
         self.index=0
         self.images = [pygame.transform.scale(pygame.image.load(img), 
@@ -172,11 +172,13 @@ class Monster(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x=x
         self.rect.y=y
+        self.font= pygame.font.Font(None, 18)
         self.originrect_x=x
         self.originrect_y=y
         self.HP = HP
         self.ATK = Atk
         self.money= Money
+        self.type=type
         self.order=order
         
         
@@ -185,21 +187,15 @@ class Monster(pygame.sprite.Sprite):
             self.index=0
         else:
             self.index+=1
-        self.image=self.images[self.index//10]
+        self.image=self.images[4*(self.index//10)]
         self.rect.x=self.originrect_x-dx
         self.rect.y=self.originrect_y-dy
         window.blit(self.image,self.rect)
-
-class Boss(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__()
         
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        textlist=["    WARM UP",f"    WEEK QUIZ{self.order}",f" MONTH EXAM{self.order}",f"MIDTERM EXAM{self.order}"," FINAL EXAM"]
+        text=textlist[self.type]
+        
+        window.blit(self.font.render(text, True, (200,200,200)),
+        (self.rect.x-17, self.rect.y-20)) 
 
-    def draw(self, window, dx=0, dy=0):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
 

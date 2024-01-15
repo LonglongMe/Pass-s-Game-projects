@@ -52,46 +52,153 @@ class Card:  #basic information of differernt cards
         #LEVEL REPRESENTING COLOR 
           #APPEND MARGIN
         self.margin_color=(45,70,130)
-    def random_card(self):
+    def random_card(self,type):
         if self.sort==5:
             a=random.randint(1,100)
             b=random.randint(1,10)
             sort=0
             level=0
-            if a<=40:#atk
-                sort=0
-            elif a>=40 and a<70:#buff
-                sort=2
-            elif a>=70 and a<74:#sacrifice
-                sort=6
-            else:#cure
-                sort=1
-
-            if b>=6:
-                level=1
-            elif b>=2 and b<7:
-                level=2
-            else:
-                level=3         
+            if type==0:
+                if a<=50:#atk
+                    sort=0
+                elif a>=40 and a<90:#buff
+                    sort=2
+                else:#cure
+                    sort=1
+                if b>=2:
+                    level=1
+                else:
+                    level=2
+            if type==1:
+                if a<=50:#atk
+                    sort=0
+                elif a>=40 and a<90:#buff
+                    sort=2
+                else:#cure
+                    sort=1
+                if b>=5:
+                    level=1
+                elif b>2 and b<5:
+                    level=2
+                else:
+                    level=3
+            if type==2:
+                if a<=40:#atk
+                    sort=0
+                elif a>=40 and a<75:#buff
+                    sort=2
+                else:#cure
+                    sort=1   
+                if b>=6:
+                    level=1
+                elif b>2 and b<6:
+                    level=2
+                else:
+                    level=3      
+            if type==3:
+                if a<=40:#atk
+                    sort=0
+                elif a>=40 and a<70:#buff
+                    sort=2
+                elif a>=70 and a<74:
+                    sort=6
+                else:#cure
+                    sort=1
+                if b>=6:
+                    level=1
+                elif b>2 and b<6:
+                    level=2
+                else:
+                    level=3     
+            if type==4:
+                if a<=40:#atk
+                    sort=0
+                elif a>=40 and a<70:#buff
+                    sort=2
+                elif a>=70 and a<74:
+                    sort=6
+                else:#cure
+                    sort=1
+                if b>=6:
+                    level=1
+                elif b>4 and b<6:
+                    level=2
+                elif b>2 and b<=4:
+                    level=3  
+                else:
+                    level=4      
             return Card(sort,level,self.order)
-    def random_card_enemy(self):
+    def random_card_enemy(self,type):
         if self.sort==5:
-            a=random.randint(1,10)
+            a=random.randint(1,100)
             b=random.randint(1,10)
             sort=0
             level=0
-            if a>=7 :#atk
-                sort=0
-            else:
-                sort=2#buff
-
-
-            if b>=5:
-                level=1
-            elif b>=1 and b<5:
-                level=2
-            else:
-                level=3         
+            if type==0:
+                if a<=50:#atk
+                    sort=0
+                elif a>=40 and a<90:#buff
+                    sort=2
+                else:#cure
+                    sort=1
+                if b>=2:
+                    level=1
+                else:
+                    level=2
+            if type==1:
+                if a<=50:#atk
+                    sort=0
+                elif a>=40 and a<90:#buff
+                    sort=2
+                else:#cure
+                    sort=1
+                if b>=5:
+                    level=1
+                elif b>2 and b<5:
+                    level=2
+                else:
+                    level=3
+            if type==2:
+                if a<=40:#atk
+                    sort=0
+                elif a>=40 and a<75:#buff
+                    sort=2
+                else:#cure
+                    sort=1 
+                if b>=5:
+                    level=1
+                elif b>2 and b<5:
+                    level=2
+                else:
+                    level=3     
+            if type==3:
+                if a<=40:#atk
+                    sort=0
+                elif a>=40 and a<70:#buff
+                    sort=2
+                else:#cure
+                    sort=1
+                if b>=6:
+                    level=1
+                elif b>2 and b<6:
+                    level=2
+                else:
+                    level=3     
+            if type==4:
+                if a<=40:#atk
+                    sort=0
+                elif a>=40 and a<70:#buff
+                    sort=2
+                else:#cure
+                    sort=1
+                if b>=6:
+                    level=1
+                elif b>4 and b<6:
+                    level=2
+                elif b>2 and b<=4:
+                    level=3  
+                else:
+                    level=4      
             return Card(sort,level,self.order)
     def update_card(self):
             #color 
