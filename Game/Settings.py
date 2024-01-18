@@ -109,11 +109,9 @@ class GamePath:
 
     # player/npc related path
     npc = r".\assets\npc\npc.png"
- 
 
     #monster = r".\assets\npc\monster\1.png"
-    boss = r".\assets\npc\boss.png"
-
+ 
     groundTiles = [
         r".\assets\tiles\ground1.png", 
         r".\assets\tiles\ground2.png", 
@@ -156,6 +154,7 @@ class GamePath:
     player = [f"./assets/player/Paimon/{i}.png" for i in range(1,122)]
 
     npc = r".\assets\npc\npc.png"
+    npcgif=[f"./assets/npc/npc/{i}.png" for i in range(1,61)]
     monster =[f"./assets/npc/enemy/ghost2/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
     groundTiles = [f"./assets/tiles/ground{i}.png" for i in range(1,7)]
     tree = r".\assets\tiles\tree.png"
@@ -191,8 +190,12 @@ class GamePath:
     chicken1 =[f"./assets/npc/animals/chicken1/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
     chicken2 =[f"./assets/npc/animals/chicken2/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
     goldenbird =[f"./assets/npc/animals/goldenbird/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
-    chicken1 =[f"./assets/npc/animals/cat1/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
-
+    store=[f"./assets/gif/product/{i}.png" for i in range(1,3)]
+    egg =[f"./assets/npc/animals/egg/imageonline/0{j}.png" for j in range(0,4)]
+    music=[f"./assets/bgm/home.mp3",
+           f"./assets/bgm/wild.mp3",
+           f"./assets/bgm/battle.mp3",
+           f"./assets/bgm/animalgame.mp3"]
 
 class PortalSettings:
     width = 320
@@ -216,3 +219,4 @@ class GameEvent:
     EVENT_SWITCH = pygame.USEREVENT + 3
     EVENT_RESTART = pygame.USEREVENT + 4
     EVENT_SHOP = pygame.USEREVENT + 5
+    EVENT_ANIMALDIALOG=pygame.USEREVENT + 6

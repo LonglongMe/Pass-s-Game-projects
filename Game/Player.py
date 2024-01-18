@@ -4,6 +4,8 @@ import pygame
 
 from Settings import *
 from Attributes import *
+import random
+from NPCs import Animal
 
 class Player(pygame.sprite.Sprite, Collidable):
     
@@ -14,21 +16,33 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.images = [pygame.transform.scale(pygame.image.load(img), 
                             (PlayerSettings.playerWidth+10, PlayerSettings.playerHeight+10)) for img in GamePath.player]
         self.index = 0
+        self.hadbattle=1
+        self.animal=pygame.sprite.Group()
         self.image = self.images[self.index]
         self.battle=False
+        self.dialog=False
+        self.shopping=False
         self.rect = self.image.get_rect()
         self.rect.width=13
         self.rect.height=13
         self.rect.topleft = (x,y)
         self.next_rect=self.rect
-        self.speed = PlayerSettings.playerSpeed+20
+        self.speed = PlayerSettings.playerSpeed
         self.talking = False
         self.dx=0
         self.dy=0
         self.OriginHP = PlayerSettings.playerHP
         self.HP=self.OriginHP
-        self.ATK = PlayerSettings.playerAttack+1000
+        self.egg=0
+        self.ATK = PlayerSettings.playerAttack
         self.defence = PlayerSettings.playerDefence
+        self.readytoplay=0
+        self.cameraX=0
+        self.cameraY=0
+        self.money=1000
+        self.price1=50
+        self.price2=50
+        self.price3=30
 
 
     def attr_update(self, addCoins = 0, addHP = 0, addAttack = 0, addDefence = 0):
@@ -37,52 +51,48 @@ class Player(pygame.sprite.Sprite, Collidable):
         ##### Your Code Here ↑ #####
 
     def reset_pos(self):
-        if self.collidingObject["monster"].order==1:
-            self.rect.y=self.collidingObject["monster"].rect.y+80
-            self.rect.x=self.collidingObject["monster"].rect.x-140
-        if self.collidingObject["monster"].order==2:
-            self.rect.y=self.collidingObject["monster"].rect.y-80
-            self.rect.x=self.collidingObject["monster"].rect.x
-        if self.collidingObject["monster"].order==3:
-            self.rect.y=self.collidingObject["monster"].rect.y-80
-            self.rect.x=self.collidingObject["monster"].rect.x-40
-        if self.collidingObject["monster"].order==4:
-            self.rect.y=self.collidingObject["monster"].rect.y+80
-            self.rect.x=self.collidingObject["monster"].rect.x-120
-        if self.collidingObject["monster"].order==5:
-            self.rect.y=self.collidingObject["monster"].rect.y
-            self.rect.x=self.collidingObject["monster"].rect.x+120
-        if self.collidingObject["monster"].order==6:
-            self.rect.y=self.collidingObject["monster"].rect.y-180
-            self.rect.x=self.collidingObject["monster"].rect.x+10
-        if self.collidingObject["monster"].order==7:
-            self.rect.y=self.collidingObject["monster"].rect.y-80
-            self.rect.x=self.collidingObject["monster"].rect.x
+        if self.collidingWith["monster"]==True:
+            postionlist=[[-140,80],[0,-80],[-40,-80],[-120,80],[120,0],[10,-180],[0,-80]]
+            self.rect.x=self.collidingObject["monster"].rect.x+postionlist[self.collidingObject["monster"].order-1][0]
+            self.rect.y=self.collidingObject["monster"].rect.y+postionlist[self.collidingObject["monster"].order-1][1]
+        if self.collidingWith["dialog_npc"]==True:
+            self.rect.x=self.collidingObject["dialog_npc"].rect.x-60
+            self.rect.y=self.collidingObject["dialog_npc"].rect.y
+
+        if self.collidingWith["animalgame_npc"]==True or self.readytoplay==2:
+            if self.readytoplay==1:#play
+                self.rect.x=self.collidingObject["animalgame_npc"].rect.x
+                self.rect.y=self.collidingObject["animalgame_npc"].rect.y+150
+            if self.readytoplay==0 :#quit
+                self.rect.x=self.collidingObject["animalgame_npc"].rect.x
+                self.rect.y=self.collidingObject["animalgame_npc"].rect.y-70
+            if self.readytoplay==2:#reset
+                self.rect.topleft=(200-self.cameraX,430-self.cameraY)
+                
+
+
         return self.rect
 
     def try_move(self):
         keys=pygame.key.get_pressed()
-        if self.talking:
-            # 如果不移动，显示静态图像
-            self.index = 0
-            self.image = self.images[0]
-        else:
+
+
             # Update Player Position
-            dx=0
-            dy=0
-            if keys[pygame.K_w] and self.rect.top > 0 :
-                dy -= self.speed
-            if keys[pygame.K_s] and self.rect.bottom < WindowSettings.height:
-                dy += self.speed
-            if keys[pygame.K_a] and self.rect.left > 0:
-                dx -= self.speed
-            if keys[pygame.K_d] and self.rect.right < WindowSettings.width:
-                dx += self.speed
-                
-            self.rect.x+=dx
-            self.rect.y+=dy
-            self.dx=dx
-            self.dy=dy
+        dx=0
+        dy=0
+        if keys[pygame.K_w] and self.rect.top > 0 :
+            dy -= self.speed
+        if keys[pygame.K_s] and self.rect.bottom < WindowSettings.height:
+            dy += self.speed
+        if keys[pygame.K_a] and self.rect.left > 0:
+            dx -= self.speed
+        if keys[pygame.K_d] and self.rect.right < WindowSettings.width:
+            dx += self.speed
+            
+        self.rect.x+=dx
+        self.rect.y+=dy
+        self.dx=dx
+        self.dy=dy
 
 
         return self.rect ,self.dy,self.dx
@@ -106,3 +116,15 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.rect.x -= dx
         self.rect.y -= dy
 
+    def eggborn(self):
+        if self.hadbattle and self.egg!=0:
+            for i in range(self.egg):
+                a=len(self.animal)
+                b=random.randint(0,100)
+                if b<95:
+                    typ=b%8
+                else:
+                    typ=8
+                self.animal.add(Animal(typ,600+(a%6)*100,100+((a//6)%6)*100))
+        self.egg=0
+        return self.animal

@@ -11,16 +11,20 @@ from PopUpBox import *
 
 class GameManager:
     def __init__(self,window):
-        self.state=GameState.GAME_PLAY_WILD
-        self.player=Player(100,100)
-        self.scene = WildScene(window)
+        self.state=GameState.GAME_PLAY_HOME
+        self.player=Player(200,50)
+        self.scene = HomeScene(window)
+        self.scene.animals=self.player.eggborn()
         self.window = window
         self.clock = pygame.time.Clock()
         self.collideindex=0
         self.playerlist=pygame.sprite.Group()
         self.playerlist.add(self.player)
+        self.music=BgmPlayer()
+        self.bgm=self.gengamemanager()
         
-
+    def gengamemanager(self):
+        self.music.play(0)
     def game_reset(self):
 
         ##### Your Code Here ↓ #####
@@ -40,13 +44,19 @@ class GameManager:
     def flush_scene(self):
         if self.scene.type == SceneType.HOME:
             self.scene = WildScene(self.window)
+            self.music.stop()
+            self.music.play(1)
             self.state= GameState.GAME_PLAY_WILD
         elif self.scene.type == SceneType.WILD:
             self.scene = HomeScene(self.window)
+            self.music.stop()
+            self.music.play(0)
+            self.scene.animals=self.player.eggborn()
             self.state= GameState.GAME_PLAY_HOME
         elif self.scene.type == SceneType.MENU:
             self.state= GameState.GAME_PLAY_HOME
             self.scene = HomeScene(self.window)
+            self.scene.animals=self.player.eggborn()
             print("scene changed")
             print(f"{self.scene.type}")
 
@@ -60,8 +70,7 @@ class GameManager:
             self.update_wild(pygame.event.get())
         elif self.state == GameState.GAME_PLAY_BOSS:
             self.update_boss(pygame.event.get())
-  
-
+   
     def update_main_menu(self, events):
         for event in events:
             if event.type == pygame.QUIT:
@@ -72,8 +81,6 @@ class GameManager:
                 GameManager.flush_scene(self)
                 self.state=GameState.GAME_PLAY_WILD
             
-
-
     def update_home(self, events):
         for event in events:
             if event.type == pygame.QUIT:
@@ -82,8 +89,50 @@ class GameManager:
             if event.type== GameEvent.EVENT_SWITCH:
                 GameManager.flush_scene(self)
 
+        if self.player.collidingWith['dialog_npc']==True and self.scene.dialogbox==None:
+            self.player.dx=0
+            self.player.dy=0
+            self.player.dialog=True
+            pygame.event.post(pygame.event.Event(GameEvent.EVENT_DIALOG))
+            self.scene.trigger_dialog(self.player.collidingObject['dialog_npc'])
+            print("triggerd dialog in game manager")
+        if self.player.collidingWith['animalgame_npc']==True and self.scene.animalgamebox==None:
+            self.player.dx=0
+            self.player.dy=0
+            self.player.dialog=True
+            pygame.event.post(pygame.event.Event(GameEvent.EVENT_ANIMALDIALOG))
+            self.scene.trigger_animaldialog(self.player.collidingObject['animalgame_npc'])
+            print("triggerd animalgame in game manager")
 
-        self.update_collide()
+        if self.player.collidingWith['shop_npc']==True and self.scene.shoppingbox==None:
+            self.player.dx=0
+            self.player.dy=0
+            self.player.dialog=True
+            pygame.event.post(pygame.event.Event(GameEvent.EVENT_SHOP))
+            self.scene.trigger_shop(self.player)
+            print("triggerd shop in game manager")
+        if self.scene.dialogbox==None and self.scene.animalgamebox==None and self.scene.shoppingbox==None:
+            self.update_collide()
+        else:
+            if self.scene.dialogbox!=None and self.scene.dialogbox.donedialog==1:
+                print(self.scene.shoppingbox==None,"game manager end dialog after then")
+                self.scene.end_dialog(self.player)
+            if self.scene.animalgamebox!=None and self.scene.animalgamebox.donedialog!=0:
+                if self.scene.animalgamebox.donedialog==1:
+                    self.player.readytoplay=0
+                if self.scene.animalgamebox.donedialog==2:
+                    self.player.readytoplay=1
+                    self.scene.trigger_animalgame(self.scene.animalgamebox.hardlevel)
+                    self.music.stop()
+                    self.music.play(3)
+                self.scene.end_animaldialog(self.player)
+            if self.scene.shoppingbox!=None and self.scene.shoppingbox.doneshopping==1:
+                self.scene.end_shop(self.player)
+                self.music.stop()
+                self.music.play(0)
+                
+
+
         for each in self.scene.obstacles.sprites():
             each.update()
         for each in self.scene.decorates.sprites():
@@ -92,7 +141,15 @@ class GameManager:
             each.update()
         for each in self.scene.portals.sprites():
             each.update()
+        for each in self.scene.dialog_npcs.sprites():
+            each.update()
+        for each in self.scene.animalgame_npc.sprites():
+            each.update()
+        for each in self.scene.animals.sprites():
+            each.walk(self.playerlist,self.scene.animals,self.scene.breakobj,self.scene.obstacles)
 
+        for each in self.scene.wildanimals.sprites():
+            each.walk(self.playerlist,self.scene.wildanimals,self.scene.breakobj,self.scene.obstacles)
     def update_wild(self, events):
 
         for event in events:
@@ -106,12 +163,13 @@ class GameManager:
 
 
         if self.player.collidingWith['monster']==True and self.scene.battlebox==None:
-
             self.player.dx=0
             self.player.dy=0
             self.player.battle=True
             pygame.event.post(pygame.event.Event(GameEvent.EVENT_BATTLE))
             self.scene.trigger_battle(self.player)
+            self.music.stop()
+            self.music.play(2)
             print("triggerd")
         if self.scene.battlebox==None:    
             self.update_collide()
@@ -122,25 +180,13 @@ class GameManager:
             each.update()
         for each in self.scene.monsters.sprites():
             each.update()
-        for each in self.scene.animals.sprites():
-            each.walk(self.playerlist,self.scene.animals,self.scene.obstacles)
         for each in self.scene.portals.sprites():
             each.update()
         if self.scene.battlebox!=None:
             if self.scene.battlebox.readytoleave==1:
                 self.scene.end_battle(self.player)
-
-
-    def update_boss(self, events):
-        # Deal with EventQueue First
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
-        
-        # Then deal with regular updates
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+                self.music.stop()
+                self.music.play(1)
 
     # Collision-relate update funtions here ↓
     def update_collide(self):
@@ -157,11 +203,17 @@ class GameManager:
 
         # Player -> Monsters
         if pygame.sprite.spritecollide(self.player, self.scene.monsters, False) :
-
             self.player.collidingWith["monster"]=True
             self.player.collidingObject["monster"]=(pygame.sprite.spritecollide(self.player,self.scene.monsters,False)[0])
+        
+        if pygame.sprite.spritecollide(self.player, self.scene.animalgame_npc, False) :
+            self.player.collidingWith["animalgame_npc"]=True
+            self.player.collidingObject["animalgame_npc"]=(pygame.sprite.spritecollide(self.player,self.scene.animalgame_npc,False)[0])
 
-
+        if pygame.sprite.spritecollide(self.player, self.scene.decorates, False) :
+            self.player.collidingWith["decorate"]=True
+        else:
+            self.player.collidingWith["decorate"]=False
 
         #player→breakableobjects
         if pygame.sprite.spritecollide(self.player, self.scene.breakobj, False) :
@@ -170,12 +222,17 @@ class GameManager:
         else:
             self.player.collidingWith["bra"]=False
             self.player.collidingObject["bra"]=[]
-        
+
         if pygame.sprite.spritecollide(self.player, self.scene.animals, False) :
             self.player.collidingWith["animal"]=True
         else:
             self.player.collidingWith["animal"]=False
 
+        if pygame.sprite.spritecollide(self.player, self.scene.wildanimals, False) :
+            self.player.collidingWith["animal"]=True
+        else:
+            self.player.collidingWith["animal"]=False
+            
         if pygame.sprite.spritecollide(self.player,self.scene.portals,False) :
             self.player.collidingWith["portal"]=True
 
@@ -184,12 +241,10 @@ class GameManager:
 
         if pygame.sprite.spritecollide(self.player,self.scene.shop_npcs,False) :
             self.player.collidingWith["shop_npc"]=True
-        else:
-            self.player.collidingWith["shop_npc"]=False
+            self.player.collidingObject["shop_npc"]=(pygame.sprite.spritecollide(self.player,self.scene.shop_npcs,False)[0])
         if pygame.sprite.spritecollide(self.player,self.scene.dialog_npcs,False) :
             self.player.collidingWith["dialog_npc"]=True
-        else:
-            self.player.collidingWith["dialog_npc"]=False
+            self.player.collidingObject["dialog_npc"]=(pygame.sprite.spritecollide(self.player,self.scene.dialog_npcs,False)[0])
 
     def update_NPCs(self):
         # This is not necessary. If you want to re-use your code you can realize this.
@@ -223,8 +278,4 @@ class GameManager:
         if keys[pygame.K_0]:
             print(self.player.rect.topleft)
 
-    def render_boss(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
 

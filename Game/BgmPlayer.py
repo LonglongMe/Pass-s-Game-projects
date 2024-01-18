@@ -1,17 +1,17 @@
 import pygame
 from Settings import *
 
-class BgmPlayer():
+class BgmPlayer:
     def __init__(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        pygame.mixer.init()
+     
+    def play(self,index):
+        pygame.mixer.music.load(GamePath.music[index])
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.8)
 
-
-    def play(self, name, loop=-1):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+    def stop(self):
+        pygame.mixer.quit()
 
     def stop(self):
         ##### Your Code Here ↓ #####

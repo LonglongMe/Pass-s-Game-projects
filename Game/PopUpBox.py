@@ -10,17 +10,321 @@ class DialogBox:
     def __init__(self, window, npc,
                  fontSize: int = DialogSettings.textSize, 
                  fontColor: Tuple[int, int, int] = (255, 255, 255), 
-                 bgColor: Tuple[int, int, int, int] = (0, 0, 0, 150)):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
-        
-    def draw(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
-        
+                 bgColor: Tuple[int, int, int, int] = (20,20,20,200)):
+        self.image=pygame.transform.scale(pygame.image.load(GamePath.npc), 
+                            (BattleSettings.playerWidth+10, BattleSettings.playerHeight+10))#needs to be fixed
+        self.window = window
+        self.index=0
+        self.playerX = BattleSettings.playerCoordX
+        self.playerY = BattleSettings.playerCoordY-70
+        # 最基础的字体和背景图片设置
+        self.font = pygame.font.Font(None, 50)
+        self.font2= pygame.font.Font(None, 40)
+        self.font3=pygame.font.Font(None,33)
+        self.hpfont = pygame.font.Font(None, 15)
+        self.hpfontcolor=(255,255,255)
+        self.fontColor=(255,255,255)
+        self.selectedfontcolor=(255,100,100)
+        self.donedialog=0
+        self.bg = pygame.Surface((BattleSettings.boxWidth,
+            BattleSettings.boxHeight), pygame.SRCALPHA)
+        self.bg.fill(bgColor)
+        self.firstchoice=0
+        self.secondchoice=0
+        self.contentx=BattleSettings.boxStartX+300
+        self.contenty=BattleSettings.boxStartY+100
+        self.selection=0
+        self.hintindex=0
+        self.pressing=0
+        self.pressingw=0
+        self.texts=None
+        self.selectable=True
+        self.title=None
+        self.chosing=0
+        self.hint=None
 
+    def dialogboxdistribute(self):
+        if self.firstchoice==0 and self.chosing==1:
+            self.firstchoice=self.selection+1
+            if self.firstchoice in [1,2,3]:
+                self.selectable=False
+                self.chosing=0
+                self.secondchoice=0
+            
+        if self.firstchoice==1 and self.chosing==1:
+            self.secondchoice=1
+            self.selectable=False
+            self.choing=0
+        if self.firstchoice==3 and self.chosing==1:
+            self.secondchoice=1
+            self.selectable=False
+            self.choing=0
+            
+    def Information(self):
+        if self.firstchoice==1:
+            if self.secondchoice==0:
+                self.title=""
+                self.texts=[
+                            "Animals can improve your battle income.",
+                            "More rare more gain.The only way to aquire animals",
+                            "is buying eggs from merchants,and then you will find one ",
+                            "animal of random type appears in your farm after one battle",
+                          "                                                            press SPACE to go on"]
+            if self.secondchoice==1:
+                self.title="ANIMALS' INFORMATION:"
+                self.texts=["",
+                            "Chicks and fishes are the most common: 10 coin per battle",
+                            "Cats are more rare: 20 coin per battle",
+                            "Goldenbirds are the most rare: 100 coin per battle",]
+        if self.firstchoice==2:
+                self.title=None
+                self.texts=["AS THE TILTLE SAYS, the game is a simulation of ",
+                            "the last days of high school,where your enemies are",
+                            "quizs and exams,the further you wander inside the maze,",
+                            "the stronger enemy you will meet.If you win the battle,",
+                            "coins will be rewarded so that you can improve",
+                            "your inital attribute from shopping Npc",
+                            "there are 4 easy enemies,2 strong enemies and 1 boss",
+                            "When the boss is defeated, the game ends"
+                ]
+        if self.firstchoice==3:
+            if self.secondchoice==0:
+                self.title=None
+                self.texts=["Collide with monster and your battle begins." ,
+                            "SPACE and CLICK are your major input during the game.",
+                            "You can select a card by a click.",
+                            "Press SPACE and then:",
+                            "Check information if you selected just one card;",
+                            "Merge two cards into higher level card if you select two same card;",
+                            "Play card if you selected three cards",
+                            "                                                        press SPACE to go on"
+                                ]
+            if self.secondchoice==1:
+                self.title=None
+                self.texts=["Regular cards are cards with level written on it,",
+                            "with LEVEL4 as the highest level",
+                            "Special cards have no level and can't be merged",
+                            "A GOOD STRATEGY is merge cards as MUCH you can,",
+                            "so you will have MORE new cards next round,",
+                            "Anthor one is to ACCUMULATE abundant buff cards",
+                            "with the purpose to make your best shoot in the end"]
+
+    def Selection(self):
+        if self.firstchoice==0:
+            self.title= "WHAT INFORMATION DO YOU NEED?"
+            self.texts=[ "About Animals",
+                    "About Enemys",
+                    "About Battle",
+                    ]
+            self.hint="                                      press space to choose"
+    
+    def update_dialog(self):
+        self.showbg()
+        keys=pygame.key.get_pressed()
+        if keys[pygame.K_s]==False:
+            self.pressing=0
+        if keys[pygame.K_s] and self.pressing==0:
+            if self.selection>=2:
+                self.selection=0
+            else:
+                self.selection+=1
+            self.pressing=1
+        if keys[pygame.K_w]==False:
+            self.pressingw=0
+        if keys[pygame.K_w] and self.pressingw==0:
+            if self.selection==0:
+                self.selection=2
+            else:
+                self.selection-=1
+            self.pressingw=1
+        if keys[pygame.K_SPACE]==False:
+            self.pressings=0
+        if keys[pygame.K_SPACE] and self.pressings==0:
+            self.chosing=1
+            self.pressings=1
+            self.dialogboxdistribute()
+
+
+
+        #render texts
+        if self.selectable:
+            self.Selection()
+            textbegin=self.contenty+60
+            self.window.blit(self.font.render(self.title, True, self.fontColor),(self.contentx, textbegin))
+            textbegin+=60
+            for i in range(len(self.texts)):
+                if i==self.selection:
+                    self.window.blit(self.font.render(self.texts[i], True, self.selectedfontcolor),(self.contentx, textbegin)) 
+                else:
+                    self.window.blit(self.font2.render(self.texts[i], True, self.fontColor),(self.contentx, textbegin)) 
+                textbegin+=50
+            self.window.blit(self.font3.render(self.hint, True, self.fontColor),(self.contentx+40, textbegin))
+        else:
+            self.Information()
+            textbegin=self.contenty
+            if self.title!=None:
+                self.window.blit(self.font.render(self.title, True, self.fontColor),(self.contentx, textbegin))
+                textbegin+=40
+            for text in self.texts:
+                self.window.blit(self.font3.render(text, True, self.fontColor),(self.contentx-80, textbegin))
+                textbegin+=50 
+
+        #leave dialog
+        if pygame.mouse.get_pressed()[0]:
+            self.donedialog=1
+        #hint
+        hint="Click to back home "
+        self.hintindex+=1
+        if self.hintindex%25<16:
+            self.window.blit(self.font3.render(hint, True, self.fontColor),(self.contentx+150, self.contenty+400)) 
+
+    def showbg(self):
+
+        #self.npcImg=self.npcimages[4*int((self.index//12)%4)]
+        self.window.blit(self.bg, (BattleSettings.boxStartX,
+                                   BattleSettings.boxStartY))
+        transparent_rect = pygame.Surface((960, 250), pygame.SRCALPHA)
+        transparent_rect.fill((0, 0,0, 140))
+        self.window.blit(self.image, (self.playerX,
+                                          self.playerY+100))
+
+class AniamlgameBox:
+    def __init__(self, window, npc,
+                 fontSize: int = DialogSettings.textSize, 
+                 fontColor: Tuple[int, int, int] = (255, 255, 255), 
+                 bgColor: Tuple[int, int, int, int] = (20,20,20,200)):
+        self.image=pygame.transform.scale(pygame.image.load(GamePath.npc), 
+                            (BattleSettings.playerWidth+10, BattleSettings.playerHeight+10))#needs to be fixed
+        self.window = window
+        self.index=0
+        # 最基础的字体和背景图片设置
+        self.npc=npc
+        self.pressing=0
+        self.selectable=1
+        self.font2= pygame.font.Font(None, 38)
+        self.font3=pygame.font.Font(None,27)
+        self.hpfont = pygame.font.Font(None, 15)
+        self.fontColor=(255,255,255)
+        self.selectedfontcolor=(255,100,100)
+        self.donedialog=0
+        self.contentx=self.npc.rect.x+50
+        self.contenty=self.npc.rect.y
+        self.bg = pygame.Surface((BattleSettings.boxWidth//2,
+            int(BattleSettings.boxHeight//3)), pygame.SRCALPHA)
+        self.bg.fill(bgColor)
+        self.firstchoice=0
+        self.secondchoice=0
+        self.selection=2
+        self.chosing=0
+        self.title=None
+        self.texts=None
+        self.hardlevel=0
+        self.pressings=0
+        self.pressingw=0
+
+    def dialogboxdistribute(self):
+        if self.firstchoice==0 and self.chosing==1:
+            if self.selection==0:
+                self.firstchoice=1
+                self.selectable=1
+                self.chosing=0
+            if self.selection==1:
+                self.firstchoice=2
+                self.selectable=0
+                self.chosing=0
+            if self.selection==2:
+                self.donedialog=1
+        if self.firstchoice==2 and self.chosing==1:
+            self.firstchoice=0
+            self.selection=0
+            self.selectable=1
+            self.chosing=0
+        if self.firstchoice==1 and self.chosing==1:
+            if self.selection==0:
+                self.hardlevel=1
+            elif self.selection==1:
+                self.hardlevel=2
+            elif self.selection==2:
+                self.hardlevel=3
+            self.donedialog=2
+    def Information(self):
+        if self.firstchoice==2:
+            self.title=None
+            self.texts=[
+                        "CRAZY WILD ANIMALS IN YOUR GARDEN!",
+                        "To get abundant coins as rewards",
+                        "Please rush through and COLLIDE WITH THE TORCH ",
+                        "WITHOUT being touched by wild animals",
+                        "Select difficulty to get even more rewards!",
+                        "                                        press SPACE to back"]
+
+    def Selection(self):
+        if self.firstchoice==0:
+            self.title= "HOW  CAN  I  HELP?"
+            self.texts=[ 
+                        "Start game!",
+                      "About this game",
+                      "Leave"]
+        if self.firstchoice==1:
+            self.title="SELECT DIFFICULTY"
+            self.texts=[ 
+                    "WARM UP   REWARD:10 COINS",
+                    "HARD      REWARD:20 COINS",
+                    "IMPOSSIBLE REWARD:300 COINS!"]
+
+    def update_animalgame(self):
+        self.showbg()
+        keys=pygame.key.get_pressed()
+        if keys[pygame.K_s]==False:
+            self.pressing=0
+        if keys[pygame.K_s] and self.pressing==0:
+            if self.selection>=2:
+                self.selection=0
+            else:
+                self.selection+=1
+            self.pressing=1
+        if keys[pygame.K_w]==False:
+            self.pressingw=0
+        if keys[pygame.K_w] and self.pressingw==0:
+            if self.selection==0:
+                self.selection=2
+            else:
+                self.selection-=1
+            self.pressingw=1
+        if keys[pygame.K_SPACE]==False:
+            self.pressings=0
+        if keys[pygame.K_SPACE] and self.pressings==0:
+            self.chosing=1
+            self.pressings=1
+            self.dialogboxdistribute()
+
+
+        if self.selectable:
+            self.Selection()
+            textbegin=self.contenty+20
+            self.window.blit(self.font2.render(self.title, True, self.fontColor),(self.contentx+40, textbegin))
+            textbegin+=40
+            for i in range(len(self.texts)):
+                if i==self.selection:
+                    self.window.blit(self.font2.render(self.texts[i], True, self.selectedfontcolor),(self.contentx+40, textbegin)) 
+                else:
+                    self.window.blit(self.font3.render(self.texts[i], True, self.fontColor),(self.contentx+40, textbegin)) 
+                textbegin+=30
+
+            
+        else:
+            self.Information()
+            textbegin=self.contenty+20
+            if self.title!=None:
+                self.window.blit(self.font2.render(self.title, True, self.fontColor),(self.contentx+40, textbegin))
+                textbegin+=25
+            for text in self.texts:
+                self.window.blit(self.font3.render(text, True, self.fontColor),(self.contentx+40, textbegin))
+                textbegin+=25
+
+    def showbg(self):
+        self.window.blit(self.bg, (self.contentx,
+                                   self.contenty))
 class BattleBox:
     def __init__(self, window, player, monster, fontSize: int = BattleSettings.textSize, 
                  fontColor: Tuple[int, int, int] = (255, 255, 255), bgColor: Tuple[int, int, int, int] = (0, 0, 0, 200)) :
@@ -32,10 +336,8 @@ class BattleBox:
         self.hpfont = pygame.font.Font(None, 15)
         self.hpfontcolor=(255,255,255)
         self.fontColor=(230,230,230)
+        self.bg=pygame.transform.scale(pygame.image.load(GamePath.background), (BattleSettings.boxWidth, BattleSettings.boxHeight))
 
-        self.bg = pygame.Surface((BattleSettings.boxWidth,
-            BattleSettings.boxHeight), pygame.SRCALPHA)
-        self.bg.fill(bgColor)
 
         # 初始化相关角色的参数，没有实际操作的权力
         self.player = player
@@ -477,6 +779,7 @@ class BattleBox:
             self.roundchangeindex=0
 
     def Win(self):
+        self.player.hadbattle=1
         self.window.blit(self.bg, (BattleSettings.boxStartX,
                                    BattleSettings.boxStartY))
         bg=pygame.transform.scale(pygame.image.load(GamePath.winbg), (800, 390))
@@ -713,20 +1016,155 @@ class BattleBox:
         self.window.blit(self.font2.render(text, True, self.fontColor),
         (BattleSettings.boxStartX+520, BattleSettings.boxStartY+60)) 
 class ShoppingBox:
-    def __init__(self, window, npc, player,
+    def __init__(self, window,player,
                  fontSize: int = DialogSettings.textSize, 
                  fontColor: Tuple[int, int, int] = (255, 255, 255), 
-                 bgColor: Tuple[int, int, int, int] = (0, 0, 0, 150)):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+                 bgColor: Tuple[int, int, int, int] = (20,20,20,200)):
+        self.image=[pygame.transform.scale(pygame.image.load(img), (220,220)) for img in GamePath.npcgif]
+        self.index3=0
+        pygame.transform.flip(self.image[self.index3], True, False)#needs to be fixed
+        self.window = window
+        self.transparent_rect = pygame.Surface((960, 80), pygame.SRCALPHA)
+        self.transparent_rect.fill((200, 200,200, 140))
+        self.images=[pygame.transform.scale(pygame.image.load(img), (80,100)) for img in GamePath.store]
+        self.eggimg=[pygame.transform.scale(pygame.image.load(img), (100,100)) for img in GamePath.egg]
+        self.index=0
+        self.player=player
+        self.playerX = BattleSettings.playerCoordX
+        self.playerY = BattleSettings.playerCoordY-70
+        # 最基础的字体和背景图片设置
+        self.font = pygame.font.Font(None, 50)
+        self.font2= pygame.font.Font(None, 40)
+        self.font3=pygame.font.Font(None,33)
+        self.hpfont = pygame.font.Font(None, 15)
+        self.hpfontcolor=(255,255,255)
+        self.fontColor=(255,255,255)
+        self.selectedfontcolor=(255,100,100)
+        self.doneshopping=0
+        self.bg = pygame.Surface((BattleSettings.boxWidth,
+            BattleSettings.boxHeight), pygame.SRCALPHA)
+        self.bg.fill(bgColor)
+        self.selection=0
+        self.hintindex=0
+        self.pressing=0
+        self.pressingw=0
+        self.index2=-20
+        self.title= "WHAT DO YOU NEED?"
+        self.texts=[ f"Initial ATK + 0.5:  {self.player.price1}$",
+        f"Iinitial HP + 5:      {self.player.price2}$",
+        f"Animal egg + 1:       {self.player.price3}$",
+        ]
+        self.imgx=BattleSettings.boxStartX+250
+        self.imgy=BattleSettings.boxStartY+150
+        self.selectionrect = pygame.Surface((600,100), pygame.SRCALPHA)
+        self.selectionrect.fill((160,160,160,200))
+        self.start=[BattleSettings.boxStartY+150,BattleSettings.boxStartY+270,BattleSettings.boxStartY+390]
 
     def buy(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        if self.selection==0:
+            if self.player.money-self.player.price1>0:
+                self.player.money-=self.player.price1
+                self.player.price1+=30
+                self.player.ATK+=0.5
+        if self.selection==1:
+            if self.player.money-self.player.price2>0:
+                self.player.money-=self.player.price2
+                self.player.price2+=30
+                self.player.HP+=5
+        if self.selection==2:
+            if self.player.money-self.player.price3>0:
+                self.player.money-=self.player.price3
+                self.player.egg+=1
 
-    def draw(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+
+        self.texts=[ f"Initial ATK + 0.5:  {self.player.price1}$",
+        f"Iinitial HP + 5:      {self.player.price2}$",
+        f"Animal egg + 1:       {self.player.price3}$",
+        ]
+
+    def update_dialog(self):
+        self.showbg()
+        keys=pygame.key.get_pressed()
+        if keys[pygame.K_s]==False:
+            self.pressing=0
+        if keys[pygame.K_s] and self.pressing==0:
+            if self.selection>=2:
+                self.selection=0
+            else:
+                self.selection+=1
+            self.pressing=1
+        if keys[pygame.K_w]==False:
+            self.pressingw=0
+        if keys[pygame.K_w] and self.pressingw==0:
+            if self.selection==0:
+                self.selection=2
+            else:
+                self.selection-=1
+            self.pressingw=1
+        if keys[pygame.K_SPACE]==False:
+            self.pressings=0
+        if keys[pygame.K_SPACE] and self.pressings==0:
+            self.chosing=1
+            self.pressings=1
+            self.buy()
+
+        #leave dialog
+        if pygame.mouse.get_pressed()[0]:
+            self.doneshopping=1
+        #hint
+        hint="CLICK to back home  PRESS to perchase"
+
+        self.window.blit(self.font3.render(hint, True, self.fontColor),(self.imgx+250, self.start[2]+110))
+    def showbg(self):
+        if self.index3==236:
+            self.index3=0
+        else:
+            self.index3+=1
+        if self.index==31:
+            self.index=0
+        else:
+            self.index+=1
+        if self.index2==20:
+            self.index2=-20
+        else:
+            self.index2+=1
+        self.window.blit(self.bg, (BattleSettings.boxStartX,
+                                   BattleSettings.boxStartY))
+
+        self.window.blit(self.transparent_rect, (BattleSettings.boxStartX,
+                                   BattleSettings.boxStartY))
+        b=abs(self.index2*10)
+        self.selectionrect.fill((160,160,160,b))
+
+        self.window.blit(self.selectionrect,(self.imgx-10,self.start[self.selection]))
+        pygame.transform.flip(self.image[self.index3//4], True, False)
+        self.window.blit(self.image[self.index3//4], (self.playerX,
+                                          self.playerY+150))
+        self.window.blit(self.images[0], (self.imgx,
+                                          self.start[0]))
+        self.window.blit(self.images[1], (self.imgx,
+                                          self.start[1]))
+        self.window.blit(self.eggimg[self.index%4], (self.imgx,
+                                          self.start[2]))
+
+        self.window.blit(self.font.render(self.title, True, self.fontColor),(self.imgx+50, self.imgy-50))
+        for i in range(len(self.texts)):
+            self.window.blit(self.font2.render(self.texts[i], True, self.fontColor),(self.imgx+130, self.start[i]+38)) 
+        
+        
+        
+        text = "LeftMoney: " + str(self.player.money)
+        self.window.blit(self.font3.render(text, True, self.fontColor),
+        (BattleSettings.boxStartX+20, BattleSettings.boxStartY+30)) 
+
+        text = "My initial ATK: " + str(int(self.player.ATK))
+        self.window.blit(self.font3.render(text, True, self.fontColor),
+        (BattleSettings.boxStartX+270, BattleSettings.boxStartY+30)) 
+
+        text = "My initial HP: " + str(int(self.player.HP))
+        self.window.blit(self.font3.render(text, True, self.fontColor),
+        (BattleSettings.boxStartX+520, BattleSettings.boxStartY+30)) 
+
+        text = "My egg: " + str(int(self.player.egg))
+        self.window.blit(self.font3.render(text, True, self.fontColor),
+        (BattleSettings.boxStartX+770, BattleSettings.boxStartY+30)) 

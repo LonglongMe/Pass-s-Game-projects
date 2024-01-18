@@ -7,7 +7,7 @@ from Settings import *
 from Attributes import *
 
 class NPC(pygame.sprite.Sprite,Collidable):
-    def __init__(self,x,y,name):
+    def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
         Collidable.__init__(self)
         self.image=pygame.transform.scale(pygame.image.load(GamePath.npc), 
@@ -19,42 +19,34 @@ class NPC(pygame.sprite.Sprite,Collidable):
         self.originrect_x=x
         self.originrect_y=y
         self.talking=False
-        self.talkCD=0
-        self.name=name
+        self.name=None
         self.fnt=pygame.font.Font(None,20)
         
         
-
-    def update(self):
-        raise NotImplementedError
-
-    def reset_talkCD(self):
-        self.talkCD=NPCSettings.talkCD
         
     def draw(self, window, dx=0, dy=0):
         self.rect.x=self.originrect_x-dx
         self.rect.y=self.originrect_y-dy
-
         window.blit(self.image,(self.rect.x-15,self.rect.y-15,self.rect.width,self.rect.height))
         window.blit(self.fnt.render(self.name,1,"white"),(self.rect.x+10,self.rect.y-35))
 
-    def can_talk(self):
-        return self.talkCD==0
+
 
 class DialogNPC(NPC):
-    def __init__(self,x,y,name,dialog):
-        super().__init__(x,y,name)
+    def __init__(self,x,y,dialog):
+        super().__init__(x,y)
         self.dialog=dialog
-    
-    def update(self, ticks):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.name="Dialog"
 
+class AnimalGamenpc(NPC):
+    def __init__(self,x,y,dialog):
+        super().__init__(x,y)
+        self.dialog=dialog
+        self.name="Animal Game"
 class ShopNPC(NPC):
-    def __init__(self,x,y,name,items):
-        super().__init__(x, y, name)
-        self.items=items
+    def __init__(self,x,y):
+        super().__init__(x, y)
+        self.name="ShopNpc"
 
     def gen_shop(self):
         pass
@@ -69,71 +61,90 @@ class Animal(pygame.sprite.Sprite):
     def __init__(self,index,x,y) -> None:
         super().__init__()
         self.index=index
+        self.touchplayer=0
+    
         speed=[1,1,1,1,1,1,1,2,2,1,2,2]
-        self.speed=speed[self.index]*0.65
-        self.step=30
+        self.speed=speed[self.index]
+        self.step=50
         self.initialdirection=random.randint(0,3)
-        self.directionx,self.directiony=[[-1,0],[1,0],[0,1],[0,-1]][self.initialdirection]
-
+        self.directionx,self.directiony=[1,0]#[[-1,0],[1,0],[0,1],[0,-1]][self.initialdirection]
         self.flame=0
         self.moving=1
-        self.imagelist=[[pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.cat1],
-                        [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.cat2],
-                        [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.cat3],
-                        [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.cat4],
+        self.imagelist=[[pygame.transform.scale(pygame.image.load(img), (50,50)) for img in GamePath.cat1],
+                        [pygame.transform.scale(pygame.image.load(img), (50,50)) for img in GamePath.cat2],
+                        [pygame.transform.scale(pygame.image.load(img), (50,50)) for img in GamePath.cat3],
+                        [pygame.transform.scale(pygame.image.load(img), (50,50)) for img in GamePath.cat4],
                         [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.fish],
                         [pygame.transform.scale(pygame.image.load(img), (40,60)) for img in GamePath.elf],
                         [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.chicken1],
                         [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.chicken2],
                         [pygame.transform.scale(pygame.image.load(img), (70,70)) for img in GamePath.goldenbird],
-                        [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.cat1]
+
                         ]
         self.images=self.imagelist[self.index]            
         self.image=self.images[self.flame]
         self.rect = self.image.get_rect()
-        self.definiterectx=x
-        self.definiterecty=y
+        self.rect.x=x
+        self.rect.y=y
+        self.rect.width=self.rect.width//2
+        self.rect.height=self.rect.height//2
+        self.lastdx=0
+        self.lastdy=0
 
-    def walk(self,player,animals,obstacles):
-        self.definiterectx+=self.directionx*self.speed
-        self.definiterecty+=self.directiony*self.speed
+    def walk(self,player,animals,bra,obstacles):
+        self.rect.x+=self.directionx*self.speed
+        self.rect.y+=self.directiony*self.speed
+        
 #pygame.sprite.spritecollide(self, animals, False) player.is_colliding_animal
-        if pygame.sprite.spritecollide(self, obstacles, False):
-            self.definiterectx-=3*self.directionx*self.speed
-            self.definiterecty-=3*self.directiony*self.speed
+        if pygame.sprite.spritecollide(self,bra, False) or pygame.sprite.spritecollide(self, obstacles, False):
+            self.rect.x-=1*self.directionx*self.speed
+            self.rect.y-=1*self.directiony*self.speed
+
             if self.directionx!=0:
                 self.directiony=-1*self.directionx
                 self.directionx=0
-            elif self.directionx==0:
-                self.directionx=self.directiony
+            else:
+                self.directionx=1*self.directiony
                 self.directiony=0
 
         for animal in animals:
             if self != animal and self.rect.colliderect(animal.rect):
-                self.definiterectx-=3*self.directionx*self.speed
-                self.definiterecty-=3*self.directiony*self.speed
+                self.rect.x-=1*self.directionx*self.speed
+                self.rect.y-=1*self.directiony*self.speed
+                b=[-1,1][random.randint(0,1)]
                 if self.directionx!=0:
-                    self.directiony=-1*self.directionx
+                    self.directiony=b*self.directionx
                     self.directionx=0
-                elif self.directionx==0:
-                    self.directionx=self.directiony
+                else:
+                    self.directionx=-1*b*self.directiony
                     self.directiony=0
 
                 #self.directionx=self.directionx*-1
                 #self.directiony=self.directiony*-1#random.choice([-1,1])
 
 
-        if pygame.sprite.spritecollide(self, player,False):
-
-            self.definiterectx-=self.directionx*self.speed
-            self.definiterecty-=self.directiony*self.speed
+        if pygame.sprite.spritecollide(self,player,False):
+            self.touchplayer=1
+            self.rect.x-=self.directionx*self.speed
+            self.rect.y-=self.directiony*self.speed
             self.moving=0
         else:
             if self.moving==0:
                 self.directionx=self.directionx*-1
                 self.directiony=self.directiony*-1
             self.moving=1
-
+            
+        if self.step<40:
+            self.step+=1
+        else:
+            b=[-1,1][random.randint(0,1)]
+            if self.directionx!=0:
+                self.directiony=b*self.directionx
+                self.directionx=0
+            else:
+                self.directionx=-1*b*self.directiony
+                self.directiony=0
+            self.step=0
     def draw(self, window, dx=0, dy=0):
         if self.flame<12:
             self.flame+=1
@@ -158,9 +169,11 @@ class Animal(pygame.sprite.Sprite):
             elif self.directionx==1:
                 self.image=self.images[2]
 
-        self.rect.x=self.definiterectx-dx
-        self.rect.y=self.definiterecty-dy
-        window.blit(self.image,self.rect)
+        self.rect.x-=dx-self.lastdx
+        self.rect.y-=dy-self.lastdy
+        self.lastdx=dx
+        self.lastdy=dy
+        window.blit(self.image,(self.rect.x-20,self.rect.y-20,self.rect.width,self.rect.height))
     
 class Monster(pygame.sprite.Sprite):
     def __init__(self, x, y,type, order,HP = 100, Atk = 3, Money = 15):
