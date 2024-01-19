@@ -11,9 +11,8 @@ from PopUpBox import *
 
 class GameManager:
     def __init__(self,window):
-        self.state=GameState.GAME_PLAY_HOME
-        self.player=Player(200,50)
-        self.scene = HomeScene(window)
+        self.player=Player(200,100)
+        self.scene = StartMenu(window)
         self.scene.animals=self.player.eggborn()
         self.window = window
         self.clock = pygame.time.Clock()
@@ -46,31 +45,24 @@ class GameManager:
             self.scene = WildScene(self.window)
             self.music.stop()
             self.music.play(1)
-            self.state= GameState.GAME_PLAY_WILD
         elif self.scene.type == SceneType.WILD:
             self.scene = HomeScene(self.window)
             self.music.stop()
             self.music.play(0)
             self.scene.animals=self.player.eggborn()
-            self.state= GameState.GAME_PLAY_HOME
         elif self.scene.type == SceneType.MENU:
-            self.state= GameState.GAME_PLAY_HOME
             self.scene = HomeScene(self.window)
             self.scene.animals=self.player.eggborn()
-            print("scene changed")
-            print(f"{self.scene.type}")
 
     def update(self):
         self.clock.tick(30)
-        if self.state == GameState.MAIN_MENU:
+        if self.scene.type == SceneType.MENU:
             self.update_main_menu(pygame.event.get())
-        elif self.state == GameState.GAME_PLAY_HOME:
+        elif self.scene.type == SceneType.HOME:
             self.update_home(pygame.event.get())
-        elif self.state == GameState.GAME_PLAY_WILD:
+        elif self.scene.type == SceneType.WILD:
             self.update_wild(pygame.event.get())
-        elif self.state == GameState.GAME_PLAY_BOSS:
-            self.update_boss(pygame.event.get())
-   
+
     def update_main_menu(self, events):
         for event in events:
             if event.type == pygame.QUIT:
@@ -79,7 +71,6 @@ class GameManager:
             # 传送
             if event.type == GameEvent.EVENT_SWITCH:
                 GameManager.flush_scene(self)
-                self.state=GameState.GAME_PLAY_WILD
             
     def update_home(self, events):
         for event in events:
@@ -110,7 +101,6 @@ class GameManager:
             pygame.event.post(pygame.event.Event(GameEvent.EVENT_SHOP))
             self.scene.trigger_shop(self.player)
             print("triggerd shop in game manager")
-
 
         if self.scene.dialogbox==None and self.scene.animalgamebox==None and self.scene.shoppingbox==None:
             self.update_collide()
@@ -151,9 +141,6 @@ class GameManager:
             if self.scene.shoppingbox!=None and self.scene.shoppingbox.doneshopping==1:
                 self.scene.end_shop(self.player)
 
-
-
-
     def update_wild(self, events):
         for event in events:
             if event.type == pygame.QUIT:
@@ -187,11 +174,10 @@ class GameManager:
                 each.update()
         else:
             if self.scene.battlebox.readytoleave==1:
-                self.player.money+=self.scene.battlebox.monster.money*self.scene.battlebox.bestshot*self.scene.battlebox.leftround//4
+                self.player.money+=self.scene.battlebox.coin
                 self.scene.end_battle(self.player)
                 self.music.stop()
                 self.music.play(1)
-
 
     # Collision-relate update funtions here ↓
     def update_collide(self):
@@ -267,11 +253,7 @@ class GameManager:
             self.render_home()
     
     def render_main_menu(self):
-        self.scene.update_menu()
-        self.window.blit(self.scene.image,(0,75))
-        self.window.blit(self.scene.startimg,self.scene.start_rect)
-        self.window.blit(self.scene.text,self.scene.text_rect)
-        self.window.blit(self.scene.text2,(self.scene.position3))
+        self.scene.update_menu(self.window)
     
     def render_home(self):
         self.scene.render(self.player)

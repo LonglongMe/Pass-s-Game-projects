@@ -33,16 +33,19 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.dy=0
         self.OriginHP = PlayerSettings.playerHP
         self.HP=self.OriginHP
-        self.egg=0
+        self.egg=1
         self.ATK = PlayerSettings.playerAttack
         self.defence = PlayerSettings.playerDefence
         self.readytoplay=0
         self.cameraX=0
         self.cameraY=0
-        self.money=1000
+        self.money=200
         self.price1=50
         self.price2=50
         self.price3=30
+        self.font0=pygame.font.SysFont("impact", 15)
+        self.text = None
+        self.textrect=None
 
 
     def attr_update(self, addCoins = 0, addHP = 0, addAttack = 0, addDefence = 0):
@@ -105,13 +108,17 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.image=self.images[self.index]
 
     def draw(self, window, dx=0, dy=0):
-        
+        self.text = self.font0.render(f"COIN:{self.money}",True,(220,220,220))
+        self.textrect=self.text.get_rect()
+        self.textrect.centerx=self.rect.centerx
+        self.textrect.centery=self.rect.centery-35
+
         self.update(PlayerSettings.playerWidth,PlayerSettings.playerHeight)
         self.rect.x-=dx
         self.rect.y-=dy
         window.blit(self.image, (self.rect.x-25,self.rect.y-28,self.rect.width,self.rect.height))
+        window.blit(self.text,self.textrect)
 
-        
     def fix_to_middle(self, dx, dy):
         self.rect.x -= dx
         self.rect.y -= dy
@@ -125,6 +132,16 @@ class Player(pygame.sprite.Sprite, Collidable):
                     typ=b%8
                 else:
                     typ=8
-                self.animal.add(Animal(typ,600+(a%6)*100,100+((a//6)%6)*100))
+                self.animal.add(Animal(typ,600+(a%30)*60,100+60*(a//30)))
         self.egg=0
         return self.animal
+    def initialcoin(self):
+        initialcoin=0
+        for animal in self.animal:
+            if animal.index<=4:
+                initialcoin+=20
+            elif animal.index<7 and animal.index>4:
+                initialcoin+=10
+            else:
+                initialcoin+=100
+        return initialcoin

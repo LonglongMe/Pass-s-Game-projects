@@ -7,7 +7,6 @@ from enum import Enum
 from Settings import *
 from NPCs import *
 from PopUpBox import *
-from Portal import *
 from BgmPlayer import *
 from Player import *
 
@@ -146,51 +145,56 @@ class StartMenu:
         self.startimg=pygame.transform.scale(pygame.image.load(GamePath.dialog) ,(300,50)) 
         self.image=self.images[self.index]
         self.window=window
-        self.start_rect=self.startimg.get_rect()
-        self.wordcenter=(WindowSettings.width // 2 , (WindowSettings.height ) // 2+100)
+        self.startrect=self.startimg.get_rect()
+        self.wordcenter=(WindowSettings.width // 2-8 , (WindowSettings.height ) // 2+100)
         #self.start_rect.center=self.wordcenter
 
         self.textsize=40
         self.textsize2=30
         self.position3=(350,620)
+        self.choosing=0
 
         font0=pygame.font.SysFont("impact", self.textsize)
         self.text = font0.render("START",True,(20,0,0))
-        self.text_rect=self.text.get_rect()
+        self.textrect=self.text.get_rect()
         #self.text_rect.center=self.wordcenter
 
         font1=pygame.font.SysFont("inkfree", self.textsize2)
         self.text2=font1.render("If you don't risk anything, you risk even more",True,(150,150,150))
     def selectanimate(self,size=1):
-        self.text=pygame.font.SysFont("impact", int(self.textsize*size)).render("START",True,(20,0,0))
         self.startimg=pygame.transform.scale(pygame.image.load(GamePath.dialog) ,(300*size,50*size)) 
-        self.start_rect=self.startimg.get_rect()
-        self.text_rect=self.text.get_rect()
-        self.start_rect.center=self.wordcenter
-        self.text_rect.center=self.wordcenter
-    def update_menu(self):
+        self.startrect=self.startimg.get_rect()
+        font0=pygame.font.SysFont("impact", int(self.textsize*size))
+        self.text = font0.render("START",True,(20,0,0))
+        self.textrect=self.text.get_rect()
+        self.startrect.center=self.wordcenter
+        self.textrect.center=self.wordcenter
+    def update_menu(self,window):
         if self.index<94*4:
             self.index+=1
         else:
             self.index=0
         self.image=self.images[self.index//4]
         mousepos=pygame.mouse.get_pos()
-        if mousepos[0] >= self.start_rect.x and mousepos[0]<self.start_rect.x+300 and mousepos[1] >self.start_rect.y  and mousepos[1]<self.start_rect.y+50  :
-            self.selectanimate(1.3)
+        if mousepos[0] >= self.startrect.x and mousepos[0]<self.startrect.x+self.startrect.width and mousepos[1] >self.startrect.y  and mousepos[1]<self.startrect.y+self.startrect.height  :
+            self.selectanimate(1.25)
+  
             if pygame.mouse.get_pressed()[0]:
-                pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
-                self.selectanimate(1)               
+                pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))               
         else:
             self.selectanimate(1)
-
+        window.blit(self.image,(0,75))
+        window.blit(self.startimg,self.startrect)
+        window.blit(self.text,self.textrect)
+        window.blit(self.text2,(self.position3))
 class HomeScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
         self.type=SceneType.HOME
         self.obstacles,self.decorates,self.breakobj,self.portals,self.wildanimals=Maps.gen_home_obstacle()
         self.map=Maps.gen_home_map()
-        self.shop_npcs.add(ShopNPC(100,200))
-        self.dialog_npcs.add(DialogNPC(300,40,None))
+        self.shop_npcs.add(ShopNPC(300,220))
+        self.dialog_npcs.add(DialogNPC(300,140,None))
         self.animalgame_npc.add(AnimalGamenpc(200,500,None))
 
     def render_home(self,player,keys):
@@ -251,7 +255,6 @@ class HomeScene(Scene):
             if player.collidingWith["portal"]:
                 pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
 
-
 class WildScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
@@ -269,7 +272,6 @@ class WildScene(Scene):
         monsters.add(Monster(440,1400,2,5,300,4,1))
         monsters.add(Monster(2080,880,3,6,300,5,5))
         monsters.add(Monster(3000,1200,4,7,750,10,5))
-
         return monsters
 
     def render_wild(self,player,keys):

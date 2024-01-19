@@ -78,7 +78,7 @@ class Card:  #basic information of differernt cards
                     sort=1
                 if b>=5:
                     level=1
-                elif b>2 and b<5:
+                elif b>=2 and b<5:
                     level=2
                 else:
                     level=3
@@ -91,7 +91,7 @@ class Card:  #basic information of differernt cards
                     sort=1   
                 if b>=6:
                     level=1
-                elif b>2 and b<6:
+                elif b>=2 and b<6:
                     level=2
                 else:
                     level=3      
@@ -106,7 +106,7 @@ class Card:  #basic information of differernt cards
                     sort=1
                 if b>=6:
                     level=1
-                elif b>2 and b<6:
+                elif b>=2 and b<6:
                     level=2
                 else:
                     level=3     
@@ -123,7 +123,7 @@ class Card:  #basic information of differernt cards
                     level=1
                 elif b>4 and b<6:
                     level=2
-                elif b>2 and b<=4:
+                elif b>=2 and b<=4:
                     level=3  
                 else:
                     level=4      
@@ -290,14 +290,3 @@ class Card:  #basic information of differernt cards
             window.blit(self.font.render(self.text, True, (210,210,210)),(self.rect.x+44,self.rect.y+162,60,20))
             window.blit(self.textdata,self.textdatarect)
 
-"""
-    def rendermycard(self,window,x,y):
-        self.update_card()#update card's imformation
-        #and then display them 
-        window.blit(self.image,(self.rect.x+self.width,self.rect.y+self.width))
-        window.blit(self.renderlevelcolor, (self.rect.x+5,self.rect.y+140))
-        pygame.draw.rect(window,self.margin_color,(self.rect.x+2,self.rect.y+2,self.rect.width+6,self.rect.height+5),self.width,border_radius=9 )
-        window.blit(self.rendermodcolor, (self.rect.x,self.rect.y)) 
-        if self.sort in[0,1,2]:
-            window.blit(self.font.render(self.text, True, (210,210,210)),(self.rect.x+44,self.rect.y+162,60,20))
-            window.blit(self.textdata,self.textdatarect)"""

@@ -338,8 +338,10 @@ class BattleBox:
         self.hpfontcolor=(255,255,255)
         self.fontColor=(230,230,230)
         self.bg=pygame.transform.scale(pygame.image.load(GamePath.background), (BattleSettings.boxWidth, BattleSettings.boxHeight))
-
-
+        self.mod = pygame.Surface((BattleSettings.boxWidth, BattleSettings.boxHeight), pygame.SRCALPHA)
+        self.mod.fill((0, 0,0, 140))
+        self.databg = pygame.Surface((960,100), pygame.SRCALPHA)
+        self.databg.fill((200,200,200,100))
         # 初始化相关角色的参数，没有实际操作的权力
         self.player = player
         self.playeratk=player.ATK
@@ -374,7 +376,7 @@ class BattleBox:
         self.monsterImg=self.monsterimages[self.index]
         self.monsterImgrect=self.monsterImg.get_rect()
         self.pressed=0#mouse press detect
-        self.leftround=15
+        self.leftround=20
         self.win=0
         self.ismyround=1
         self.atkgif=0
@@ -403,7 +405,10 @@ class BattleBox:
         self.enemy_realatk=0
         self.enemy_round_count=1
         self.sacrificeatkthistime=0
-
+        self.coin0=0
+        self.initialcoin=self.player.initialcoin()
+        self.coin=0
+    
 
     def DrawNewCard(self):
         for cards in self.player_card_list:
@@ -780,6 +785,7 @@ class BattleBox:
             self.roundchangeindex=0
 
     def Win(self):
+        
         self.player.hadbattle=1
         self.window.blit(self.bg, (BattleSettings.boxStartX,
                                    BattleSettings.boxStartY))
@@ -788,17 +794,24 @@ class BattleBox:
         c=pygame.font.SysFont("impact", 30)
         self.window.blit(bg, (BattleSettings.boxStartX+30, BattleSettings.boxStartY+20))
         if self.monsterHP==0 and self.leftround>=0:
-            text = b.render("You win! by " + str(10-self.leftround)+"rounds",True,(20,0,0))
+            
+            self.coin0=int(self.bestshot*self.monster.money*(1+self.leftround/20))
+            self.coin=self.coin0+self.initialcoin
+            text = b.render("You win! by " + str(20-self.leftround)+"rounds",True,(20,0,0))
             self.window.blit(text,(BattleSettings.boxStartX+300,BattleSettings.boxStartY+200))
             text2 = c.render(f"Your strongest shot : {self.bestshot}" ,False,(20,0,0))
-            self.window.blit(text2,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+290))
-
+            self.window.blit(text2,(BattleSettings.boxStartX+420,BattleSettings.boxStartY+290))
+            text3 = c.render(f"Earned Coin : {self.coin0} + {self.initialcoin}" ,False,(20,0,0))
+            self.window.blit(text3,(BattleSettings.boxStartX+420,BattleSettings.boxStartY+320))
         elif self.monsterHP>0 and self.leftround<=0:
-            text = b.render("You Lose by "+ str(10-self.leftround)+"rounds",True,(20,0,0))
+            self.coin0=int((self.bestshot*self.monster.money*(1+self.leftround/20))/10)
+            self.coin=self.coin0
+            text = b.render("You Lose by "+ str(20-self.leftround)+"rounds",True,(20,0,0))
             self.window.blit(text,(BattleSettings.boxStartX+250,BattleSettings.boxStartY+240))
             text2 = c.render(f"Your strongest shot : {self.bestshot}" ,False,(20,0,0))
             self.window.blit(text2,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+290))
-
+            text3 = c.render(f"Earned Coin : {self.coin0}" ,False,(20,0,0))
+            self.window.blit(text3,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+320))
     def Getinfo(self):
 
         keys=pygame.key.get_pressed()
@@ -944,6 +957,7 @@ class BattleBox:
 
         if self.monsterHP==0 or self.playerHP==0 or self.leftround==0:#determin whether win
             self.win=1
+            
             self.Win()
             mousepress=pygame.mouse.get_pressed()#detect change from enemy round to my round
             if mousepress[0] :
@@ -958,21 +972,16 @@ class BattleBox:
 
         #display mouse to see whether the program working correctly
 
-        mousepos=pygame.mouse.get_pos()
-        pygame.draw.circle(self.window, (100,0,0), (mousepos[0],mousepos[1]),5, width=0)
+        #mousepos=pygame.mouse.get_pos()
+        #pygame.draw.circle(self.window, (100,0,0), (mousepos[0],mousepos[1]),5, width=0)
 
     def showbg(self):
-
         self.playerImg=self.images[self.index]
         self.monsterImg=self.monsterimages[4*int((self.index//12)%4)]
         self.window.blit(self.bg, (BattleSettings.boxStartX,
                                    BattleSettings.boxStartY))
-        transparent_rect = pygame.Surface((960, 250), pygame.SRCALPHA)
-        transparent_rect.fill((0, 0,0, 140))
-
-        databg = pygame.Surface((960,100), pygame.SRCALPHA)
-        databg.fill((200,200,200,100))
-        self.window.blit(databg,(BattleSettings.boxStartX, BattleSettings.boxStartY))
+        self.window.blit(self.mod,(BattleSettings.boxStartX, BattleSettings.boxStartY))
+        self.window.blit(self.databg,(BattleSettings.boxStartX, BattleSettings.boxStartY))
         self.window.blit(self.playerImg, (self.playerX,
                                           self.playerY))
         self.window.blit(self.monsterImg, (self.monsterX,
@@ -1077,9 +1086,8 @@ class ShoppingBox:
                 self.player.egg+=1
 
 
-        self.texts=["Initial ATK+0.5:         Initial HP+5:                 Animal egg+1:     ",
-                    f"                 {self.player.price1}                            {self.player.price2}                                 {self.player.price3}"]
-      
+        self.text1=["INITIAL ATK +0.5","INITIAL HP +5","ANIMAL EGG +1"]
+        self.text2=[f"{self.player.price1}$",f"{self.player.price2}$",f"{self.player.price3}$"]
     def update_dialog(self):
         self.showbg()
         keys=pygame.key.get_pressed()
@@ -1158,11 +1166,11 @@ class ShoppingBox:
         (BattleSettings.boxStartX+20, BattleSettings.boxStartY+30)) 
 
         text = "My initial ATK: " + str(self.player.ATK)
-        self.window.blit(self.font3.render(text, True, (44,230,100)),
+        self.window.blit(self.font3.render(text, True, (230,230,230)),
         (BattleSettings.boxStartX+270, BattleSettings.boxStartY+30)) 
 
         text = "My initial HP: " + str(int(self.player.HP))
-        self.window.blit(self.font3.render(text, True, (225,30,30)),
+        self.window.blit(self.font3.render(text, True, (230,230,230)),
         (BattleSettings.boxStartX+520, BattleSettings.boxStartY+30)) 
 
         text = "My egg: " + str(int(self.player.egg))

@@ -121,14 +121,7 @@ class GamePath:
         r".\assets\tiles\ground6.png", 
     ]
 
-    cityTiles = [
-        r".\assets\tiles\city1.png", 
-        r".\assets\tiles\city2.png", 
-        r".\assets\tiles\city3.png", 
-        r".\assets\tiles\city4.png", 
-        r".\assets\tiles\city5.png", 
-        r".\assets\tiles\city6.png", 
-    ]
+    cityTiles = [f"./assets/tiles/home ({i}).jpg" for i in range(1,7)]
 
     cityWall = r".\assets\tiles\cityWall.png"
 
@@ -157,7 +150,7 @@ class GamePath:
     npcgif=[f"./assets/npc/npc/{i}.png" for i in range(1,61)]
     monster =[f"./assets/npc/enemy/ghost2/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
     groundTiles = [f"./assets/tiles/ground{i}.png" for i in range(1,7)]
-    tree = r".\assets\tiles\tree.png"
+    tree = r".\assets\tiles\tree.jpg"
     card_backround_list=[r"./assets/cards/ATK.jpg",
                     r"./assets/cards/CURE.jpg",
                     r"./assets/cards/BUFF.jpg",
@@ -177,7 +170,7 @@ class GamePath:
     fire=[f"./assets/gif/fire/{i}.png" for i in range(1,7)]
     menu=[f"./assets/gif/menubggif/{i}.png" for i in range(1,96)]
     portal=[f"./assets/gif/portal/{i}.png" for i in range(1,8)]
-    vase=f"./assets/gif/vase/1.jpg"
+    vase=f"./assets/gif/vase/vase.jpg"
     strongatk=[f"./assets/gif/strongatk/{i}.png" for i in range(1,5)]
     rainatk=[f"./assets/gif/rainatk/{i}.png" for i in range(1,15)]
     winbg=f"./assets/background/winbg.png"
@@ -204,15 +197,7 @@ class PortalSettings:
     coordX = (SceneSettings.tileXnum - 10) * SceneSettings.tileWidth - width / 2
     coordY = (SceneSettings.tileYnum / 2) * SceneSettings.tileHeight - height / 2
 
-class GameState(Enum):
-    MAIN_MENU = 1
-    GAME_TRANSITION = 2
-    GAME_OVER = 3
-    GAME_WIN = 4
-    GAME_PAUSE = 5
-    GAME_PLAY_WILD = 6
-    GAME_PLAY_HOME = 7
-    GAME_PLAY_BOSS = 8
+
 
 class GameEvent:
     EVENT_BATTLE = pygame.USEREVENT + 1

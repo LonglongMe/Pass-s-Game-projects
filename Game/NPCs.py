@@ -20,15 +20,20 @@ class NPC(pygame.sprite.Sprite,Collidable):
         self.originrect_y=y
         self.talking=False
         self.name=None
-        self.fnt=pygame.font.Font(None,20)
-        
-        
+        self.font0=pygame.font.SysFont("impact", 15)
+        self.text = None
+        self.textrect=None
         
     def draw(self, window, dx=0, dy=0):
+        self.text = self.font0.render(f"{self.name}",True,(40,40,40))
+        self.textrect=self.text.get_rect()
         self.rect.x=self.originrect_x-dx
         self.rect.y=self.originrect_y-dy
+        self.textrect.centerx=self.rect.centerx+10
+        self.textrect.centery=self.rect.centery-35
+
         window.blit(self.image,(self.rect.x-15,self.rect.y-15,self.rect.width,self.rect.height))
-        window.blit(self.fnt.render(self.name,1,"white"),(self.rect.x+10,self.rect.y-35))
+        window.blit(self.text,self.textrect)
 
 
 
@@ -193,8 +198,10 @@ class Monster(pygame.sprite.Sprite):
         self.money= Money
         self.type=type
         self.order=order
-        
-        
+        font0=pygame.font.SysFont("impact", 15)
+        textlist=["    WARM UP",f"    WEEK QUIZ{self.order}",f" MONTH EXAM{self.order}",f"MIDTERM EXAM{self.order}"," FINAL EXAM"]
+        self.name=font0.render(textlist[self.type],True,(220,220,220))
+        self.textrect=self.name.get_rect()
     def draw(self, window, dx=0, dy=0):
         if self.index==39:
             self.index=0
@@ -204,11 +211,9 @@ class Monster(pygame.sprite.Sprite):
         self.rect.x=self.originrect_x-dx
         self.rect.y=self.originrect_y-dy
         window.blit(self.image,self.rect)
-        
-        textlist=["    WARM UP",f"    WEEK QUIZ{self.order}",f" MONTH EXAM{self.order}",f"MIDTERM EXAM{self.order}"," FINAL EXAM"]
-        text=textlist[self.type]
-        
-        window.blit(self.font.render(text, True, (200,200,200)),
-        (self.rect.x-17, self.rect.y-20)) 
+        self.textrect.centerx=self.rect.centerx-5
+        self.textrect.centery=self.rect.centery-35
+        window.blit(self.name,self.textrect),
+
 
 
