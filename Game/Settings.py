@@ -190,12 +190,13 @@ class GamePath:
     chicken1 =[f"./assets/npc/animals/chicken1/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
     chicken2 =[f"./assets/npc/animals/chicken2/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
     goldenbird =[f"./assets/npc/animals/goldenbird/imageonline/{i}{j}.png" for i in range(0,4) for j in range(0,4)]
-    store=[f"./assets/gif/product/{i}.png" for i in range(1,3)]
+    store=[f"./assets/gif/product/1.1.png", f"./assets/gif/product/2.1.jpeg",f"./assets/gif/product/3.png"]
     egg =[f"./assets/npc/animals/egg/imageonline/0{j}.png" for j in range(0,4)]
     music=[f"./assets/bgm/home.mp3",
            f"./assets/bgm/wild.mp3",
            f"./assets/bgm/battle.mp3",
-           f"./assets/bgm/animalgame.mp3"]
+           f"./assets/bgm/animalgame.mp3",
+           f"./assets/bgm/boss.flac"]
 
 class PortalSettings:
     width = 320

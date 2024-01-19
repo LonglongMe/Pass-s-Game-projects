@@ -36,6 +36,8 @@ class Scene():
         self.animalgaming=0
         self.cameraX =0
         self.cameraY=0      
+        self.gamelevel=0
+        self.win=0
 
     def trigger_dialog(self, npc):
         self.dialogbox=DialogBox(self.window,npc)
@@ -53,7 +55,7 @@ class Scene():
         self.animalgamebox=AniamlgameBox(self.window,npc)
         
     def end_animaldialog(self,player):
-        
+        self.gamelevel=self.animalgamebox.hardlevel
         self.animalgamebox=None
         player.reset_pos()
         player.collidingWith['animalgame_npc']=False
@@ -66,6 +68,8 @@ class Scene():
 
     def end_animalgame(self,player):
         self.animalgaming=0
+        if self.win==1:
+            player.money+=[10,50,100][self.gamelevel-1]
         player.reset_pos()
         for animals in self.wildanimals:
             animals.speed=1
@@ -129,101 +133,10 @@ class Scene():
         self.update_camera(player)
         keys=pygame.key.get_pressed()
         if self.type==SceneType.WILD:
-
-            if self.battlebox!=None:
-                self.battlebox.Update_card()
-                #print("render in scene")
-            else:
-                for i in range(SceneSettings.tileXnum):
-                        for j in range(SceneSettings.tileYnum):
-                            self.window.blit(self.map[i][j], 
-                                            (SceneSettings.tileWidth * i- self.cameraX, SceneSettings.tileHeight * j- self.cameraY))
-                for obs in self.obstacles.sprites():
-                    obs.draw(self.window,self.cameraX,self.cameraY)
-                for dec in self.decorates.sprites():             
-                    dec.draw(self.window,self.cameraX,self.cameraY)
-                for mon in self.monsters.sprites(): 
-                    mon.draw(self.window,self.cameraX,self.cameraY)
-                for bra in self.breakobj.sprites(): 
-                    bra.draw(self.window,self.cameraX,self.cameraY)
-                for portal in self.portals.sprites():
-                    portal.draw(self.window,self.cameraX,self.cameraY)
-
-                if player.is_colliding():
-                    player.draw(self.window,player.dx,player.dy)
-                else:
-                    player.draw(self.window,0,0)
-            
-                if player.collidingWith["bra"] and keys[pygame.K_SPACE]:
-                    for bra in player.collidingObject["bra"]:
-                        self.breakobj.remove(bra)
-                if player.collidingWith["portal"]:
-                    pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
+            self.render_wild(player,keys)
                 
         if self.type==SceneType.HOME:
-            
-            for i in range(SceneSettings.tileXnum):
-                for j in range(SceneSettings.tileYnum):
-                    self.window.blit(self.map[i][j], 
-                                    (SceneSettings.tileWidth * i- self.cameraX, SceneSettings.tileHeight * j- self.cameraY))
-            for obs in self.obstacles.sprites():
-                obs.draw(self.window,self.cameraX,self.cameraY)
-            for dec in self.decorates.sprites():             
-                dec.draw(self.window,self.cameraX,self.cameraY)
-            for bra in self.breakobj.sprites(): 
-                bra.draw(self.window,self.cameraX,self.cameraY)
-            for portal in self.portals.sprites():
-                portal.draw(self.window,self.cameraX,self.cameraY)
-            for npc in self.shop_npcs.sprites():
-                npc.draw(self.window,self.cameraX,self.cameraY)
-            for npc in self.dialog_npcs.sprites():
-                npc.draw(self.window,self.cameraX,self.cameraY)
-            for npc in self.animalgame_npc.sprites():
-                #print(len(self.animalgame_npc.sprites()))
-                npc.draw(self.window,self.cameraX,self.cameraY)
-            for ani in self.animals.sprites(): 
-                ani.draw(self.window,self.cameraX,self.cameraY)
-            for ani in self.wildanimals.sprites(): 
-                ani.draw(self.window,self.cameraX,self.cameraY)
-
-            if self.animalgaming==1 :
-
-                for animals in self.wildanimals:
-                    if animals.touchplayer==1:
-                        player.cameraX=self.cameraX
-                        player.cameraY=self.cameraY
-                        player.readytoplay=2
-                        self.end_animalgame(player)
-                if player.collidingWith["decorate"]:
-                        player.cameraX=self.cameraX
-                        player.cameraY=self.cameraY
-                        player.readytoplay=2
-                        self.end_animalgame(player)
-                        
-
-   
-                    
-
-                
-            if player.is_colliding():
-                player.draw(self.window,player.dx,player.dy)
-            
-            if player.collidingWith["bra"] and keys[pygame.K_SPACE]:
-                for bra in player.collidingObject["bra"]:
-                    self.breakobj.remove(bra)
-
-            if player.collidingWith["portal"]:
-                pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
-
-            if self.dialogbox!=None or self.animalgamebox!=None or self.shoppingbox!=None:
-                if self.dialogbox!=None:
-                    self.dialogbox.update_dialog()
-                elif self.animalgamebox!=None:
-                    self.animalgamebox.update_animalgame()
-                elif self.shoppingbox!=None:
-                    self.shoppingbox.update_dialog()
-            else:
-                player.draw(self.window,0,0)
+            self.render_home(player,keys)
 class StartMenu:
     def __init__(self, window):
         self.index=0
@@ -280,6 +193,65 @@ class HomeScene(Scene):
         self.dialog_npcs.add(DialogNPC(300,40,None))
         self.animalgame_npc.add(AnimalGamenpc(200,500,None))
 
+    def render_home(self,player,keys):
+        if self.dialogbox!=None or self.animalgamebox!=None or self.shoppingbox!=None:
+            if self.dialogbox!=None:
+                self.dialogbox.update_dialog()
+            elif self.animalgamebox!=None:
+                self.animalgamebox.update_animalgame()
+            elif self.shoppingbox!=None:
+                self.shoppingbox.update_dialog()
+        else:
+            for i in range(SceneSettings.tileXnum):
+                for j in range(SceneSettings.tileYnum):
+                    self.window.blit(self.map[i][j], 
+                                    (SceneSettings.tileWidth * i- self.cameraX, SceneSettings.tileHeight * j- self.cameraY))
+            for obs in self.obstacles.sprites():
+                obs.draw(self.window,self.cameraX,self.cameraY)
+            for dec in self.decorates.sprites():             
+                dec.draw(self.window,self.cameraX,self.cameraY)
+            for bra in self.breakobj.sprites(): 
+                bra.draw(self.window,self.cameraX,self.cameraY)
+            for portal in self.portals.sprites():
+                portal.draw(self.window,self.cameraX,self.cameraY)
+            for npc in self.shop_npcs.sprites():
+                npc.draw(self.window,self.cameraX,self.cameraY)
+            for npc in self.dialog_npcs.sprites():
+                npc.draw(self.window,self.cameraX,self.cameraY)
+            for npc in self.animalgame_npc.sprites():
+                #print(len(self.animalgame_npc.sprites()))
+                npc.draw(self.window,self.cameraX,self.cameraY)
+            for ani in self.animals.sprites(): 
+                ani.draw(self.window,self.cameraX,self.cameraY)
+            for ani in self.wildanimals.sprites(): 
+                ani.draw(self.window,self.cameraX,self.cameraY)
+
+            if self.animalgaming==1 :
+                for animals in self.wildanimals:
+                    if animals.touchplayer==1:
+                        player.cameraX=self.cameraX
+                        player.cameraY=self.cameraY
+                        player.readytoplay=2
+                        self.win=0
+                        self.end_animalgame(player)
+                if player.collidingWith["decorate"]:
+                    player.cameraX=self.cameraX
+                    player.cameraY=self.cameraY
+                    player.readytoplay=2
+                    self.win=1
+                    self.end_animalgame(player)
+                
+            if player.is_colliding():
+                player.draw(self.window,player.dx,player.dy)
+            else:
+                player.draw(self.window,0,0)
+            if player.collidingWith["bra"] and keys[pygame.K_SPACE]:
+                for bra in player.collidingObject["bra"]:
+                    self.breakobj.remove(bra)
+            if player.collidingWith["portal"]:
+                pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
+
+
 class WildScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
@@ -287,12 +259,6 @@ class WildScene(Scene):
         self.obstacles,self.decorates,self.breakobj,self.portals=Maps.gen_wild_obstacle()
         self.map=Maps.gen_wild_map()
         self.monsters=self.gen_monsters()#x y order hp atk money
-        
-
-
-    def gen_WILD(self):
-        pass
-        #PortalSettings
 
     def gen_monsters(self):
         monsters=pygame.sprite.Group()
@@ -306,3 +272,33 @@ class WildScene(Scene):
 
         return monsters
 
+    def render_wild(self,player,keys):
+        if self.battlebox!=None:
+            self.battlebox.Update_card()
+                        #print("render in scene")
+        else:
+            for i in range(SceneSettings.tileXnum):
+                    for j in range(SceneSettings.tileYnum):
+                        self.window.blit(self.map[i][j], 
+                                        (SceneSettings.tileWidth * i- self.cameraX, SceneSettings.tileHeight * j- self.cameraY))
+            for obs in self.obstacles.sprites():
+                obs.draw(self.window,self.cameraX,self.cameraY)
+            for dec in self.decorates.sprites():             
+                dec.draw(self.window,self.cameraX,self.cameraY)
+            for mon in self.monsters.sprites(): 
+                mon.draw(self.window,self.cameraX,self.cameraY)
+            for bra in self.breakobj.sprites(): 
+                bra.draw(self.window,self.cameraX,self.cameraY)
+            for portal in self.portals.sprites():
+                portal.draw(self.window,self.cameraX,self.cameraY)
+
+            if player.is_colliding():
+                player.draw(self.window,player.dx,player.dy)
+            else:
+                player.draw(self.window,0,0)
+        
+            if player.collidingWith["bra"] and keys[pygame.K_SPACE]:
+                for bra in player.collidingObject["bra"]:
+                    self.breakobj.remove(bra)
+            if player.collidingWith["portal"]:
+                pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))
