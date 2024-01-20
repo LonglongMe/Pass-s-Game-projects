@@ -12,7 +12,7 @@ from PopUpBox import *
 class GameManager:
     def __init__(self,window):
         self.player=Player(200,100)
-        self.scene = StartMenu(window)
+        self.scene = HomeScene(window)
         self.scene.animals=self.player.eggborn()
         self.window = window
         self.clock = pygame.time.Clock()
@@ -21,6 +21,7 @@ class GameManager:
         self.playerlist.add(self.player)
         self.music=BgmPlayer()
         self.bgm=self.gengamemanager()
+
         
     def gengamemanager(self):
         self.music.play(0)
@@ -70,14 +71,17 @@ class GameManager:
                 sys.exit()
             # 传送
             if event.type == GameEvent.EVENT_SWITCH:
+                self.player.scenereset(self.scene)
                 GameManager.flush_scene(self)
             
     def update_home(self, events):
         for event in events:
             if event.type == pygame.QUIT:
+                self.player.exportdata()
                 pygame.quit()
                 sys.exit()
             if event.type== GameEvent.EVENT_SWITCH:
+                self.player.scenereset(self.scene,2)
                 GameManager.flush_scene(self)
 
         if self.player.collidingWith['dialog_npc']==True and self.scene.dialogbox==None:
@@ -144,10 +148,12 @@ class GameManager:
     def update_wild(self, events):
         for event in events:
             if event.type == pygame.QUIT:
+                self.player.exportdata()
                 pygame.quit()
                 sys.exit()
             # 传送
             elif event.type== GameEvent.EVENT_SWITCH:
+                self.player.scenereset(self.scene,1)
                 GameManager.flush_scene(self)
 
         if self.player.collidingWith['monster']==True and self.scene.battlebox==None:
@@ -264,5 +270,6 @@ class GameManager:
         keys=pygame.key.get_pressed()
         if keys[pygame.K_0]:
             print(self.player.rect.topleft)
+
 
 

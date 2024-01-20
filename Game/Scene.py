@@ -25,6 +25,7 @@ class Scene():
         self.animals=pygame.sprite.Group()
         self.wildanimals=pygame.sprite.Group()
         self.animalgame_npc=pygame.sprite.Group()
+        self.hint=pygame.sprite.Group()
         self.window = window
         self.width = WindowSettings.width
         self.height = WindowSettings.height
@@ -191,7 +192,7 @@ class HomeScene(Scene):
     def __init__(self, window):
         super().__init__(window=window)
         self.type=SceneType.HOME
-        self.obstacles,self.decorates,self.breakobj,self.portals,self.wildanimals=Maps.gen_home_obstacle()
+        self.obstacles,self.decorates,self.breakobj,self.portals,self.wildanimals,self.hint=Maps.gen_home_obstacle()
         self.map=Maps.gen_home_map()
         self.shop_npcs.add(ShopNPC(300,220))
         self.dialog_npcs.add(DialogNPC(300,140,None))
@@ -210,6 +211,8 @@ class HomeScene(Scene):
                 for j in range(SceneSettings.tileYnum):
                     self.window.blit(self.map[i][j], 
                                     (SceneSettings.tileWidth * i- self.cameraX, SceneSettings.tileHeight * j- self.cameraY))
+            for hintblock in self.hint.sprites():
+                self.window.blit(hintblock.image,(hintblock.x- self.cameraX, hintblock.y- self.cameraY))
             for obs in self.obstacles.sprites():
                 obs.draw(self.window,self.cameraX,self.cameraY)
             for dec in self.decorates.sprites():             

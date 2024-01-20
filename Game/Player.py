@@ -6,6 +6,7 @@ from Settings import *
 from Attributes import *
 import random
 from NPCs import Animal
+import os
 
 class Player(pygame.sprite.Sprite, Collidable):
     
@@ -17,7 +18,6 @@ class Player(pygame.sprite.Sprite, Collidable):
                             (PlayerSettings.playerWidth+10, PlayerSettings.playerHeight+10)) for img in GamePath.player]
         self.index = 0
         self.hadbattle=1
-        self.animal=pygame.sprite.Group()
         self.image = self.images[self.index]
         self.battle=False
         self.dialog=False
@@ -31,21 +31,17 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.talking = False
         self.dx=0
         self.dy=0
-        self.OriginHP = PlayerSettings.playerHP
-        self.HP=self.OriginHP
-        self.egg=1
-        self.ATK = PlayerSettings.playerAttack
-        self.defence = PlayerSettings.playerDefence
+        self.egg=0
         self.readytoplay=0
         self.cameraX=0
         self.cameraY=0
-        self.money=200
-        self.price1=50
-        self.price2=50
-        self.price3=30
+        self.money,self.ATK,self.OriginHP,self.price1,self.price2,self.price3,self.animal=self.importdata()
+        self.HP=self.OriginHP
         self.font0=pygame.font.SysFont("impact", 15)
         self.text = None
         self.textrect=None
+        self.homeportaldata=(0,0,200,200)
+        self.wildportaldata=(0,0,200,200)
 
 
     def attr_update(self, addCoins = 0, addHP = 0, addAttack = 0, addDefence = 0):
@@ -73,12 +69,19 @@ class Player(pygame.sprite.Sprite, Collidable):
                 self.rect.topleft=(200-self.cameraX,430-self.cameraY)
                 
 
-
         return self.rect
+    def scenereset(self,scene,type):
+        if type==2:
+            scene.cameraX,scene.cameraY,self.rect.x,self.rect.y=self.wildportaldata
+        if type==1:
+            self.wildportaldata=(0,0,self.rect.x-100+scene.cameraX,self.rect.y+scene.cameraY)
+            scene.cameraX,scene.cameraY,self.rect.x,self.rect.y=self.homeportaldata
 
+
+        #self.rect.x=3100
+        #self.rect.y=1300
     def try_move(self):
         keys=pygame.key.get_pressed()
-
 
             # Update Player Position
         dx=0
@@ -135,7 +138,9 @@ class Player(pygame.sprite.Sprite, Collidable):
                 self.animal.add(Animal(typ,600+(a%30)*60,100+60*(a//30)))
         self.egg=0
         return self.animal
+
     def initialcoin(self):
+
         initialcoin=0
         for animal in self.animal:
             if animal.index<=4:
@@ -145,3 +150,58 @@ class Player(pygame.sprite.Sprite, Collidable):
             else:
                 initialcoin+=100
         return initialcoin
+
+    def importdata(self):
+        money=0
+        atk=0
+        hp=0
+        price1=0
+        price2=0
+        price3=0
+        animal=pygame.sprite.Group()
+        with open(f"./Data.txt","r",encoding="utf-8") as data:
+            for line in data:
+                if "money" in line:
+                    money=int(line[6:])
+                elif "atk" in line:
+                    atk=int(line[4:])
+                elif "hp" in line:
+                    hp=int(line[3:])
+                elif "price1" in line:
+                    price1=int(line[7:])
+                elif "price2" in line:
+                    price2=int(line[7:])
+                elif "price3" in line:
+                    price3=int(line[7:])
+                elif "animal" in line:
+                    ani=line[9:]
+                    f=ani.split("--")
+                    for t in f:
+                        if t!="":
+                            anii=t.split(",")
+                            print(anii)
+                            animal.add(Animal(int(anii[0]),int(anii[1]),int(anii[2])))
+        data.close()
+        return money,atk,hp,price1,price2,price3,animal
+    
+    def exportdata(self):
+        self.hadbattle=1
+        self.eggborn()
+        modifylines=[]
+        modifylines.append(str(f"money={self.money}\n"))
+        modifylines.append(str(f"atk={self.ATK}\n"))
+        modifylines.append(str(f"hp={self.OriginHP}\n"))
+        modifylines.append(str(f"price1={self.price1}\n"))
+        modifylines.append(str(f"price2={self.price2}\n"))
+        modifylines.append(str(f"price3={self.price3}\n"))
+        animallist=["animal="]
+        for animal in self.animal:
+            animallist.append(f"{animal.index},{animal.originx},{animal.originy}")
+        animallist="--".join(animallist)
+        modifylines.append(animallist)
+        print(animallist)
+ 
+        with open(f"./Data.txt","w") as newdata:
+            newdata.writelines(modifylines)
+
+

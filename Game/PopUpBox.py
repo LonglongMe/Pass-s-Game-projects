@@ -13,6 +13,9 @@ class DialogBox:
                  bgColor: Tuple[int, int, int, int] = (20,20,20,200)):
         self.image=pygame.transform.scale(pygame.image.load(GamePath.npc), 
                             (BattleSettings.playerWidth+10, BattleSettings.playerHeight+10))#needs to be fixed
+        self.images=[pygame.transform.scale(pygame.image.load(GamePath.tree), (SceneSettings.tileWidth*2, SceneSettings.tileHeight*2)),
+                     pygame.transform.scale(pygame.image.load(GamePath.fire[0]), (SceneSettings.tileWidth*1.5, SceneSettings.tileHeight*3)),
+                     pygame.transform.scale(pygame.image.load(GamePath.vase), (SceneSettings.tileWidth*2, SceneSettings.tileHeight*2))]
         self.window = window
         self.index=0
         self.playerX = BattleSettings.playerCoordX
@@ -46,22 +49,32 @@ class DialogBox:
     def dialogboxdistribute(self):
         if self.firstchoice==0 and self.chosing==1:
             self.firstchoice=self.selection+1
-            if self.firstchoice in [1,2,3]:
+            self.selectable=False
+            self.chosing=0
+            self.secondchoice=0
+            
+        if self.firstchoice in [2,3,4] and self.chosing==1:
+            if self.secondchoice==1:
+                self.donedialog=1
+            else:
+                self.secondchoice=1
                 self.selectable=False
-                self.chosing=0
-                self.secondchoice=0
+                self.choing=0
             
         if self.firstchoice==1 and self.chosing==1:
-            self.secondchoice=1
-            self.selectable=False
             self.choing=0
-        if self.firstchoice==3 and self.chosing==1:
-            self.secondchoice=1
-            self.selectable=False
-            self.choing=0
+            self.donedialog=1
             
     def Information(self):
         if self.firstchoice==1:
+            if self.secondchoice==0:
+                self.dialogimg=self.images[0]
+                self.title="Here are information about blocks:"
+                self.texts=["BLOCKS:  Unable to go through",
+                            "TORCHES: Unable to go through (decoration)",
+                            "BOXES:   Attach and press SPACE to break it",
+                                                         ]
+        if self.firstchoice==2:
             if self.secondchoice==0:
                 self.title=""
                 self.texts=[
@@ -69,13 +82,14 @@ class DialogBox:
                             "More rare more gain.The only way to aquire animals",
                             "is buying eggs from merchants,and then you will find one ",
                             "animal of random type appears in your farm after one battle",
-                          "                                                            press SPACE to go on"]
+                          "                                                        NEXT...."]
             if self.secondchoice==1:
                 self.title="ANIMALS' INFORMATION:"
                 self.texts=["",
                             "Chicks and fishes are the most common: 10 coin per battle",
                             "Cats are more rare: 20 coin per battle",
-                            "Goldenbirds are the most rare: 100 coin per battle",]
+                            "Goldenbirds are the most rare: 100 coin per battle",
+                            "                                                                That's all"]
         if self.firstchoice==2:
                 self.title=None
                 self.texts=["AS THE TILTLE SAYS, the game is a simulation of ",
@@ -85,7 +99,8 @@ class DialogBox:
                             "coins will be rewarded so that you can improve",
                             "your inital attribute from shopping Npc",
                             "there are 4 easy enemies,2 strong enemies and 1 boss",
-                            "When the boss is defeated, the game ends"
+                            "When the boss is defeated, the game ends",
+                            "                                                                That's all"
                 ]
         if self.firstchoice==3:
             if self.secondchoice==0:
@@ -97,7 +112,7 @@ class DialogBox:
                             "Check information if you selected just one card;",
                             "Merge two cards into higher level card if you select two same card;",
                             "Play card if you selected three cards",
-                            "                                                        press SPACE to go on"
+                            "                                                        NEXT...."
                                 ]
             if self.secondchoice==1:
                 self.title=None
@@ -107,24 +122,25 @@ class DialogBox:
                             "A GOOD STRATEGY is merge cards as MUCH you can,",
                             "so you will have MORE new cards next round,",
                             "Anthor one is to ACCUMULATE abundant buff cards",
-                            "with the purpose to make your best shoot in the end"]
+                            "with the purpose to make your best shoot in the end",
+                            "                                                                That's all"]
 
     def Selection(self):
         if self.firstchoice==0:
             self.title= "WHAT INFORMATION DO YOU NEED?"
-            self.texts=[ "About Animals",
+            self.texts=[ "About Blocks",
+                        "About Animals",
                     "About Enemys",
                     "About Battle",
                     ]
 
-    
     def update_dialog(self):
         self.showbg()
         keys=pygame.key.get_pressed()
         if keys[pygame.K_s]==False:
             self.pressing=0
         if keys[pygame.K_s] and self.pressing==0:
-            if self.selection>=2:
+            if self.selection>=3:
                 self.selection=0
             else:
                 self.selection+=1
@@ -133,7 +149,7 @@ class DialogBox:
             self.pressingw=0
         if keys[pygame.K_w] and self.pressingw==0:
             if self.selection==0:
-                self.selection=2
+                self.selection=3
             else:
                 self.selection-=1
             self.pressingw=1
@@ -162,21 +178,27 @@ class DialogBox:
         else:
             self.Information()
             textbegin=self.contenty
-            if self.title!=None:
+            if self.firstchoice==1:
                 self.window.blit(self.font.render(self.title, True, self.fontColor),(self.contentx, textbegin))
                 textbegin+=40
-            for text in self.texts:
-                self.window.blit(self.font3.render(text, True, self.fontColor),(self.contentx-80, textbegin))
-                textbegin+=50 
+                for i in range(len(self.texts)):
+                        self.window.blit(self.font3.render(self.texts[i], True, self.fontColor),(self.contentx+20, textbegin+20))
+                        self.window.blit(self.images[i],(self.contentx-80, textbegin))
+                        textbegin+=120     
+            else:
 
-        #leave dialog
-        if pygame.mouse.get_pressed()[0]:
-            self.donedialog=1
+                if self.title!=None:
+                    self.window.blit(self.font.render(self.title, True, self.fontColor),(self.contentx, textbegin))
+                    textbegin+=40
+                for text in self.texts:
+                    self.window.blit(self.font3.render(text, True, self.fontColor),(self.contentx-80, textbegin))
+                    textbegin+=50 
+
         #hint
-        hint="CLICK to back home PRESS SPACE to select or go on"
+        hint="PRESS SPACE"
         self.hintindex+=1
         if self.hintindex%25<16:
-            self.window.blit(self.font3.render(hint, True, self.fontColor),(self.contentx+50, self.contenty+400)) 
+            self.window.blit(self.font3.render(hint, True, self.fontColor),(self.contentx+400, self.contenty+400)) 
 
     def showbg(self):
 
@@ -253,10 +275,10 @@ class AniamlgameBox:
             self.title=None
             self.texts=[
                         "CRAZY WILD ANIMALS IN YOUR GARDEN!",
-                        "To get abundant coins as rewards",
-                        "Please rush through and COLLIDE WITH THE TORCH ",
-                        "WITHOUT being touched by wild animals",
+                        "Follow the RED line BUT don't touch animals!",
+                        "Reach torch and then you will get Rewards",
                         "Select difficulty to get even more rewards!",
+                        "",
                         "                                        press SPACE to back"]
 
     def Selection(self):
@@ -274,7 +296,7 @@ class AniamlgameBox:
                     "IMPOSSIBLE REWARD:1000 COINS!"]
 
     def update_animalgame(self):
-        self.showbg()
+        self.window.blit(self.bg, (self.contentx,self.contenty))
         keys=pygame.key.get_pressed()
         if keys[pygame.K_s]==False:
             self.pressing=0
@@ -323,9 +345,6 @@ class AniamlgameBox:
                 self.window.blit(self.font3.render(text, True, self.fontColor),(self.contentx+40, textbegin))
                 textbegin+=25
 
-    def showbg(self):
-        self.window.blit(self.bg, (self.contentx,
-                                   self.contenty))
 class BattleBox:
     def __init__(self, window, player, monster, fontSize: int = BattleSettings.textSize, 
                  fontColor: Tuple[int, int, int] = (255, 255, 255), bgColor: Tuple[int, int, int, int] = (0, 0, 0, 200)) :
@@ -493,7 +512,7 @@ class BattleBox:
             self.accumulateatkgifindex+=1   
 
         if self.retoreenergyindex>0:
-            text = "energy restored: "+str(int(self.Accumulated_atk))
+            text = "energy restored: "+str(self.Accumulated_atk)
             self.window.blit(self.font.render(text, True, (255,255,255)),(BattleSettings.boxStartX+30,BattleSettings.boxStartY+300)) 
             if self.retoreenergyindex>30:
                 self.retoreenergyindex=0
@@ -632,7 +651,7 @@ class BattleBox:
                 enhancement=[0.05,0.08,0.1,card.level4cure]
                 Hp_change+=enhancement[card.level-1]
             if card.sort==2:#card=buff-accumulate atk
-                enhancement=[1,1.5,2,card.level4buff]
+                enhancement=[1.2,1.5,2,card.level4buff]
                 Accumulate_ATK+=enhancement[card.level-1]
             if card.sort==6:
                 self.sacrificethistime+=4
@@ -699,11 +718,11 @@ class BattleBox:
                                 #cauculate card effect accordingly
         for card in self.monster_card_list:        
             if card.sort==0:#atk
-                enhancement=[1.1,1.2,1.5]
+                enhancement=[1.1,1.2,1.5,card.level4atk]
                 real_atk+=enhancement[card.level-1]
                 self.enemyatktimes+=1
             elif card.sort==2:#buff
-                enhancement=[1,2.3,3.4]
+                enhancement=[1,2.3,3.4,card.level4buff]
                 Accumulate_ATK+=enhancement[card.level-1] 
         print(f"realatk:{real_atk}  accumulatedatk:{Accumulate_ATK}  in act enemy change")    
         if real_atk!=0:
@@ -787,12 +806,11 @@ class BattleBox:
     def Win(self):
         
         self.player.hadbattle=1
-        self.window.blit(self.bg, (BattleSettings.boxStartX,
-                                   BattleSettings.boxStartY))
+        self.window.blit(self.bg, (BattleSettings.boxStartX,BattleSettings.boxStartY))
         bg=pygame.transform.scale(pygame.image.load(GamePath.winbg), (800, 390))
         b=pygame.font.SysFont("impact", 50)
         c=pygame.font.SysFont("impact", 30)
-        self.window.blit(bg, (BattleSettings.boxStartX+30, BattleSettings.boxStartY+20))
+        self.window.blit(bg, (BattleSettings.boxStartX+80,BattleSettings.boxStartY))
         if self.monsterHP==0 and self.leftround>=0:
             
             self.coin0=int(self.bestshot*self.monster.money*(1+self.leftround/20))
@@ -803,7 +821,7 @@ class BattleBox:
             self.window.blit(text2,(BattleSettings.boxStartX+420,BattleSettings.boxStartY+290))
             text3 = c.render(f"Earned Coin : {self.coin0} + {self.initialcoin}" ,False,(20,0,0))
             self.window.blit(text3,(BattleSettings.boxStartX+420,BattleSettings.boxStartY+320))
-        elif self.monsterHP>0 and self.leftround<=0:
+        elif self.monsterHP>0 or self.leftround<=0:
             self.coin0=int((self.bestshot*self.monster.money*(1+self.leftround/20))/10)
             self.coin=self.coin0
             text = b.render("You Lose by "+ str(20-self.leftround)+"rounds",True,(20,0,0))
@@ -812,6 +830,7 @@ class BattleBox:
             self.window.blit(text2,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+290))
             text3 = c.render(f"Earned Coin : {self.coin0}" ,False,(20,0,0))
             self.window.blit(text3,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+320))
+            
     def Getinfo(self):
 
         keys=pygame.key.get_pressed()
@@ -976,6 +995,7 @@ class BattleBox:
         #pygame.draw.circle(self.window, (100,0,0), (mousepos[0],mousepos[1]),5, width=0)
 
     def showbg(self):
+
         self.playerImg=self.images[self.index]
         self.monsterImg=self.monsterimages[4*int((self.index//12)%4)]
         self.window.blit(self.bg, (BattleSettings.boxStartX,
@@ -1000,7 +1020,7 @@ class BattleBox:
         #3 render left rounds and atk accumulation:
 
 
-        text = "Accumulated ATK: " + str(int(self.Accumulated_atk))+"00%"
+        text = "Accumulated ATK: " + str(int(self.Accumulated_atk*10))+"0%"
         self.window.blit(self.font2.render(text, True, self.fontColor),
         (BattleSettings.boxStartX+20, BattleSettings.boxStartY+30)) 
 
@@ -1019,7 +1039,7 @@ class BattleBox:
             text = "SACRIFICE effect in " + str(self.sacrificethistime-1)+"rounds"
             self.window.blit(self.font2.render(text, True, (230,40,40)),(BattleSettings.boxStartX+20, BattleSettings.boxStartY+110)) 
 
-        text = "Accumulated ATK: " + str(int(self.enemy_Accumulated_atk))+"00%"
+        text = "Accumulated ATK: " + str(int(self.enemy_Accumulated_atk*10))+"0%"
         self.window.blit(self.font2.render(text, True, self.fontColor),
         (BattleSettings.boxStartX+520, BattleSettings.boxStartY+30)) 
 
@@ -1037,16 +1057,17 @@ class ShoppingBox:
         self.window = window
         self.transparent_rect = pygame.Surface((960, 80), pygame.SRCALPHA)
         self.transparent_rect.fill((200, 200,200, 140))
-        self.images=[pygame.transform.scale(pygame.image.load(img), (220,220)) for img in GamePath.store]
-        self.eggimg=[pygame.transform.scale(pygame.image.load(img), (70,70)) for img in GamePath.egg]
+        self.images=[pygame.transform.scale(pygame.image.load(img), (180,180)) for img in GamePath.store]
+        self.eggimg=[pygame.transform.scale(pygame.image.load(img), (56,106)) for img in GamePath.egg]
         self.index=0
+        self.hintindex=0
         self.player=player
         self.playerX = BattleSettings.playerCoordX
         self.playerY = BattleSettings.playerCoordY-70
         # 最基础的字体和背景图片设置
         self.font = pygame.font.Font(None, 50)
-        self.font2= pygame.font.Font(None, 40)
-        self.font3=pygame.font.Font(None,33)
+        self.font2= pygame.font.Font(None, 33)
+        self.font3=pygame.font.Font(None,25)
         self.hpfont = pygame.font.Font(None, 15)
         self.hpfontcolor=(255,255,255)
         self.fontColor=(255,255,255)
@@ -1061,20 +1082,20 @@ class ShoppingBox:
         self.pressingw=0
         self.index2=-20
         self.title= "WHAT DO YOU NEED?"
-        self.text1=["INITIAL ATK +0.5","INITIAL HP +5","ANIMAL EGG +1"]
-        self.text2=[f"{self.player.price1}$",f"{self.player.price2}$",f"{self.player.price3}$"]
+        self.text1=["INITIAL ATK +1","INITIAL HP +5","ANIMAL EGG +1","       LEAVE"]
+        self.text2=[f"{self.player.price1}$",f"{self.player.price2}$",f"{self.player.price3}$",""]
         self.imgx=BattleSettings.boxStartX+320
         self.imgy=BattleSettings.boxStartY+180
-        self.selectionrect = pygame.Surface((190,350), pygame.SRCALPHA)
+        self.selectionrect = pygame.Surface((160,350), pygame.SRCALPHA)
         self.selectionrect.fill((160,160,160,200))
-        self.start=[BattleSettings.boxStartX+260,BattleSettings.boxStartX+460,BattleSettings.boxStartX+660]
+        self.start=[BattleSettings.boxStartX+230,BattleSettings.boxStartX+410,BattleSettings.boxStartX+590,BattleSettings.boxStartX+760]
 
     def buy(self):
         if self.selection==0:
             if self.player.money-self.player.price1>0:
                 self.player.money-=self.player.price1
-                self.player.price1+=30
-                self.player.ATK+=0.5
+                self.player.price1+=60
+                self.player.ATK+=1
         if self.selection==1:
             if self.player.money-self.player.price2>0:
                 self.player.money-=self.player.price2
@@ -1083,18 +1104,21 @@ class ShoppingBox:
         if self.selection==2:
             if self.player.money-self.player.price3>0:
                 self.player.money-=self.player.price3
+                self.player.price3+10
                 self.player.egg+=1
+        if self.selection==3:
+            self.doneshopping=1
 
+        self.text1=["INITIAL ATK +1","INITIAL HP +5","ANIMAL EGG +1","     LEAVE"]
+        self.text2=[f"{self.player.price1}$",f"{self.player.price2}$",f"{self.player.price3}$",""]
 
-        self.text1=["INITIAL ATK +0.5","INITIAL HP +5","ANIMAL EGG +1"]
-        self.text2=[f"{self.player.price1}$",f"{self.player.price2}$",f"{self.player.price3}$"]
     def update_dialog(self):
         self.showbg()
         keys=pygame.key.get_pressed()
         if keys[pygame.K_d]==False:
             self.pressing=0
         if keys[pygame.K_d] and self.pressing==0:
-            if self.selection>=2:
+            if self.selection>=3:
                 self.selection=0
             else:
                 self.selection+=1
@@ -1103,7 +1127,7 @@ class ShoppingBox:
             self.pressingw=0
         if keys[pygame.K_a] and self.pressingw==0:
             if self.selection==0:
-                self.selection=2
+                self.selection=3
             else:
                 self.selection-=1
             self.pressingw=1
@@ -1126,7 +1150,7 @@ class ShoppingBox:
             self.index3=0
         else:
             self.index3+=1
-        if self.index==31:
+        if self.index==29:
             self.index=0
         else:
             self.index+=1
@@ -1143,36 +1167,41 @@ class ShoppingBox:
         b=abs(self.index2*10)
         self.selectionrect.fill((160,160,160,b))
         self.window.blit(self.selectionrect,(self.start[self.selection]+20,self.imgy-10))
-        pygame.transform.flip(self.image[self.index3//4], True, False)
+        #pygame.transform.flip(self.image[self.index3//4], True, False)
         self.window.blit(self.image[self.index3//4], (self.playerX,
                                           self.playerY+150))
         self.window.blit(self.images[0], (
                                           self.start[0],self.imgy))
         self.window.blit(self.images[1], (
                                           self.start[1],self.imgy))
-        self.window.blit(self.eggimg[self.index%4], (
-                                          self.start[2]+80,self.imgy+70))
+        self.window.blit(self.eggimg[self.index//3], (
+                                          self.start[2]+65,self.imgy+70))
 
-        self.window.blit(self.font.render(self.title, True, self.fontColor),(self.imgx-20, self.imgy-50))
+        self.window.blit(self.font.render(self.title, True, self.fontColor),(self.imgx-20, self.imgy-80))
         for i in range(len(self.text1)):
             self.window.blit(self.font3.render(self.text1[i], True, self.fontColor),(self.start[i]+30,self.imgy+250)) 
-            self.window.blit(self.font3.render(self.text2[i], True, self.fontColor),(self.start[i]+80,self.imgy+280)) 
+            self.window.blit(self.font3.render(self.text2[i], True, self.fontColor),(self.start[i]+85,self.imgy+275)) 
         
         
         
         
-        text = "LeftMoney: " + str(self.player.money)
-        self.window.blit(self.font3.render(text, True, (255,255,0)),
+        text = "Coin: " + str(self.player.money)
+        self.window.blit(self.font2.render(text, True, (255,255,0)),
         (BattleSettings.boxStartX+20, BattleSettings.boxStartY+30)) 
 
         text = "My initial ATK: " + str(self.player.ATK)
-        self.window.blit(self.font3.render(text, True, (230,230,230)),
+        self.window.blit(self.font2.render(text, True, (230,230,230)),
         (BattleSettings.boxStartX+270, BattleSettings.boxStartY+30)) 
 
         text = "My initial HP: " + str(int(self.player.HP))
-        self.window.blit(self.font3.render(text, True, (230,230,230)),
+        self.window.blit(self.font2.render(text, True, (230,230,230)),
         (BattleSettings.boxStartX+520, BattleSettings.boxStartY+30)) 
 
         text = "My egg: " + str(int(self.player.egg))
-        self.window.blit(self.font3.render(text, True, self.fontColor),
+        self.window.blit(self.font2.render(text, True, self.fontColor),
         (BattleSettings.boxStartX+770, BattleSettings.boxStartY+30)) 
+
+        hint="Press SPACE "
+        self.hintindex+=1
+        if self.hintindex%25<16:
+            self.window.blit(self.font3.render(hint, True, self.fontColor),(BattleSettings.boxStartX+750, BattleSettings.boxStartY+505)) 

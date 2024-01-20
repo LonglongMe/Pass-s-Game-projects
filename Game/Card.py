@@ -174,10 +174,8 @@ class Card:  #basic information of differernt cards
             if type==3:
                 if a<=40:#atk
                     sort=0
-                elif a>=40 and a<70:#buff
+                else:
                     sort=2
-                else:#cure
-                    sort=1
                 if b>=6:
                     level=1
                 elif b>2 and b<6:
@@ -187,10 +185,9 @@ class Card:  #basic information of differernt cards
             if type==4:
                 if a<=40:#atk
                     sort=0
-                elif a>=40 and a<70:#buff
+                else:#buff
                     sort=2
-                else:#cure
-                    sort=1
+
                 if b>=6:
                     level=1
                 elif b>4 and b<6:

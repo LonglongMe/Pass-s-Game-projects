@@ -35,8 +35,6 @@ class NPC(pygame.sprite.Sprite,Collidable):
         window.blit(self.image,(self.rect.x-15,self.rect.y-15,self.rect.width,self.rect.height))
         window.blit(self.text,self.textrect)
 
-
-
 class DialogNPC(NPC):
     def __init__(self,x,y,dialog):
         super().__init__(x,y)
@@ -65,10 +63,12 @@ class ShopNPC(NPC):
 class Animal(pygame.sprite.Sprite):
     def __init__(self,index,x,y) -> None:
         super().__init__()
-        self.index=index
+        self.index=int(index)
         self.touchplayer=0
-    
         speed=[1,1,1,1,1,1,1,2,2,1,2,2]
+        self.originx=x
+        self.originy=y
+
         self.speed=speed[self.index]
         self.step=50
         self.initialdirection=random.randint(0,3)
