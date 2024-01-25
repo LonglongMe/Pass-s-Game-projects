@@ -85,21 +85,21 @@ class GameManager:
             self.player.dialog=True
             pygame.event.post(pygame.event.Event(GameEvent.EVENT_DIALOG))
             self.scene.trigger_dialog(self.player.collidingObject['dialog_npc'])
-            print("triggerd dialog in game manager")
+            #print("triggerd dialog in game manager")
         if self.player.collidingWith['animalgame_npc']==True and self.scene.animalgamebox==None:
             self.player.dx=0
             self.player.dy=0
             self.player.dialog=True
             pygame.event.post(pygame.event.Event(GameEvent.EVENT_ANIMALDIALOG))
             self.scene.trigger_animaldialog(self.player.collidingObject['animalgame_npc'])
-            print("triggerd animalgame in game manager")
+            #print("triggerd animalgame in game manager")
         if self.player.collidingWith['shop_npc']==True and self.scene.shoppingbox==None:
             self.player.dx=0
             self.player.dy=0
             self.player.dialog=True
             pygame.event.post(pygame.event.Event(GameEvent.EVENT_SHOP))
             self.scene.trigger_shop(self.player)
-            print("triggerd shop in game manager")
+            #print("triggerd shop in game manager")
 
         if self.scene.dialogbox==None and self.scene.animalgamebox==None and self.scene.shoppingbox==None:
             self.update_collide()
@@ -126,7 +126,7 @@ class GameManager:
                 self.player.readytoplay=0
         else:
             if self.scene.dialogbox!=None and self.scene.dialogbox.donedialog==1:
-                print(self.scene.shoppingbox==None,"game manager end dialog after then")
+                #print(self.scene.shoppingbox==None,"game manager end dialog after then")
                 self.scene.end_dialog(self.player)
             if self.scene.animalgamebox!=None and self.scene.animalgamebox.donedialog!=0:
                 if self.scene.animalgamebox.donedialog==1:

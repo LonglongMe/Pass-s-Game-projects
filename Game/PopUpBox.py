@@ -76,7 +76,7 @@ class DialogBox:
         if self.firstchoice==5 and self.chosing==1:
             self.chosing=0
             if self.secondchoice==1:
-                print("restart detected")
+                #print("restart detected")
                 pygame.event.post(pygame.event.Event(GameEvent.EVENT_RESTART))
                 self.donedialog=1
             else:
@@ -90,6 +90,8 @@ class DialogBox:
                 self.texts=["BLOCKS:  Unable to go through",
                             "TORCHES: Unable to go through (decoration)",
                             "BOXES:   Attach and press SPACE to break it",
+                            "   for example, if the box is on your right,",
+                            "   press 'D'and SPACE to break it"
                                                          ]
         if self.firstchoice==2:
             if self.secondchoice==0:
@@ -253,11 +255,16 @@ class DialogBox:
             textbegin=self.contenty
             if self.firstchoice==1:
                 self.window.blit(self.font.render(self.title, True, self.fontColor),(self.contentx, textbegin))
-                textbegin+=40
+                textbegin-=80
                 for i in range(len(self.texts)):
+                    if i<3:
+                        textbegin+=120
                         self.window.blit(self.font3.render(self.texts[i], True, self.fontColor),(self.contentx+20, textbegin+20))
                         self.window.blit(self.images[i],(self.contentx-80, textbegin))
-                        textbegin+=120     
+                    else:
+                        textbegin+=40
+                        self.window.blit(self.font3.render(self.texts[i], True, self.fontColor),(self.contentx+120, textbegin+20))
+                        
             elif self.firstchoice==4 and self.secondchoice in [3,4,5,6]:
                 for cards in self.example_card_list:
                     cards.rendermycard(self.window,cards.rect.x,cards.rect.y)
@@ -469,7 +476,10 @@ class BattleBox:
         self.images = [pygame.transform.scale(pygame.image.load(img), (BattleSettings.playerWidth, BattleSettings.playerHeight)) for img in GamePath.player]
         self.playerImg=self.images[self.index]
         self.playerImgrect=self.playerImg.get_rect()
-        self.monsterimages = [pygame.transform.scale(pygame.image.load(img), (BattleSettings.monsterWidth, BattleSettings.monsterHeight)) for img in GamePath.monster]
+        if monster.type<3:
+            self.monsterimages = [pygame.transform.scale(pygame.image.load(img), (BattleSettings.monsterWidth, BattleSettings.monsterHeight)) for img in GamePath.monster2]
+        else:
+            self.monsterimages = [pygame.transform.scale(pygame.image.load(img), (BattleSettings.monsterWidth, BattleSettings.monsterHeight)) for img in GamePath.monster]
         self.monsterImg=self.monsterimages[self.index]
         self.monsterImgrect=self.monsterImg.get_rect()
         self.pressed=0#mouse press detect
@@ -526,12 +536,12 @@ class BattleBox:
                             self.selected.append(cards)
                             cards.rect.y=400
 
-                            print("choose")
+                            #print("choose")
                         elif cards in self.selected:
                             self.selected.remove(cards)
 
                             cards.rect.y=420
-                            print("dechoose")
+                            #print("dechoose")
                         self.pressed=0
                     else:
                         if len(self.selected)<3 and cards not in self.selected:
@@ -545,8 +555,8 @@ class BattleBox:
             keys=pygame.key.get_pressed()
             if len(self.selected)==2:
                 if self.selected[0].sort==self.selected[1].sort and self.selected[0].level==self.selected[1].level and self.selected[0].level<4 and keys[pygame.K_SPACE]:
-                    for cards in self.player_card_list:
-                        print(cards.sort,cards.level,cards.order)
+                    #for cards in self.player_card_list:
+                        #print(cards.sort,cards.level,cards.order)
                     for cards in self.player_card_list:
                         if cards.order==self.selected[0].order:
                             cards.sort=5
@@ -557,8 +567,8 @@ class BattleBox:
                     self.mergetimes+=1
                     del self.selected[1]
                     del self.selected[0]
-                    for cards in self.player_card_list:
-                        print(cards.sort,cards.level,cards.order)
+                    #for cards in self.player_card_list:
+                        #print(cards.sort,cards.level,cards.order)
 
     def curegif(self):#gif after player play cure cards
         images = [pygame.transform.scale(pygame.image.load(img), 
@@ -725,7 +735,7 @@ class BattleBox:
                 self.sacrificethistime+=4
                 self.sacrificeatkthistime=1
                 
-        print(f"hpchange:{Hp_change}  realatk:{int(real_ATK)}  accumulated:{Accumulate_ATK+self.Accumulated_atk}  player informationcheck")    
+        #print(f"hpchange:{Hp_change}  realatk:{int(real_ATK)}  accumulated:{Accumulate_ATK+self.Accumulated_atk}  player informationcheck")    
         if real_ATK!=0:#player atk number adjust and activate animate
             real_ATK=real_ATK*(self.Accumulated_atk+Accumulate_ATK)*self.playeratk          
             if real_ATK>20:
@@ -792,7 +802,7 @@ class BattleBox:
                              CardSettings.buff_enhancement_enemy_3,
                              card.level4buff]
                 Accumulate_ATK+=enhancement[card.level-1] 
-        print(f"realatk:{real_atk}  accumulatedatk:{Accumulate_ATK+self.enemy_Accumulated_atk}  in act enemy change")    
+        #print(f"realatk:{real_atk}  accumulatedatk:{Accumulate_ATK+self.enemy_Accumulated_atk}  in act enemy change")    
         if real_atk!=0:
             real_atk=real_atk*(Accumulate_ATK+self.enemy_Accumulated_atk)*self.monsteratk       
             self.enemy_Accumulated_atk=1#reset accumulate atk
@@ -1024,7 +1034,7 @@ class BattleBox:
                 keys=pygame.key.get_pressed()
                 if self.animatedonechecker():
                     if mousepress[0] or keys[pygame.K_SPACE]:
-                        print("detected stage4-stage1 in updatecard")                           
+                        #print("detected stage4-stage1 in updatecard")                           
                         self.monster_card_list=[Card(5,1,i) for i in range(3)]
                         self.roundchangeindex=1
                         self.DrawNewCard()
@@ -1040,7 +1050,7 @@ class BattleBox:
             keys=pygame.key.get_pressed()
             if mousepress[0] or keys[pygame.K_SPACE]:
                 self.readytoleave=1
-                print("readytoleft")
+                #print("readytoleft")
 
         if self.index==119:
             self.index=0

@@ -179,7 +179,5 @@ def gen_wild_obstacle():
                 breakobj.add(CanBreak(wildmatrix[j][i], SceneSettings.tileWidth * i, SceneSettings.tileHeight * j))
             if wildmatrix[j][i]==4:
                 portal.add(Portal(wildmatrix[j][i], SceneSettings.tileWidth * i, SceneSettings.tileHeight * j))
-            if wildmatrix[j][i]==7:
-                print(SceneSettings.tileWidth * i, SceneSettings.tileHeight * j)
     return obstacles,decorates,breakobj,portal 
 

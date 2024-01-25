@@ -41,7 +41,7 @@ class Scene():
 
     def trigger_dialog(self, npc):
         self.dialogbox=DialogBox(self.window,npc)
-        print("init dialog done,dialog event done")
+        #print("init dialog done,dialog event done")
 
     def end_dialog(self,player):
         self.dialogbox=None
@@ -82,7 +82,7 @@ class Scene():
     def trigger_battle(self, player):
         self.battlebox=BattleBox(self.window,player,player.collidingObject["monster"])
         #pygame.event.post(pygame.event.Event(GameEvent.EVENT_BATTLE))
-        print("init battle done,battle event done")
+        #print("init battle done,battle event done")
 
     def end_battle(self,player):
         self.battlebox=None

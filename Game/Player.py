@@ -171,13 +171,12 @@ class Player(pygame.sprite.Sprite, Collidable):
                 elif "price3" in line:
                     price3=int(line[7:])
                 elif "animal" in line:
-                    ani=line[9:]
-                    f=ani.split("--")
-                    for t in f:
-                        if t!="":
-                            anii=t.split(",")
-                            print(anii)
-                            animal.add(Animal(int(anii[0]),int(anii[1]),int(anii[2])))
+                    animals=line[9:]
+                    animallist=animals.split("--")
+                    for animal in animallist:
+                        if animal!="":
+                            animaldata=animal.split(",")
+                            animal.add(Animal(int(animaldata[0]),int(animaldata[1]),int(animaldata[2])))
         data.close()
         return money,atk,hp,price1,price2,price3,animal
     
@@ -196,8 +195,6 @@ class Player(pygame.sprite.Sprite, Collidable):
             animallist.append(f"{animal.index},{animal.originx},{animal.originy}")
         animallist="--".join(animallist)
         modifylines.append(animallist)
-        print(animallist)
- 
         with open(f"./Data.txt","w") as newdata:
             newdata.writelines(modifylines)
     def initialdata(self):

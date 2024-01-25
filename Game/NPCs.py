@@ -179,7 +179,7 @@ class Animal(pygame.sprite.Sprite):
         self.lastdx=dx
         self.lastdy=dy
         window.blit(self.image,(self.rect.x-20,self.rect.y-20,self.rect.width,self.rect.height))
-    
+    print()
 class Monster(pygame.sprite.Sprite):
     def __init__(self, x, y,type, order,HP, Atk, Money):
         super().__init__()
