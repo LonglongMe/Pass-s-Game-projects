@@ -1,7 +1,7 @@
-money=500
-atk=3
+money=1021
+atk=6
 hp=100
-price1=50
+price1=290
 price2=50
-price3=30
-animal=--2,600,300--3,800,300--
+price3=45
+animal=--6,600,100--8,660,100--6,720,100

@@ -9,8 +9,8 @@ from time import sleep
 class DialogBox:
     def __init__(self, window, npc,
                  fontSize: int = DialogSettings.textSize, 
-                 fontColor: Tuple[int, int, int] = (255, 255, 255), 
-                 bgColor: Tuple[int, int, int, int] = (20,20,20,200)):
+                 fontColor: Tuple[int, int, int] =DialogSettings.fontcolor, 
+                 bgColor: Tuple[int, int, int, int] =DialogSettings.bgcolor):
         self.image=pygame.transform.scale(pygame.image.load(GamePath.npc), 
                             (BattleSettings.playerWidth+10, BattleSettings.playerHeight+10))#needs to be fixed
         self.images=[pygame.transform.scale(pygame.image.load(GamePath.tree), (SceneSettings.tileWidth*2, SceneSettings.tileHeight*2)),
@@ -21,13 +21,13 @@ class DialogBox:
         self.playerX = BattleSettings.playerCoordX
         self.playerY = BattleSettings.playerCoordY-70
         # 最基础的字体和背景图片设置
-        self.font = pygame.font.Font(None, 50)
-        self.font2= pygame.font.Font(None, 40)
-        self.font3=pygame.font.Font(None,33)
-        self.hpfont = pygame.font.Font(None, 15)
-        self.hpfontcolor=(255,255,255)
-        self.fontColor=(255,255,255)
-        self.selectedfontcolor=(255,100,100)
+        self.font = pygame.font.Font(None,DialogSettings.fontsize)
+        self.font2= pygame.font.Font(None,DialogSettings.font2size)
+        self.font3=pygame.font.Font(None,DialogSettings.font3size)
+        self.hpfont = pygame.font.Font(None,DialogSettings.hpfontsize)
+        self.hpfontcolor=DialogSettings.fontcolor
+        self.fontColor=DialogSettings.fontcolor
+        self.selectedfontcolor=DialogSettings.selectedfontcolor
         self.donedialog=0
         self.bg = pygame.Surface((BattleSettings.boxWidth,
             BattleSettings.boxHeight), pygame.SRCALPHA)
@@ -45,6 +45,8 @@ class DialogBox:
         self.title=None
         self.chosing=0
         self.hint=None
+        self.example_card_list=pygame.sprite.Group()
+        self.informationgetted=0
 
     def dialogboxdistribute(self):
         if self.firstchoice==0 and self.chosing==1:
@@ -53,7 +55,7 @@ class DialogBox:
             self.chosing=0
             self.secondchoice=0
             
-        if self.firstchoice in [2,3,4] and self.chosing==1:
+        if self.firstchoice in [2,3] and self.chosing==1:
             if self.secondchoice==1:
                 self.donedialog=1
             else:
@@ -64,7 +66,22 @@ class DialogBox:
         if self.firstchoice==1 and self.chosing==1:
             self.choing=0
             self.donedialog=1
-            
+        
+        if self.firstchoice==4 and self.chosing==1:
+            self.chosing=0
+            if self.secondchoice!=7:
+                self.secondchoice+=1
+            else:
+                self.donedialog=1
+        if self.firstchoice==5 and self.chosing==1:
+            self.chosing=0
+            if self.secondchoice==1:
+                print("restart detected")
+                pygame.event.post(pygame.event.Event(GameEvent.EVENT_RESTART))
+                self.donedialog=1
+            else:
+                self.secondchoice=1
+
     def Information(self):
         if self.firstchoice==1:
             if self.secondchoice==0:
@@ -90,7 +107,7 @@ class DialogBox:
                             "Cats are more rare: 20 coin per battle",
                             "Goldenbirds are the most rare: 100 coin per battle",
                             "                                                                That's all"]
-        if self.firstchoice==2:
+        if self.firstchoice==3:
                 self.title=None
                 self.texts=["AS THE TILTLE SAYS, the game is a simulation of ",
                             "the last days of high school,where your enemies are",
@@ -102,7 +119,7 @@ class DialogBox:
                             "When the boss is defeated, the game ends",
                             "                                                                That's all"
                 ]
-        if self.firstchoice==3:
+        if self.firstchoice==4:
             if self.secondchoice==0:
                 self.title=None
                 self.texts=["Collide with monster and your battle begins." ,
@@ -112,26 +129,78 @@ class DialogBox:
                             "Check information if you selected just one card;",
                             "Merge two cards into higher level card if you select two same card;",
                             "Play card if you selected three cards",
-                            "                                                        NEXT...."
+                            "                                                               NEXT...."
                                 ]
             if self.secondchoice==1:
                 self.title=None
-                self.texts=["Regular cards are cards with level written on it,",
-                            "with LEVEL4 as the highest level",
+                self.texts=["",
+                            "Regular cards are cards with level written on it,",
+                            "LEVEL4 is the highest level",
                             "Special cards have no level and can't be merged",
-                            "A GOOD STRATEGY is merge cards as MUCH you can,",
+                            "                                                               NEXT...."]
+            if self.secondchoice==2:
+                self.title="MAIN STRATAGY OF THE GAME   "                         
+                self.texts=["The first GOOD STRATEGY is merge cards as MUCH you can,",
                             "so you will have MORE new cards next round,",
-                            "Anthor one is to ACCUMULATE abundant buff cards",
-                            "with the purpose to make your best shoot in the end",
+                            "The second one is to ACCUMULATE abundant buff cards",
+                            "especially when it comes to harder enemies, ",
+                            "their hp are extremely high, and can never be defeated ",
+                            "by regular atk, but easily by massive buffs and then trigger",
+                            "a huge shoot instantly",
+                            "                                                               NEXT...."]
+            if self.secondchoice==3:
+                self.title="in this situation, you have 3 buff cards and 3 atk cards"
+                self.texts=[
+                            "the SMART way is play three buff cards in this round, ",
+                            "so that your next atk will be extremely improved ",
+                            "on the otherhand, you can merge atk cards, so your atk cards",
+                            "are integrated, and there will be more new cards in next round"
+                            "                                                               NEXT...."]
+                self.example_card_list=[Card(0,1,1), Card(0,1,2),Card(0,2,3), Card(2,1,4),Card(2,1,5), Card(2,3,6)]
+            if self.secondchoice==4:
+                self.title=None
+                self.texts=[ "","",
+                            "So the suggestion is : ",
+                            "merge two level1 atk cards into a level2 card",
+                            "                                                               NEXT...."]
+            if self.secondchoice==5:
+                self.texts=[ "","",
+                            "and then, merge the level2 atk and the new-merged level2 atk",
+                            "into a level3 atk",
+                            "                                                               NEXT...."]
+                self.example_card_list=[Card(5,1,1), Card(0,2,2),Card(0,2,3), Card(2,1,4),Card(2,1,5), Card(2,3,6)]
+            if self.secondchoice==6:
+                self.texts=[ "","",
+                            "Finally play 3 buff cards, while leave atk for next round","",
+                            "                                                               NEXT...."]
+                self.example_card_list=[Card(5,1,1), Card(5,1,2),Card(0,3,3), Card(2,1,4),Card(2,1,5), Card(2,3,6)]
+            if self.secondchoice==7:
+                self.texts=[ "",
+                            "Hope you apply these strategy wisely,",
+                            "and I sincerely wish you enjoy the game ",
+                            "CREATOR : LijiaLong Xiaoyao",
+                            "Good luck love you"
+                     
                             "                                                                That's all"]
-
+                self.example_card_list=None
+        if self.firstchoice==5:
+            self.title=None
+            self.texts=["",
+                        "Are you sure you want to retart?",
+                        "If you just want to quit, the game data will",
+                        "be stored in data.txt, but if you restart,",
+                        "Game data will be initialize and can never be found!",
+                        "press SPACE to restart, press 'n' to leave dialog"
+                        ]
+        self.informationgetted=1
     def Selection(self):
         if self.firstchoice==0:
             self.title= "WHAT INFORMATION DO YOU NEED?"
-            self.texts=[ "About Blocks",
+            self.texts=[ "About Blocks (DON'T MISS!)",
                         "About Animals",
                     "About Enemys",
-                    "About Battle",
+                    "About Battle (MUST SEE!)",
+                    "Restart the game"
                     ]
 
     def update_dialog(self):
@@ -140,7 +209,7 @@ class DialogBox:
         if keys[pygame.K_s]==False:
             self.pressing=0
         if keys[pygame.K_s] and self.pressing==0:
-            if self.selection>=3:
+            if self.selection>=4:
                 self.selection=0
             else:
                 self.selection+=1
@@ -149,7 +218,7 @@ class DialogBox:
             self.pressingw=0
         if keys[pygame.K_w] and self.pressingw==0:
             if self.selection==0:
-                self.selection=3
+                self.selection=4
             else:
                 self.selection-=1
             self.pressingw=1
@@ -158,7 +227,10 @@ class DialogBox:
         if keys[pygame.K_SPACE] and self.pressings==0:
             self.chosing=1
             self.pressings=1
+            self.informationgetted=0
             self.dialogboxdistribute()
+        if keys[pygame.K_n]:
+            self.donedialog=1
 
 
 
@@ -176,7 +248,8 @@ class DialogBox:
                 textbegin+=50
             self.window.blit(self.font3.render(self.hint, True, self.fontColor),(self.contentx+40, textbegin))
         else:
-            self.Information()
+            if self.informationgetted==0:
+                self.Information()
             textbegin=self.contenty
             if self.firstchoice==1:
                 self.window.blit(self.font.render(self.title, True, self.fontColor),(self.contentx, textbegin))
@@ -185,8 +258,13 @@ class DialogBox:
                         self.window.blit(self.font3.render(self.texts[i], True, self.fontColor),(self.contentx+20, textbegin+20))
                         self.window.blit(self.images[i],(self.contentx-80, textbegin))
                         textbegin+=120     
+            elif self.firstchoice==4 and self.secondchoice in [3,4,5,6]:
+                for cards in self.example_card_list:
+                    cards.rendermycard(self.window,cards.rect.x,cards.rect.y)
+                for text in self.texts:
+                    self.window.blit(self.font3.render(text, True, self.fontColor),(self.contentx-80, textbegin))
+                    textbegin+=50 
             else:
-
                 if self.title!=None:
                     self.window.blit(self.font.render(self.title, True, self.fontColor),(self.contentx, textbegin))
                     textbegin+=40
@@ -198,7 +276,7 @@ class DialogBox:
         hint="PRESS SPACE"
         self.hintindex+=1
         if self.hintindex%25<16:
-            self.window.blit(self.font3.render(hint, True, self.fontColor),(self.contentx+400, self.contenty+400)) 
+            self.window.blit(self.font3.render(hint, True, self.fontColor),(self.contentx-250, self.contenty+400)) 
 
     def showbg(self):
 
@@ -213,8 +291,8 @@ class DialogBox:
 class AniamlgameBox:
     def __init__(self, window, npc,
                  fontSize: int = DialogSettings.textSize, 
-                 fontColor: Tuple[int, int, int] = (255, 255, 255), 
-                 bgColor: Tuple[int, int, int, int] = (20,20,20,200)):
+                 fontColor: Tuple[int, int, int] = AniamlgameBoxSettings.fontcolor, 
+                 bgColor: Tuple[int, int, int, int] = AniamlgameBoxSettings.bgcolor):
         self.image=pygame.transform.scale(pygame.image.load(GamePath.npc), 
                             (BattleSettings.playerWidth+10, BattleSettings.playerHeight+10))#needs to be fixed
         self.window = window
@@ -224,11 +302,11 @@ class AniamlgameBox:
 
         self.pressing=0
         self.selectable=1
-        self.font2= pygame.font.Font(None, 38)
-        self.font3=pygame.font.Font(None,27)
-        self.hpfont = pygame.font.Font(None, 15)
-        self.fontColor=(255,255,255)
-        self.selectedfontcolor=(255,100,100)
+        self.font2= pygame.font.Font(None,AniamlgameBoxSettings.font2size)
+        self.font3=pygame.font.Font(None,AniamlgameBoxSettings.font3size)
+        self.hpfont = pygame.font.Font(None,AniamlgameBoxSettings.hpfontsize)
+        self.fontColor=AniamlgameBoxSettings.fontcolor
+        self.selectedfontcolor=AniamlgameBoxSettings.selectedfontcolor
         self.donedialog=0
         self.contentx=self.npc.rect.x+50
         self.contenty=self.npc.rect.y
@@ -347,20 +425,20 @@ class AniamlgameBox:
 
 class BattleBox:
     def __init__(self, window, player, monster, fontSize: int = BattleSettings.textSize, 
-                 fontColor: Tuple[int, int, int] = (255, 255, 255), bgColor: Tuple[int, int, int, int] = (0, 0, 0, 200)) :
+                 fontColor: Tuple[int, int, int] = BattleSettings.hpfontcolor, bgColor: Tuple[int, int, int, int] = BattleSettings.bgcolor) :
         self.window = window
         # 最基础的字体和背景图片设置
-        self.font = pygame.font.Font(None, 40)
-        self.font2= pygame.font.Font(None, 30)
-        self.font3=pygame.font.Font(None,25)
-        self.hpfont = pygame.font.Font(None, 15)
-        self.hpfontcolor=(255,255,255)
-        self.fontColor=(230,230,230)
+        self.font = pygame.font.Font(None,BattleSettings.fontsize)
+        self.font2= pygame.font.Font(None,BattleSettings.font2size)
+        self.font3=pygame.font.Font(None,BattleSettings.font3size)
+        self.hpfont = pygame.font.Font(None,BattleSettings.hpfontsize)
+        self.hpfontcolor=BattleSettings.hpfontcolor
+        self.fontColor=BattleSettings.fontcolor
         self.bg=pygame.transform.scale(pygame.image.load(GamePath.background), (BattleSettings.boxWidth, BattleSettings.boxHeight))
         self.mod = pygame.Surface((BattleSettings.boxWidth, BattleSettings.boxHeight), pygame.SRCALPHA)
-        self.mod.fill((0, 0,0, 140))
-        self.databg = pygame.Surface((960,100), pygame.SRCALPHA)
-        self.databg.fill((200,200,200,100))
+        self.mod.fill(BattleSettings.modcolor)
+        self.databg = pygame.Surface(BattleSettings.datasize, pygame.SRCALPHA)
+        self.databg.fill(BattleSettings.datacolor)
         # 初始化相关角色的参数，没有实际操作的权力
         self.player = player
         self.playeratk=player.ATK
@@ -395,7 +473,7 @@ class BattleBox:
         self.monsterImg=self.monsterimages[self.index]
         self.monsterImgrect=self.monsterImg.get_rect()
         self.pressed=0#mouse press detect
-        self.leftround=20
+        self.leftround=BattleSettings.leftround
         self.win=0
         self.ismyround=1
         self.atkgif=0
@@ -406,7 +484,6 @@ class BattleBox:
         self.roundchangeindex=0
         self.readytoleave=0
         self.retoreenergyindex=0
-        self.enemyretoreenergyindex=0
         self.actrainatkindex=0
         self.gettinginfo=False
         self.hintindex=0
@@ -484,19 +561,19 @@ class BattleBox:
                         print(cards.sort,cards.level,cards.order)
 
     def curegif(self):#gif after player play cure cards
-        if self.actcuregif>0 :
-            images = [pygame.transform.scale(pygame.image.load(img), 
-                            (BattleSettings.playerWidth, BattleSettings.playerHeight)) for img in GamePath.cure]
-            image = images[int((self.actcuregif//2)%3)]
-
-            if self.actcuregif>40:
-                self.actcuregif=0
-            else:
-                self.actcuregif+=1
+        images = [pygame.transform.scale(pygame.image.load(img), 
+                        (BattleSettings.playerWidth, BattleSettings.playerHeight)) for img in GamePath.cure]
+        image = images[int((self.actcuregif//2)%3)]
+        text4 = "+ "+str(int((self.Hp_change)))
+        self.window.blit(self.hpfont.render(text4, True, self.hpfontcolor),(BattleSettings.boxStartX+70+self.actcuregif//2,BattleSettings.boxStartY+10)) 
+        self.window.blit(image, (BattleSettings.playerCoordX+10,BattleSettings.playerCoordY+10)) 
+        if self.actcuregif>40:
+            self.actcuregif=0
+            self.Hp_change=0
+        else:
+            self.actcuregif+=1
             #render blood volume change
-            text4 = "+ "+str(int((self.Hp_change)))
-            self.window.blit(self.hpfont.render(text4, True, self.hpfontcolor),(BattleSettings.boxStartX+70+self.actcuregif//2,BattleSettings.boxStartY+10)) 
-            self.window.blit(image, (BattleSettings.playerCoordX+10,BattleSettings.playerCoordY+10)) 
+
     def accumulategif(self):#gif of player's accumulate atk
         images = [pygame.transform.scale(pygame.image.load(img), 
                         (200,184)) for img in GamePath.lightshield]
@@ -512,8 +589,8 @@ class BattleBox:
             self.accumulateatkgifindex+=1   
 
         if self.retoreenergyindex>0:
-            text = "energy restored: "+str(self.Accumulated_atk)
-            self.window.blit(self.font.render(text, True, (255,255,255)),(BattleSettings.boxStartX+30,BattleSettings.boxStartY+300)) 
+            text = "energy restored: "+str(int(self.Accumulated_atk*10))
+            self.window.blit(self.font.render(text, True,BattleSettings.hpfontcolor),(BattleSettings.boxStartX+30,BattleSettings.boxStartY+300)) 
             if self.retoreenergyindex>30:
                 self.retoreenergyindex=0
             else:
@@ -532,14 +609,6 @@ class BattleBox:
         else:
             self.accumulateatkgifindex+=1   
 
-        if self.enemyretoreenergyindex>0:
-            text = "energy restored: "+str(int(self.enemy_Accumulated_atk))
-            self.window.blit(self.font.render(text, True, (255,255,255)),(BattleSettings.boxStartX+30,BattleSettings.boxStartY+70)) 
-            if self.enemyretoreenergyindex>30:
-                self.enemyretoreenergyindex=0
-            else:
-                self.enemyretoreenergyindex+=1
-
     def atk_gif(self):#gif after player's atk
         #lightning gif
         if self.actlightninggif>0:
@@ -548,7 +617,7 @@ class BattleBox:
             
             imagee = images[self.actlightninggif//4]
             
-            self.window.blit(imagee, (BattleSettings.boxStartX+470,200))
+            self.window.blit(imagee, (BattleSettings.boxStartX+670,200))
             if self.actlightninggif==16:
                 self.actlightninggif=0
             else:
@@ -560,53 +629,42 @@ class BattleBox:
             
             imagee = images[self.atkgif%14]
             self.window.blit(imagee, (BattleSettings.boxStartX+730,150))
+            if self.atkgif<30:
+                text3 = "LEVEL4 ATK : "+str(int(self.level4atk))
+                self.window.blit(self.font.render(text3, True, (255,50,50)),(BattleSettings.boxStartX+220+self.atkgif*2,BattleSettings.boxStartY+100)) 
 
         if self.sacrificethistime==1:
-            text = "SACRIFICE effect -10% hp"
+            text = "SACRIFICE effect -20% hp"
             self.window.blit(self.font.render(text, True, (255,50,50)),(BattleSettings.boxStartX+170-self.atkgif,250)) 
         
         if self.sacrificeatkthistime==1:
-            text3 = "SACRIFICE ATK -20% "
-            print(self.atkgif)
+            text3 = "SACRIFICE ATK -25% hp"
             self.window.blit(self.font.render(text3, True, (255,25,55)),(BattleSettings.boxStartX+540+self.atkgif//2,BattleSettings.boxStartY+150)) 
             #atk effect: enemy hp reduce gif
         
-        if self.real_ATK>0:
-            for i in range(self.atktimes):
-                text3 = "- "+str(int(self.real_ATK/(self.atktimes)))
-                #print(self.real_ATK)
-                self.window.blit(self.font.render(text3, True, (255,255,255)),(BattleSettings.boxStartX+640+self.atkgif+2*i,BattleSettings.boxStartY+250+40*i)) 
-            if self.level4atk>1 :
-                if self.atkgif<30:
-                    text3 = "LEVEL4 ATK : "+str(int(self.level4atk))
-                    self.window.blit(self.font.render(text3, True, (255,50,50)),(BattleSettings.boxStartX+220+self.atkgif+2*i,BattleSettings.boxStartY+100+40*i)) 
-                else:
-                    self.level4atk=0
+
+        for i in range(self.atktimes):
+            text3 = "- "+str(int(self.real_ATK/(self.atktimes)))
+            #print(self.real_ATK)
+            self.window.blit(self.font.render(text3, True, (255,255,255)),(BattleSettings.boxStartX+640+self.atkgif+2*i,BattleSettings.boxStartY+250+40*i)) 
+
+
         if self.level4atk>1:
             if self.atkgif>80:
+                self.real_ATK=0
+                self.level4atk=0
                 self.atkgif=0
                 self.atktimes=0
             else:
                 self.atkgif+=1
         else:
             if self.atkgif>40:
+                self.real_ATK=0
                 self.atkgif=0
                 self.atktimes=0
             else:
                 self.atkgif+=1
-        print(self.atkgif)
     def enemy_atk_gif(self):#gif after enemy's atk
-        #lightning gif
-        if self.actlightninggif>0:
-            images = [pygame.transform.scale(pygame.image.load(img), 
-                            (200,184)) for img in GamePath.lightning]     
-            imagee = images[self.actlightninggif%5]
-            if self.actlightninggif>0:
-                self.window.blit(imagee, (100,200))
-            if self.actlightninggif==10:
-                self.actlightninggif=0
-            if self.actlightninggif>0:
-                self.actlightninggif+=1
         #player hp reduce gif
         for i in range(self.enemyatktimes):
             text3 = "- "+str(int(self.enemy_realatk//(self.enemyatktimes)))
@@ -614,12 +672,13 @@ class BattleBox:
                 self.window.blit(self.font.render(text3, True, (255,255,255)),(BattleSettings.boxStartX+170+self.atkgif+2*i,250+40*i)) 
         if self.enemy_Accumulated_atk>1:
             #print("built enemy accumlate data change in enemyatkgif")
-            text = "energy restored "+str(int(self.enemy_Accumulated_atk))
+            text = "energy restored "+str(int(self.enemy_Accumulated_atk*10))
             self.window.blit(self.font.render(text, True, (255,255,255)),(BattleSettings.boxStartX+430,BattleSettings.boxStartY+370)) 
         if self.atkgif>40:
             self.atkgif=0
+            self.enemy_realatk=0
             self.enemyatktimes=0
-        if self.atkgif>0:
+        else:
             self.atkgif+=1
     def Playcards(self):#trigger actchange fuction ,clean selected card list
         keys=pygame.key.get_pressed()
@@ -637,30 +696,39 @@ class BattleBox:
     def act_my_changes(self):#change into stage 2        data adjust and trigger animate accordingly
         Hp_change=0
         real_ATK=0
-        Accumulate_ATK=1
+        Accumulate_ATK=0
         #1 player data adjust
 
         for card in self.selected:
-            if card.sort==0:#card=atk
-                enhancement=[1.1,1.2,1.5,card.level4atk]
+            if card.sort==CardSettings.atk:#card=atk
+                enhancement=[CardSettings.atk_boost_1,
+                             CardSettings.atk_boost_2,
+                             CardSettings.atk_boost_3,
+                             card.level4atk]
                 real_ATK+=enhancement[card.level-1]
                 self.atktimes+=1
-                if card.level==4:
+                if card.level==CardSettings.level_4:
                     self.level4atk=card.level4atk
-            if card.sort==1:#card=cure
-                enhancement=[0.05,0.08,0.1,card.level4cure]
+            if card.sort==CardSettings.cure:#card=cure
+                enhancement=[CardSettings.cure_treat_1,
+                             CardSettings.cure_treat_2,
+                             CardSettings.cure_treat_3,
+                             card.level4cure]
                 Hp_change+=enhancement[card.level-1]
-            if card.sort==2:#card=buff-accumulate atk
-                enhancement=[1.2,1.5,2,card.level4buff]
+            if card.sort==CardSettings.buff:#card=buff-accumulate atk
+                enhancement=[CardSettings.buff_enhancement_1,
+                             CardSettings.buff_enhancement_2,
+                             CardSettings.buff_enhancement_3,
+                             card.level4buff]
                 Accumulate_ATK+=enhancement[card.level-1]
-            if card.sort==6:
+            if card.sort==CardSettings.sacrifice:
                 self.sacrificethistime+=4
                 self.sacrificeatkthistime=1
                 
-        print(f"hpchange:{Hp_change}  realatk:{int(real_ATK)}  accumulated:{Accumulate_ATK}  player informationcheck")    
+        print(f"hpchange:{Hp_change}  realatk:{int(real_ATK)}  accumulated:{Accumulate_ATK+self.Accumulated_atk}  player informationcheck")    
         if real_ATK!=0:#player atk number adjust and activate animate
-            real_ATK=real_ATK*Accumulate_ATK*self.playeratk          
-            if Accumulate_ATK>13:
+            real_ATK=real_ATK*(self.Accumulated_atk+Accumulate_ATK)*self.playeratk          
+            if real_ATK>20:
                 self.actlightninggif=1
             self.Accumulated_atk=1
         else:
@@ -668,7 +736,6 @@ class BattleBox:
             self.retoreenergyindex=1
         if Hp_change>0:#player hp number adjust and activate animate
             self.Hp_change=self.playerinitialhp*Hp_change
-            self.actcuregif=1
             if self.playerHP+self.Hp_change<self.playerinitialhp:
                 self.playerHP+=self.Hp_change
             else:
@@ -679,21 +746,17 @@ class BattleBox:
                 if self.playerHP-self.playerHP*0.2>0:
                     self.playerHP-=self.playerHP*0.2
                     self.atkgif=1
-                    
                 else:
                     self.playerHP=0
-
 
         #print(f"sacrifice contdown{self.sacrificenextime}")
         if self.sacrificeatkthistime==1:   
             if self.monsterHP-self.monsterHP*0.3>0:    
                 self.monsterHP-=self.monsterHP*0.3
                 self.atkgif=1
-                print("atk thie time")
             else:
                 self.monsterHP=0
         
-    
         self.real_ATK=int(real_ATK)
 
         #2 enemy hp number adjust
@@ -708,28 +771,30 @@ class BattleBox:
         self.ismyround=0 #change into stage 2
     def act_enemy_change(self):#change into stage 4
         real_atk=0
-        Accumulate_ATK=1
-
+        Accumulate_ATK=0
         #1 enemy data adjust
 
         for card in self.monster_card_list:
-            if card.sort==5:#initial enemy card list
+            if card.sort==CardSettings.margin:#initial enemy card list
                 self.monster_card_list=[card.random_card_enemy(self.monster.type) if i==card else i for i in self.monster_card_list]
                                 #cauculate card effect accordingly
         for card in self.monster_card_list:        
-            if card.sort==0:#atk
-                enhancement=[1.1,1.2,1.5,card.level4atk]
+            if card.sort==CardSettings.atk:#atk
+                enhancement=[CardSettings.atk_boost_1,
+                             CardSettings.atk_boost_2,
+                             CardSettings.atk_boost_3,
+                             card.level4atk]
                 real_atk+=enhancement[card.level-1]
                 self.enemyatktimes+=1
-            elif card.sort==2:#buff
-                enhancement=[1,2.3,3.4,card.level4buff]
+            elif card.sort==CardSettings.buff:#buff
+                enhancement=[CardSettings.buff_enhancement_enemy_1,
+                             CardSettings.buff_enhancement_enemy_2,
+                             CardSettings.buff_enhancement_enemy_3,
+                             card.level4buff]
                 Accumulate_ATK+=enhancement[card.level-1] 
-        print(f"realatk:{real_atk}  accumulatedatk:{Accumulate_ATK}  in act enemy change")    
+        print(f"realatk:{real_atk}  accumulatedatk:{Accumulate_ATK+self.enemy_Accumulated_atk}  in act enemy change")    
         if real_atk!=0:
-            real_atk=real_atk*Accumulate_ATK*self.monsteratk       
-            if Accumulate_ATK>10:
-                self.actlightninggif=1#trigger lightning gif
-            self.atkgif=1#trigger atk gif
+            real_atk=real_atk*(Accumulate_ATK+self.enemy_Accumulated_atk)*self.monsteratk       
             self.enemy_Accumulated_atk=1#reset accumulate atk
         else:
             self.enemy_Accumulated_atk+=Accumulate_ATK#restore accumulated atk
@@ -753,42 +818,26 @@ class BattleBox:
         else:
             return False
     def gifrender(self):#render stage2 and stage4
-
-        if self.actcuregif>0:
-            self.curegif()           
-        if self.atkgif>0 or self.atktimes>0:
-            self.atk_gif()
-        if self.enemy_realatk>0:
-            self.enemy_atk_gif()
-
         if self.ismyround==0 and self.enemy_round_count==0:
-
-            #print(self.actcuregif,self.actlightninggif,self.atkgif,self.roundchangeindex)
+            if self.Hp_change>0:
+                self.curegif()
+            if self.real_ATK>0 or self.atkgif>0 :
+                self.atk_gif()
             #trigger round change animate
-            if self.actcuregif==0 and self.actlightninggif==0 and self.atkgif==0 and self.roundchangeindex==0:
-                self.atktimes=0
-                print("changeround")
-                self.roundchangeindex=1
-
-            #animating round change
-            if self.roundchangeindex>0:
-                #print(self.real_ATK,self.roundchangeindex)
+            if self.animatedonechecker():
                 self.roundchange()
                 if self.roundchangeindex==0:
+                    self.atktimes=0
                     self.enemy_round_count=1#change into stage 3
-
         if self.ismyround==1 and self.enemy_round_count==1:
+            if self.enemy_realatk>0:
+                self.enemy_atk_gif()
             #trigger round change animate
-            if self.actcuregif==0 and self.actlightninggif==0 and self.atkgif==0 and self.roundchangeindex==-1:
-                self.roundchangeindex=1
-            #animating round change
             if self.roundchangeindex>0:
-                self.enemy_realatk=0
-                self.enemyatktimes=0
                 self.roundchange()
                 if self.roundchangeindex==0:
+                    self.enemyatktimes=0
                     self.enemy_round_count=0#change back into stage 1
-
     def roundchange(self):#change round animate
         bg=pygame.transform.scale(pygame.image.load(GamePath.dialog), (900, 200))
         b=pygame.font.SysFont("impact", 50)
@@ -818,18 +867,18 @@ class BattleBox:
             text = b.render("You win! by " + str(20-self.leftround)+"rounds",True,(20,0,0))
             self.window.blit(text,(BattleSettings.boxStartX+300,BattleSettings.boxStartY+200))
             text2 = c.render(f"Your strongest shot : {self.bestshot}" ,False,(20,0,0))
-            self.window.blit(text2,(BattleSettings.boxStartX+420,BattleSettings.boxStartY+290))
+            self.window.blit(text2,(BattleSettings.boxStartX+420,BattleSettings.boxStartY+250))
             text3 = c.render(f"Earned Coin : {self.coin0} + {self.initialcoin}" ,False,(20,0,0))
-            self.window.blit(text3,(BattleSettings.boxStartX+420,BattleSettings.boxStartY+320))
+            self.window.blit(text3,(BattleSettings.boxStartX+420,BattleSettings.boxStartY+280))
         elif self.monsterHP>0 or self.leftround<=0:
             self.coin0=int((self.bestshot*self.monster.money*(1+self.leftround/20))/10)
             self.coin=self.coin0
             text = b.render("You Lose by "+ str(20-self.leftround)+"rounds",True,(20,0,0))
-            self.window.blit(text,(BattleSettings.boxStartX+250,BattleSettings.boxStartY+240))
+            self.window.blit(text,(BattleSettings.boxStartX+300,BattleSettings.boxStartY+200))
             text2 = c.render(f"Your strongest shot : {self.bestshot}" ,False,(20,0,0))
-            self.window.blit(text2,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+290))
+            self.window.blit(text2,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+250))
             text3 = c.render(f"Earned Coin : {self.coin0}" ,False,(20,0,0))
-            self.window.blit(text3,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+320))
+            self.window.blit(text3,(BattleSettings.boxStartX+440,BattleSettings.boxStartY+280))
             
     def Getinfo(self):
 
@@ -851,9 +900,15 @@ class BattleBox:
             databg.fill((100,100,100,250))
             self.window.blit(databg,(boxbeginx, boxbeginy))
             self.selected[0].rendermycard(self.window,boxbeginx+50, boxbeginy+50)
-            if self.selected[0].sort==0:
-                enhancement=[1.1,1.2,1.5,self.selected[0].level4atk]
-                enhancement2=[1.1,1.2,1.5,"1~7"]
+            if self.selected[0].sort==CardSettings.atk:
+                enhancement=[CardSettings.atk_boost_1,
+                             CardSettings.atk_boost_2,
+                             CardSettings.atk_boost_3,
+                             self.selected[0].level4atk]
+                enhancement2=[CardSettings.atk_boost_1,
+                              CardSettings.atk_boost_2,
+                              CardSettings.atk_boost_3,
+                              "1~10"]
                 realatk=self.playeratk*enhancement[self.selected[0].level-1]        
                 titles=[ "Card Level:",
                         "Enhancement:" ,
@@ -865,9 +920,12 @@ class BattleBox:
                           str(int(realatk)),
                           str("Reduce EnemyHp "),
                           str("None")]
-            if self.selected[0].sort==1:
-                enhancement=[0.5,0.8,1,self.selected[0].level4atk]
-                enhancement2=["5%","8%","10%","10%~40%"]
+            if self.selected[0].sort==CardSettings.cure:
+                enhancement=[CardSettings.cure_treat_1*10,
+                             CardSettings.cure_treat_2*10,
+                             CardSettings.cure_treat_3*10,
+                             self.selected[0].level4atk]
+                enhancement2=["5%","8%","10%","10%~100%"]
                 titles=[ "Card Level:",
                         "Brief:" ,
                         "Special:" ]
@@ -875,9 +933,12 @@ class BattleBox:
                           str(f"Recover {enhancement2[self.selected[0].level-1]} Hp"),
                           str("None")]
 
-            if self.selected[0].sort==2:
-                enhancement=[1.2,1.5,2,self.selected[0].level4atk]
-                enhancement2=["120%","150%","200%","100%~700%"]
+            if self.selected[0].sort==CardSettings.buff:
+                enhancement=[CardSettings.buff_enhancement_1,
+                             CardSettings.buff_enhancement_2,
+                             CardSettings.buff_enhancement_3,
+                             self.selected[0].level4atk]
+                enhancement2=["120%","150%","200%","100%~1000%"]
                 titles=[ "Card Level:",
                         "Buff Effect:" ,
                         "Brief:" ,
@@ -887,18 +948,19 @@ class BattleBox:
                           str("Store energy and can greatly improve next Atk "),
                           str("You can kept adding buff cards to accumulate"),
                           str("a huge shot")]
-            if self.selected[0].sort==6:
+            if self.selected[0].sort==CardSettings.sacrifice:
 
                 titles=["Brief:" ,
                         "",
                         "Special:" ]
-                contents=[str("Immediately reduce '30%' of enemy's hp"),
+                contents=[str("Immediately reduce '25%' of enemy's hp"),
                         str("With a cost of losing 20% hp 3rounds later"),
                         str("Sacrifice is one of the rarest card ,"),
                         str("its attack is strong and regardless of" ),
                         str("player's initial atk, if you are lucky enough to "),
                         str("have more than one sacrifice card, you can play"),
-                        str("them in constant rounds to postpone sacrifice")]
+                        str("them in sequence rounds to postpone sacrifice"),
+                        "because you can only play one SACRIFICE in a round"]
  
  
             textbegin=boxbeginy+60
@@ -930,7 +992,6 @@ class BattleBox:
             self.enemyaccumulategif()
 
         if self.win==0 :#as long as no winner:
-
             #STAGE1 player selection and act effect
             if self.ismyround==1 and self.enemy_round_count==0 :
                 #draw new card
@@ -949,8 +1010,7 @@ class BattleBox:
             #STAGE3 enemy's selection and act effect
             if self.ismyround==0 and self.enemy_round_count==1:
                 self.act_enemy_change()
-                self.Hp_change=0
-                self.real_ATK=0
+
                 self.sacrificeatkthistime=0
                 if self.sacrificethistime==1:
                     self.sacrificethistime=0
@@ -966,9 +1026,8 @@ class BattleBox:
                     if mousepress[0] or keys[pygame.K_SPACE]:
                         print("detected stage4-stage1 in updatecard")                           
                         self.monster_card_list=[Card(5,1,i) for i in range(3)]
-                        self.roundchangeindex=-1
+                        self.roundchangeindex=1
                         self.DrawNewCard()
-
                         if self.sacrificethistime>0:
                             self.sacrificethistime-=1
 
@@ -976,10 +1035,10 @@ class BattleBox:
 
         if self.monsterHP==0 or self.playerHP==0 or self.leftround==0:#determin whether win
             self.win=1
-            
             self.Win()
             mousepress=pygame.mouse.get_pressed()#detect change from enemy round to my round
-            if mousepress[0] :
+            keys=pygame.key.get_pressed()
+            if mousepress[0] or keys[pygame.K_SPACE]:
                 self.readytoleave=1
                 print("readytoleft")
 
@@ -1082,7 +1141,7 @@ class ShoppingBox:
         self.pressingw=0
         self.index2=-20
         self.title= "WHAT DO YOU NEED?"
-        self.text1=["INITIAL ATK +1","INITIAL HP +5","ANIMAL EGG +1","       LEAVE"]
+        self.text1=["INITIAL ATK +1","INITIAL HP +20","ANIMAL EGG +1","       LEAVE"]
         self.text2=[f"{self.player.price1}$",f"{self.player.price2}$",f"{self.player.price3}$",""]
         self.imgx=BattleSettings.boxStartX+320
         self.imgy=BattleSettings.boxStartY+180
@@ -1094,22 +1153,22 @@ class ShoppingBox:
         if self.selection==0:
             if self.player.money-self.player.price1>0:
                 self.player.money-=self.player.price1
-                self.player.price1+=60
+                self.player.price1+=80
                 self.player.ATK+=1
         if self.selection==1:
             if self.player.money-self.player.price2>0:
                 self.player.money-=self.player.price2
-                self.player.price2+=30
-                self.player.HP+=5
+                self.player.price2+=50
+                self.player.HP+=20
         if self.selection==2:
             if self.player.money-self.player.price3>0:
                 self.player.money-=self.player.price3
-                self.player.price3+10
+                self.player.price3+=5
                 self.player.egg+=1
         if self.selection==3:
             self.doneshopping=1
 
-        self.text1=["INITIAL ATK +1","INITIAL HP +5","ANIMAL EGG +1","     LEAVE"]
+        self.text1=["INITIAL ATK +1","INITIAL HP +20","ANIMAL EGG +1","     LEAVE"]
         self.text2=[f"{self.player.price1}$",f"{self.player.price2}$",f"{self.player.price3}$",""]
 
     def update_dialog(self):
@@ -1141,10 +1200,7 @@ class ShoppingBox:
         #leave dialog
         if pygame.mouse.get_pressed()[0]:
             self.doneshopping=1
-        #hint
-        hint="CLICK to back home  PRESS to perchase"
 
-        self.window.blit(self.font3.render(hint, True, self.fontColor),(self.imgx+180, self.start[2]+110))
     def showbg(self):
         if self.index3==236:
             self.index3=0
@@ -1204,4 +1260,4 @@ class ShoppingBox:
         hint="Press SPACE "
         self.hintindex+=1
         if self.hintindex%25<16:
-            self.window.blit(self.font3.render(hint, True, self.fontColor),(BattleSettings.boxStartX+750, BattleSettings.boxStartY+505)) 
+            self.window.blit(self.font3.render(hint, True, self.fontColor),(BattleSettings.boxStartX+760, BattleSettings.boxStartY+515)) 

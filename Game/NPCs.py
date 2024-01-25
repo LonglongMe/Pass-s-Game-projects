@@ -13,19 +13,19 @@ class NPC(pygame.sprite.Sprite,Collidable):
         self.image=pygame.transform.scale(pygame.image.load(GamePath.npc), 
                             (PlayerSettings.playerWidth+10, PlayerSettings.playerHeight+10))
         self.rect=self.image.get_rect()
-        self.rect.width=40
-        self.rect.height=40
+        self.rect.width=NPCSettings.npcWidth
+        self.rect.height=NPCSettings.npcHeight
         self.rect.topleft=(x,y)
         self.originrect_x=x
         self.originrect_y=y
         self.talking=False
         self.name=None
-        self.font0=pygame.font.SysFont("impact", 15)
+        self.font0=pygame.font.SysFont("impact",NPCSettings.font0size)
         self.text = None
         self.textrect=None
         
     def draw(self, window, dx=0, dy=0):
-        self.text = self.font0.render(f"{self.name}",True,(40,40,40))
+        self.text = self.font0.render(f"{self.name}",True,NPCSettings.font0color)
         self.textrect=self.text.get_rect()
         self.rect.x=self.originrect_x-dx
         self.rect.y=self.originrect_y-dy
@@ -65,25 +65,25 @@ class Animal(pygame.sprite.Sprite):
         super().__init__()
         self.index=int(index)
         self.touchplayer=0
-        speed=[1,1,1,1,1,1,1,2,2,1,2,2]
+        speed=AnimalSettings.speedlist
         self.originx=x
         self.originy=y
 
         self.speed=speed[self.index]
         self.step=50
         self.initialdirection=random.randint(0,3)
-        self.directionx,self.directiony=[1,0]#[[-1,0],[1,0],[0,1],[0,-1]][self.initialdirection]
+        self.directionx,self.directiony=AnimalSettings.originaldirection #[[-1,0],[1,0],[0,1],[0,-1]][self.initialdirection]
         self.flame=0
         self.moving=1
-        self.imagelist=[[pygame.transform.scale(pygame.image.load(img), (50,50)) for img in GamePath.cat1],
-                        [pygame.transform.scale(pygame.image.load(img), (50,50)) for img in GamePath.cat2],
-                        [pygame.transform.scale(pygame.image.load(img), (50,50)) for img in GamePath.cat3],
-                        [pygame.transform.scale(pygame.image.load(img), (50,50)) for img in GamePath.cat4],
-                        [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.fish],
-                        [pygame.transform.scale(pygame.image.load(img), (40,60)) for img in GamePath.elf],
-                        [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.chicken1],
-                        [pygame.transform.scale(pygame.image.load(img), (40,40)) for img in GamePath.chicken2],
-                        [pygame.transform.scale(pygame.image.load(img), (70,70)) for img in GamePath.goldenbird],
+        self.imagelist=[[pygame.transform.scale(pygame.image.load(img), AnimalSettings.catposition) for img in GamePath.cat1],
+                        [pygame.transform.scale(pygame.image.load(img), AnimalSettings.catposition) for img in GamePath.cat2],
+                        [pygame.transform.scale(pygame.image.load(img), AnimalSettings.catposition) for img in GamePath.cat3],
+                        [pygame.transform.scale(pygame.image.load(img), AnimalSettings.catposition) for img in GamePath.cat4],
+                        [pygame.transform.scale(pygame.image.load(img), AnimalSettings.fishposition) for img in GamePath.fish],
+                        [pygame.transform.scale(pygame.image.load(img), AnimalSettings.elfposition) for img in GamePath.elf],
+                        [pygame.transform.scale(pygame.image.load(img), AnimalSettings.chickenposition) for img in GamePath.chicken1],
+                        [pygame.transform.scale(pygame.image.load(img), AnimalSettings.chickenposition) for img in GamePath.chicken2],
+                        [pygame.transform.scale(pygame.image.load(img), AnimalSettings.goldenbirdposition) for img in GamePath.goldenbird],
 
                         ]
         self.images=self.imagelist[self.index]            
@@ -181,26 +181,30 @@ class Animal(pygame.sprite.Sprite):
         window.blit(self.image,(self.rect.x-20,self.rect.y-20,self.rect.width,self.rect.height))
     
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, x, y,type, order,HP = 100, Atk = 3, Money = 15):
+    def __init__(self, x, y,type, order,HP, Atk, Money):
         super().__init__()
         self.index=0
-        self.images = [pygame.transform.scale(pygame.image.load(img), 
-                            (BattleSettings.monsterWidth//3, BattleSettings.monsterHeight//3)) for img in GamePath.monster]
+        self.type=type
+        if self.type<3:
+            self.images = [pygame.transform.scale(pygame.image.load(img), 
+                                    (BattleSettings.monsterWidth//3, BattleSettings.monsterHeight//3)) for img in GamePath.monster2]
+        else:
+           self.images = [pygame.transform.scale(pygame.image.load(img), 
+                                    (BattleSettings.monsterWidth//3, BattleSettings.monsterHeight//3)) for img in GamePath.monster]
         self.image=self.images[self.index]
         self.rect = self.image.get_rect()
         self.rect.x=x
         self.rect.y=y
-        self.font= pygame.font.Font(None, 18)
+        self.font= pygame.font.Font(None,NPCSettings.fontsize)
         self.originrect_x=x
         self.originrect_y=y
         self.HP = HP
         self.ATK = Atk
         self.money= Money
-        self.type=type
         self.order=order
-        font0=pygame.font.SysFont("impact", 15)
+        font0=pygame.font.SysFont("impact",NPCSettings.font0size)
         textlist=["    WARM UP",f"    WEEK QUIZ{self.order}",f" MONTH EXAM{self.order}",f"MIDTERM EXAM{self.order}"," FINAL EXAM"]
-        self.name=font0.render(textlist[self.type],True,(220,220,220))
+        self.name=font0.render(textlist[self.type],True,MonsterSettings.font0color)
         self.textrect=self.name.get_rect()
     def draw(self, window, dx=0, dy=0):
         if self.index==39:

@@ -23,8 +23,8 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.dialog=False
         self.shopping=False
         self.rect = self.image.get_rect()
-        self.rect.width=13
-        self.rect.height=13
+        self.rect.width=PlayerSettings.rectwidth
+        self.rect.height=PlayerSettings.rectheight
         self.rect.topleft = (x,y)
         self.next_rect=self.rect
         self.speed = PlayerSettings.playerSpeed
@@ -33,25 +33,20 @@ class Player(pygame.sprite.Sprite, Collidable):
         self.dy=0
         self.egg=0
         self.readytoplay=0
-        self.cameraX=0
-        self.cameraY=0
         self.money,self.ATK,self.OriginHP,self.price1,self.price2,self.price3,self.animal=self.importdata()
         self.HP=self.OriginHP
-        self.font0=pygame.font.SysFont("impact", 15)
+        self.font0=pygame.font.SysFont("impact",PlayerSettings.font0size)
         self.text = None
         self.textrect=None
-        self.homeportaldata=(0,0,200,200)
-        self.wildportaldata=(0,0,200,200)
+        self.homeportaldata=PlayerSettings.homeportal
+        self.wildportaldata=PlayerSettings.wildportal
+        self.scenecameray=0
+        self.scenecamerax=0
 
-
-    def attr_update(self, addCoins = 0, addHP = 0, addAttack = 0, addDefence = 0):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
 
     def reset_pos(self):
         if self.collidingWith["monster"]==True:
-            postionlist=[[-140,80],[0,-80],[-40,-80],[-120,80],[120,0],[10,-180],[0,-80]]
+            postionlist=PlayerSettings.reset_position_list
             self.rect.x=self.collidingObject["monster"].rect.x+postionlist[self.collidingObject["monster"].order-1][0]
             self.rect.y=self.collidingObject["monster"].rect.y+postionlist[self.collidingObject["monster"].order-1][1]
         if self.collidingWith["dialog_npc"]==True:
@@ -66,15 +61,17 @@ class Player(pygame.sprite.Sprite, Collidable):
                 self.rect.x=self.collidingObject["animalgame_npc"].rect.x
                 self.rect.y=self.collidingObject["animalgame_npc"].rect.y-70
             if self.readytoplay==2:#reset
-                self.rect.topleft=(200-self.cameraX,430-self.cameraY)
+                self.rect.topleft=(200,370)
                 
 
         return self.rect
     def scenereset(self,scene,type):
         if type==2:
+
             scene.cameraX,scene.cameraY,self.rect.x,self.rect.y=self.wildportaldata
         if type==1:
-            self.wildportaldata=(0,0,self.rect.x-100+scene.cameraX,self.rect.y+scene.cameraY)
+            self.wildportaldata=(scene.cameraX,scene.cameraY,self.rect.x-100,self.rect.y)
+
             scene.cameraX,scene.cameraY,self.rect.x,self.rect.y=self.homeportaldata
 
 
@@ -203,5 +200,8 @@ class Player(pygame.sprite.Sprite, Collidable):
  
         with open(f"./Data.txt","w") as newdata:
             newdata.writelines(modifylines)
-
-
+    def initialdata(self):
+        modifylines=["money=400\n","atk=3\n","hp=100\n","price1=50\n","price2=50\n","price3=30\n"]
+        with open(f"./Data.txt","w") as newdata:
+            newdata.writelines(modifylines)
+        self.money,self.ATK,self.OriginHP,self.price1,self.price2,self.price3,self.animal=self.importdata()

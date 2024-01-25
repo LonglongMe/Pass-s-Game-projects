@@ -41,8 +41,6 @@ class Scene():
 
     def trigger_dialog(self, npc):
         self.dialogbox=DialogBox(self.window,npc)
-
-
         print("init dialog done,dialog event done")
 
     def end_dialog(self,player):
@@ -62,14 +60,20 @@ class Scene():
         player.collidingObject['animalgame_npc']=[]
         
     def trigger_animalgame(self,level):
+        
         for animals in self.wildanimals:
-            animals.speed=animals.speed*[1,2,3.5][level-1]
+            animals.speed=animals.speed*[1,2,3.2][level-1]
         self.animalgaming=1
 
+
     def end_animalgame(self,player):
+        
+        
+        self.cameraX=0
+        self.cameraY=60
         self.animalgaming=0
         if self.win==1:
-            player.money+=[10,50,100][self.gamelevel-1]
+            player.money+=[10,50,1000][self.gamelevel-1]
         player.reset_pos()
         for animals in self.wildanimals:
             animals.speed=1
@@ -99,7 +103,7 @@ class Scene():
 
     def get_height(self):
         return WindowSettings.height * WindowSettings.outdoorScale
-
+    
     def update_camera(self, player):
 
             if player.rect.x > WindowSettings.width //2+ 50:
@@ -179,11 +183,14 @@ class StartMenu:
         mousepos=pygame.mouse.get_pos()
         if mousepos[0] >= self.startrect.x and mousepos[0]<self.startrect.x+self.startrect.width and mousepos[1] >self.startrect.y  and mousepos[1]<self.startrect.y+self.startrect.height  :
             self.selectanimate(1.25)
-  
+
             if pygame.mouse.get_pressed()[0]:
                 pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH))               
         else:
             self.selectanimate(1)
+        keys=pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            pygame.event.post(pygame.event.Event(GameEvent.EVENT_SWITCH)) 
         window.blit(self.image,(0,75))
         window.blit(self.startimg,self.startrect)
         window.blit(self.text,self.textrect)
@@ -241,12 +248,14 @@ class HomeScene(Scene):
                         player.readytoplay=2
                         self.win=0
                         self.end_animalgame(player)
+
                 if player.collidingWith["decorate"]:
                     player.cameraX=self.cameraX
                     player.cameraY=self.cameraY
                     player.readytoplay=2
                     self.win=1
                     self.end_animalgame(player)
+
                 
             if player.is_colliding():
                 player.draw(self.window,player.dx,player.dy)
@@ -272,9 +281,9 @@ class WildScene(Scene):
         monsters.add(Monster(1280,280,1,2,100,1,1))
         monsters.add(Monster(120,1040,1,3,100,2,1))
         monsters.add(Monster(1000,1040,1,4,100,3,1))
-        monsters.add(Monster(440,1400,2,5,300,4,1))
-        monsters.add(Monster(2080,880,3,6,300,5,5))
-        monsters.add(Monster(3000,1200,4,7,750,10,5))
+        monsters.add(Monster(440,1400,2,5,300,3,1))
+        monsters.add(Monster(2080,880,3,6,300,3,5))
+        monsters.add(Monster(3000,1200,4,7,750,6,5))
         return monsters
 
     def render_wild(self,player,keys):

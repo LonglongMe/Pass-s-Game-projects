@@ -11,34 +11,26 @@ from PopUpBox import *
 
 class GameManager:
     def __init__(self,window):
-        self.player=Player(200,100)
-        self.scene = HomeScene(window)
-        self.scene.animals=self.player.eggborn()
-        self.window = window
-        self.clock = pygame.time.Clock()
-        self.collideindex=0
+        self.player=Player(PlayerSettings.playerInitialX,PlayerSettings.playerInitialY)
         self.playerlist=pygame.sprite.Group()
         self.playerlist.add(self.player)
+        self.window = window
+        self.clock = pygame.time.Clock()
+        self.scene = StartMenu(window)
+        self.collideindex=0
         self.music=BgmPlayer()
         self.bgm=self.gengamemanager()
-
-        
+  
     def gengamemanager(self):
         self.music.play(0)
     def game_reset(self):
-
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
+        self.player.initialdata()
+        self.music.stop()
+        self.music.play(0)
 
     # Necessary game components here ↓
     def tick(self, fps):
         self.clock.tick(fps)
-
-    def get_time(self):
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
 
     # Scene-related update functions here ↓
     def flush_scene(self):
@@ -71,7 +63,7 @@ class GameManager:
                 sys.exit()
             # 传送
             if event.type == GameEvent.EVENT_SWITCH:
-                self.player.scenereset(self.scene)
+                self.player.scenereset(self.scene,2)
                 GameManager.flush_scene(self)
             
     def update_home(self, events):
@@ -81,8 +73,11 @@ class GameManager:
                 pygame.quit()
                 sys.exit()
             if event.type== GameEvent.EVENT_SWITCH:
-                self.player.scenereset(self.scene,2)
                 GameManager.flush_scene(self)
+                self.player.scenereset(self.scene,2)
+            elif event.type==GameEvent.EVENT_RESTART:
+                self.game_reset()
+                self.scene.animals=pygame.sprite.Group()
 
         if self.player.collidingWith['dialog_npc']==True and self.scene.dialogbox==None:
             self.player.dx=0
@@ -156,6 +151,7 @@ class GameManager:
                 self.player.scenereset(self.scene,1)
                 GameManager.flush_scene(self)
 
+
         if self.player.collidingWith['monster']==True and self.scene.battlebox==None:
             self.player.dx=0
             self.player.dy=0
@@ -192,11 +188,6 @@ class GameManager:
             self.player.collidingWith["obstacle"]=True
         else:
             self.player.collidingWith["obstacle"]=False
-
-        # Player -> NPCs; if multiple NPCs collided, only first is accepted and dealt with.
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
 
         # Player -> Monsters
         if pygame.sprite.spritecollide(self.player, self.scene.monsters, False) :
@@ -243,11 +234,6 @@ class GameManager:
             self.player.collidingWith["dialog_npc"]=True
             self.player.collidingObject["dialog_npc"]=(pygame.sprite.spritecollide(self.player,self.scene.dialog_npcs,False)[0])
 
-    def update_NPCs(self):
-        # This is not necessary. If you want to re-use your code you can realize this.
-        ##### Your Code Here ↓ #####
-        pass
-        ##### Your Code Here ↑ #####
 
     # Render-relate update functions here ↓
     def render(self):
@@ -265,11 +251,7 @@ class GameManager:
         self.scene.render(self.player)
 
     def render_wild(self):
-
         self.scene.render(self.player)
         keys=pygame.key.get_pressed()
-        if keys[pygame.K_0]:
-            print(self.player.rect.topleft)
-
 
 
