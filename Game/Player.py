@@ -202,3 +202,4 @@ class Player(pygame.sprite.Sprite, Collidable):
         with open(f"./Data.txt","w") as newdata:
             newdata.writelines(modifylines)
         self.money,self.ATK,self.OriginHP,self.price1,self.price2,self.price3,self.animal=self.importdata()
+        self.HP=self.OriginHP
