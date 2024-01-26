@@ -441,7 +441,13 @@ class BattleBox:
         self.hpfont = pygame.font.Font(None,BattleSettings.hpfontsize)
         self.hpfontcolor=BattleSettings.hpfontcolor
         self.fontColor=BattleSettings.fontcolor
-        self.bg=pygame.transform.scale(pygame.image.load(GamePath.background), (BattleSettings.boxWidth, BattleSettings.boxHeight))
+        bglist=[pygame.transform.scale(pygame.image.load(img), (BattleSettings.boxWidth, BattleSettings.boxHeight)) for img in GamePath.background]
+        if monster.type<2:
+            self.bg=bglist[0]
+        elif monster.type==4:
+            self.bg=bglist[2]
+        else :
+            self.bg=bglist[1]
         self.mod = pygame.Surface((BattleSettings.boxWidth, BattleSettings.boxHeight), pygame.SRCALPHA)
         self.mod.fill(BattleSettings.modcolor)
         self.databg = pygame.Surface(BattleSettings.datasize, pygame.SRCALPHA)
