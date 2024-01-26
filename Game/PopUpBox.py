@@ -1163,6 +1163,7 @@ class ShoppingBox:
                 self.player.money-=self.player.price2
                 self.player.price2+=50
                 self.player.HP+=20
+                self.player.OriginHP+=20
         if self.selection==2:
             if self.player.money-self.player.price3>0:
                 self.player.money-=self.player.price3
