@@ -173,9 +173,9 @@ class Player(pygame.sprite.Sprite, Collidable):
                 elif "animal" in line:
                     animals=line[9:]
                     animallist=animals.split("--")
-                    for animal in animallist:
-                        if animal!="":
-                            animaldata=animal.split(",")
+                    for animali in animallist:
+                        if animali!="":
+                            animaldata=animali.split(",")
                             animal.add(Animal(int(animaldata[0]),int(animaldata[1]),int(animaldata[2])))
         data.close()
         return money,atk,hp,price1,price2,price3,animal

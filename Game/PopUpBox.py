@@ -1000,7 +1000,6 @@ class BattleBox:
             self.accumulategif()
         if self.enemy_Accumulated_atk>1:
             self.enemyaccumulategif()
-
         if self.win==0 :#as long as no winner:
             #STAGE1 player selection and act effect
             if self.ismyround==1 and self.enemy_round_count==0 :
@@ -1012,20 +1011,15 @@ class BattleBox:
                     self.Playcards()    # 4 play 3 cards selceted by "space"
                 else:
                     self.Getinfo()
-
             #STAGE2 player's animations
             if self.ismyround==0 and self.enemy_round_count==0:
                 self.gifrender()
-
             #STAGE3 enemy's selection and act effect
             if self.ismyround==0 and self.enemy_round_count==1:
                 self.act_enemy_change()
-
                 self.sacrificeatkthistime=0
                 if self.sacrificethistime==1:
                     self.sacrificethistime=0
-
-
             #STAGE4 enemy's animations
             if self.ismyround==1 and self.enemy_round_count==1 :
                 self.gifrender()
@@ -1040,7 +1034,6 @@ class BattleBox:
                         self.DrawNewCard()
                         if self.sacrificethistime>0:
                             self.sacrificethistime-=1
-
             #STAGE: one round finished
 
         if self.monsterHP==0 or self.playerHP==0 or self.leftround==0:#determin whether win
